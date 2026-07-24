@@ -58,7 +58,7 @@ HAND = {
    "Content creator; Associate Creative Head at The Nepali Comment (405k+ subs); hosts TNC Debates (15.5k+); leads the Himalayan Linguistics Olympiad and youth-ed projects.",
    {"web":"https://youtube.com/@TheNepaliComment"}),
  ("Aarjan Chaudhary",2026):     (dict(social_impact=4,leadership=5,innovation=5,entrepreneurship=5,recognition=5,glocal_fit=5,character=5),
-   "'Youngest Hacker of Nepal'; CVE-2025-51588; credited by Google, Twitch, EA, Stanford. Security engineer at Dench (YC S24); founder of kroda.ai ($20k+ LOIs) and Arniko Hack Club (400+ members, top-10 teen non-profit in Asia); ran Daydream (250+) and Campfire (150+); 1x exit.",
+   "'Youngest Hacker of Nepal'; CVE-2025-51588; research credited by Google, Twitch, EA, Stanford. AI-security researcher with published arXiv papers and one incoming at NeurIPS. Security engineer at Dench (YC S24); founder of kroda.ai ($20k+ binding LOIs). Founded Arniko Hack Club (Nepal's largest teen tech community, 400+ members); ran Daydream (250+) and Campfire (150+) and the InventionNovelty hacker house; built & exited ggamechamps (7k+ users).",
    {"web":"https://arjanchaudharyy.lol","x":"https://x.com/arjanchaudharyy"}),
 }
 
