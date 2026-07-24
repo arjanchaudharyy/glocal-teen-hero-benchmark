@@ -1,10 +1,12 @@
-.PHONY: help test eval rank stats ask similar build serve
+.PHONY: help test eval tune rank stats ask similar build serve
 help:            ## show targets
 	@grep -E '^[a-z].*:.*##' Makefile | sed 's/:.*##/ —/'
 test:            ## run the unit tests (stdlib, zero deps)
 	python3 -m unittest discover -s tests -v
 eval:            ## retrieval evaluation: Recall / MRR / nDCG / MAP
 	python3 -m gth eval
+tune:            ## grid-search BM25 params on the gold set
+	python3 -m gth tune
 rank:            ## print the at-selection ranking
 	python3 -m gth rank --top 20
 stats:           ## cohort statistics by tier

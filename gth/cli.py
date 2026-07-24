@@ -57,7 +57,12 @@ def _cmd_ask(a):
 
 def _cmd_eval(a):
     from .eval import run
-    run(k=a.k)
+    run(k=a.k, per_query=a.per_query)
+
+
+def _cmd_tune(a):
+    from .eval import tune
+    tune(k=a.k)
 
 
 def _cmd_score(a):
@@ -82,7 +87,8 @@ def main(argv=None):
     sub.add_parser("stats").set_defaults(fn=_cmd_stats)
     s = sub.add_parser("similar"); s.add_argument("name"); s.add_argument("--k", type=int, default=5); s.add_argument("--no-rerank", action="store_true"); s.set_defaults(fn=_cmd_similar)
     q = sub.add_parser("ask"); q.add_argument("query"); q.add_argument("--k", type=int, default=5); q.add_argument("--no-expand", action="store_true"); q.add_argument("--no-rerank", action="store_true"); q.set_defaults(fn=_cmd_ask)
-    e = sub.add_parser("eval"); e.add_argument("--k", type=int, default=10); e.set_defaults(fn=_cmd_eval)
+    e = sub.add_parser("eval"); e.add_argument("--k", type=int, default=10); e.add_argument("--per-query", action="store_true"); e.set_defaults(fn=_cmd_eval)
+    t = sub.add_parser("tune"); t.add_argument("--k", type=int, default=10); t.set_defaults(fn=_cmd_tune)
     sc = sub.add_parser("score"); sc.add_argument("--file"); sc.set_defaults(fn=_cmd_score)
 
     args = p.parse_args(argv)

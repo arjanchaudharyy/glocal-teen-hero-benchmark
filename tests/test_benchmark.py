@@ -69,7 +69,7 @@ class TestRetrievers(unittest.TestCase):
                 self.assertAlmostEqual(math.sqrt(sum(x * x for x in v.values())), 1.0, places=6)
 
     def test_rrf_fuses_ranks(self):
-        fused = reciprocal_rank_fusion([[3, 1, 2], [1, 3, 4]])
+        fused = reciprocal_rank_fusion({"a": [3, 1, 2], "b": [1, 3, 4]})
         # doc 1 & 3 appear high in both -> should top the fusion
         top2 = {i for i, _ in fused[:2]}
         self.assertEqual(top2, {1, 3})
@@ -100,15 +100,21 @@ class TestRAG(unittest.TestCase):
 
 
 class TestEval(unittest.TestCase):
-    def test_metrics_in_range_and_hybrid_competitive(self):
+    def test_metrics_in_range_and_hybrid_beats_baseline(self):
         c = load()
         rows = dict((name, m) for name, m in ev.run(c))
         for m in rows.values():
-            for v in m.values():
+            for key, v in m.items():
+                if key.startswith("_"):
+                    continue
                 self.assertGreaterEqual(v, 0.0)
                 self.assertLessEqual(v, 1.0)
-        # the fused/re-ranked config should be at least as good as raw tf-idf on nDCG
-        self.assertGreaterEqual(rows["hybrid+mmr"]["ndcg"], rows["tfidf"]["ndcg"] - 1e-9)
+        # the full stack should beat the single-retriever tf-idf baseline on nDCG
+        self.assertGreater(rows["hybrid+rm3+mmr"]["ndcg"], rows["tfidf"]["ndcg"])
+
+    def test_bootstrap_ci_ordered(self):
+        lo, hi = ev.bootstrap_ci([0.2, 0.4, 0.6, 0.8])
+        self.assertLessEqual(lo, hi)
 
 
 if __name__ == "__main__":

@@ -34,5 +34,14 @@ honorees receive conservative estimates flagged `est=true`.
 - Common-name honorees with thin footprints are conservative estimates.
 - `now` notes are provided for context and are **excluded** from all scoring.
 
+## Retrieval evaluation labels (`gth/eval.py`)
+A separate hand-labeled set of **16 topical queries**, each mapped to the honorees
+a human judges clearly relevant, is used to evaluate the retrieval engine
+(Recall@k, Precision@k, MRR, nDCG@k, MAP). These labels measure *whether the
+engine finds on-topic honorees* — they are independent of the benchmark scores.
+They are a **sparse pool**: for broad queries, relevant honorees outside the
+labeled set are counted as misses, so reported metrics are conservative lower
+bounds. The valid signal is the *relative* comparison across retrieval configs.
+
 ## License
 MIT for the code; corpus facts belong to their linked sources.

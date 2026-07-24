@@ -11,17 +11,17 @@ from .corpus import Corpus, Hero, load
 from .rubric import WEIGHTS, LABELS, DIMENSIONS, weighted_total
 from .scoring import rank_all, cohort_stats, percentile_vs, rank_of, verdict
 from .retrieval import (
-    HybridRetriever, TfidfIndex, BM25Index, Retrieval,
-    reciprocal_rank_fusion, mmr, prf_expand, tokenize,
+    HybridRetriever, TfidfIndex, BM25Index, QLMIndex, CharNGramIndex, Retrieval,
+    reciprocal_rank_fusion, comb_sum, mmr, rm3, prf_expand, tokenize, char_ngrams,
 )
 from .rag import build_index, similar, ask
 from . import eval as evaluation
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __all__ = [
     "Corpus", "Hero", "load", "WEIGHTS", "LABELS", "DIMENSIONS", "weighted_total",
     "rank_all", "cohort_stats", "percentile_vs", "rank_of", "verdict",
-    "HybridRetriever", "TfidfIndex", "BM25Index", "Retrieval",
-    "reciprocal_rank_fusion", "mmr", "prf_expand", "tokenize",
+    "HybridRetriever", "TfidfIndex", "BM25Index", "QLMIndex", "CharNGramIndex", "Retrieval",
+    "reciprocal_rank_fusion", "comb_sum", "mmr", "rm3", "prf_expand", "tokenize", "char_ngrams",
     "build_index", "similar", "ask", "evaluation", "__version__",
 ]
