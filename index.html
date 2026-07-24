@@ -139,6 +139,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-s
 <div class="nav"><div class="wrap">
   <span class="brand"><span class="mk">▲</span>Glocal Teen Hero</span>
   <a class="lnk" href="#score">Score</a><a class="lnk" href="#compare">Compare</a><a class="lnk hideM" href="#board">Leaderboard</a><a class="lnk hideM" href="#everyone">Everyone</a><a class="lnk hideM" href="#how">Method</a>
+  <a class="lnk" href="https://github.com/arjanchaudharyy/glocal-teen-hero-benchmark" target="_blank" rel="noreferrer" title="Open source on GitHub">GitHub&nbsp;&#8599;</a>
   <a class="btn sm" href="#score">Score yourself</a>
   <button class="tbtn" id="themebtn" title="Theme">◐</button>
 </div></div>
@@ -337,4 +338,101 @@ function boot(){
 $("themebtn").onclick=()=>{const r=document.documentElement,cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");r.setAttribute("data-theme",cur==="dark"?"light":"dark");render();refreshCompare();};
 let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{render();refreshCompare();},120);});
 boot();
+</script>
+<style>
+/* ---- polish + easter-egg layer ---- */
+@media(prefers-reduced-motion:no-preference){
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .btn{transition:transform .15s ease,opacity .15s ease,box-shadow .15s ease}
+  .btn:hover{transform:translateY(-1px)}
+  .chip{transition:transform .12s ease,background .12s,color .12s,border-color .12s}
+  .chip:active{transform:scale(.94)}
+  .lbrow{transition:background .15s}
+  .brand{cursor:pointer}
+}
+.nav .lnk.active{color:var(--ink)}
+.nav .lnk.active::after{content:"";display:block;height:2px;border-radius:2px;background:var(--ink);margin-top:3px}
+.fab{position:fixed;right:22px;bottom:22px;z-index:40;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);box-shadow:var(--shadow);cursor:pointer;font-size:16px;opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s;pointer-events:none}
+.fab.show{opacity:1;transform:none;pointer-events:auto}
+.confetti-cv{position:fixed;inset:0;z-index:9998;pointer-events:none}
+.egg-toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);z-index:9999;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 12px 30px rgba(0,0,0,.25);opacity:0;transition:opacity .3s,transform .3s;max-width:min(90vw,520px);text-align:center}
+.egg-toast.show{opacity:1;transform:translate(-50%,0)}
+.egg-toast a{color:inherit;text-decoration:underline}
+</style>
+<script>
+(function(){
+  var RE="https://github.com/arjanchaudharyy/glocal-teen-hero-benchmark";
+  var reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s));};
+
+  /* console signature */
+  try{
+    console.log("%c▲ Glocal Teen Hero — At-Selection Benchmark","font:600 16px Georgia;color:#16233e");
+    console.log("%cbuilt by Aarjan Chaudhary · fully open source → "+RE,"color:#6b7280");
+    console.log("%cpsst: try the Konami code ↑↑↓↓←→←→ B A 🐊","color:#b3906a;font-weight:600");
+  }catch(e){}
+
+  /* toast + confetti */
+  function toast(msg){var t=document.querySelector(".egg-toast");if(!t){t=document.createElement("div");t.className="egg-toast";document.body.appendChild(t);}t.innerHTML=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");},4200);}
+  function confetti(){
+    if(reduce){return;}
+    var c=document.createElement("canvas");c.className="confetti-cv";document.body.appendChild(c);
+    var x=c.getContext("2d"),W=c.width=innerWidth,H=c.height=innerHeight;
+    var cs=getComputedStyle(document.documentElement);
+    var cols=[cs.getPropertyValue("--ink").trim()||"#16233e",cs.getPropertyValue("--accentB").trim()||"#b3906a","#e0a94e","#d9718c","#6aa9d8"];
+    var P=[];for(var i=0;i<150;i++)P.push({x:Math.random()*W,y:-20-Math.random()*H*0.35,r:4+Math.random()*6,c:cols[i%cols.length],vx:(Math.random()-.5)*3.4,vy:2+Math.random()*4,a:Math.random()*6.28,va:(Math.random()-.5)*.35});
+    var start=performance.now(),last=start;
+    (function tick(t){var dt=Math.min(34,t-last);last=t;x.clearRect(0,0,W,H);var alive=false;
+      for(var i=0;i<P.length;i++){var p=P[i];p.vy+=0.05*dt/16;p.x+=p.vx*dt/16;p.y+=p.vy*dt/16;p.a+=p.va;if(p.y<H+30)alive=true;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.62);x.restore();}
+      if(alive&&t-start<4200)requestAnimationFrame(tick);else c.remove();
+    })(start);
+  }
+
+  /* scroll reveal */
+  var blocks=$$("section, .quote");blocks.forEach(function(b){b.classList.add("reveal");});
+  if("IntersectionObserver" in window && !reduce){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.12});
+    blocks.forEach(function(b){io.observe(b);});
+    setTimeout(function(){blocks.forEach(function(b){b.classList.add("in");});},2000); /* safety */
+  } else blocks.forEach(function(b){b.classList.add("in");});
+
+  /* hero stat count-up */
+  function countUp(){
+    $$(".statline .s b").forEach(function(el){
+      var raw=el.textContent.trim();if(!/^\d+$/.test(raw))return;var target=+raw,t0=performance.now(),dur=900;
+      (function step(t){var k=Math.min(1,(t-t0)/dur);el.textContent=Math.round(target*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step);})(t0);
+    });
+  }
+  if(!reduce)setTimeout(countUp,300);
+
+  /* nav active on scroll */
+  var secIds=["score","compare","board","everyone","how"];
+  if("IntersectionObserver" in window){
+    var no=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){$$(".nav .lnk").forEach(function(a){a.classList.toggle("active",a.getAttribute("href")==="#"+e.target.id);});}});},{rootMargin:"-45% 0px -50% 0px"});
+    secIds.forEach(function(id){var el=document.getElementById(id);if(el)no.observe(el);});
+  }
+
+  /* back-to-top */
+  var fab=document.createElement("button");fab.className="fab";fab.textContent="↑";fab.title="Back to top";document.body.appendChild(fab);
+  fab.onclick=function(){scrollTo({top:0,behavior:"smooth"});};
+  addEventListener("scroll",function(){fab.classList.toggle("show",scrollY>640);},{passive:true});
+
+  /* egg 1: konami */
+  var K=[38,38,40,40,37,39,37,39,66,65],ki=0;
+  addEventListener("keydown",function(e){ki=(e.keyCode===K[ki])?ki+1:(e.keyCode===K[0]?1:0);if(ki===K.length){ki=0;confetti();toast("🐊 you found it — the whole benchmark is <a href='"+RE+"' target='_blank'>open source</a>. built by Aarjan.");}});
+
+  /* egg 2: logo taps */
+  var lc=0,lt=0;var brand=document.querySelector(".brand");if(brand)brand.addEventListener("click",function(){var n=performance.now();lc=(n-lt<800)?lc+1:1;lt=n;if(lc>=5){lc=0;confetti();toast("▲ made in Biratnagar, Nepal 🇳🇵 — world-class, rooted at home.");}});
+
+  /* egg 3: type the author's name in the paste box */
+  var at=document.getElementById("appText"),fired=false;
+  if(at)at.addEventListener("input",function(){if(fired)return;if(/\ba+rjan|aarjan|\bkroda\b|arniko/i.test(at.value)){fired=true;var ls=document.getElementById("loadSample");toast("😏 well, well… loading the author's profile.");setTimeout(function(){if(ls)ls.click();confetti();},500);}});
+
+  /* egg 4: confetti when you top the field */
+  if("MutationObserver" in window){
+    var vd=document.getElementById("verdict");
+    if(vd){var mo=new MutationObserver(function(){var txt=vd.textContent||"";if(/Above every winner/.test(txt)&&!vd._popped){vd._popped=true;confetti();}else if(!/Above every winner/.test(txt)){vd._popped=false;}});mo.observe(vd,{childList:true,subtree:true,characterData:true});}
+  }
+})();
 </script>
