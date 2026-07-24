@@ -4,7 +4,7 @@ Scoring rubric for the Glocal Teen Hero corpus, applied on an at-selection basis
 Seven weighted dimensions derived from the program's own stated criteria
 (leadership, innovation & technology, social impact, creativity, community
 contribution, "beyond academics") and the organizer's public write-ups of why
-past winners won. Weights are a documented prior — override them and re-run.
+past winners won. Weights are a documented prior; override them and re-run.
 """
 from __future__ import annotations
 

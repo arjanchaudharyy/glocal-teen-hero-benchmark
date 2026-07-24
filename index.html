@@ -149,7 +149,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-s
   <h1>How would you rank among <em>Glocal&nbsp;Teen&nbsp;Heroes</em>?</h1>
   <p class="sub">Every Nepal honoree, scored on the record they held the year they were selected. Paste your own and see where you'd land.</p>
   <div class="cta"><a class="btn" href="#score">Score yourself →</a><a class="btn ghost" href="#board">See the leaderboard</a></div>
-  <p class="note">This is an <b>at-selection</b> ranking, not a where-are-they-now ranking. Everyone is judged on what they'd achieved as a teen at their Glocal moment — not the career they built afterward. Each profile keeps a separate “now” note for that.</p>
+  <p class="note">This is an <b>at-selection</b> ranking, not a where-are-they-now ranking. Everyone is judged on what they'd achieved as a teen at their Glocal moment - not the career they built afterward. Each profile keeps a separate “now” note for that.</p>
   <div class="statline" id="statline"></div>
 </div></header>
 
@@ -157,7 +157,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-s
   <div class="head"><p class="eyebrow">Score yourself</p><h2>Where would your teen record land?</h2><p>Fill what's true. The paste box auto-detects signals; adjust anything by hand.</p></div>
   <div class="two">
     <div class="card pad">
-      <div class="field"><label>Paste your bio / achievements <span class="hint">— scanned for signals</span></label>
+      <div class="field"><label>Paste your bio / achievements <span class="hint">- scanned for signals</span></label>
         <textarea id="appText" placeholder="e.g. 15, self-taught. CVE-2025-51588. Credited by Google & Twitch. Founder of a 400+ member non-profit. Building an AI startup with $20k LOIs. Ran two hackathons…"></textarea>
         <div class="detected" id="detected"></div></div>
       <div class="row2"><div class="field"><label>Orgs founded / led</label><input type="number" id="orgs" min="0" value="0"></div>
@@ -166,23 +166,23 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-s
         <div class="field"><label>Years active</label><input type="number" id="years" min="0" value="0"></div></div>
       <div class="field"><label>What have you built / done?</label><div class="chips" id="tBuild"></div></div>
       <div class="field"><label>Recognition</label><div class="chips" id="tRec"></div></div>
-      <div class="field"><label>Glocal test <span class="hint">— world-class and locally rooted</span></label><div class="chips" id="tGloc"></div></div>
+      <div class="field"><label>Glocal test <span class="hint">- world-class and locally rooted</span></label><div class="chips" id="tGloc"></div></div>
       <button class="btn ghost sm" id="loadSample">Load a sample profile</button>
     </div>
     <div class="card">
       <div class="score-top"><div class="bigscore" id="bigScore">0.0</div>
         <div><div class="verdict" id="verdict">Start typing…<small id="verdictSub">out of 5.0 weighted</small></div>
-          <span class="badge" id="verdictBadge">—</span></div></div>
+          <span class="badge" id="verdictBadge">-</span></div></div>
       <div style="padding:14px 24px 0"><canvas id="radar" data-h="420"></canvas></div>
       <div class="dims" id="dims"></div><div class="cmp" id="cmp"></div>
     </div>
   </div>
 </div></section>
 
-<div class="quote"><div class="wrap"><p class="serif" id="quoteLine">“Judged on the record they had at selection — not the career they built after.”</p><div class="by">the one rule that keeps this rubric fair</div></div></div>
+<div class="quote"><div class="wrap"><p class="serif" id="quoteLine">“Judged on the record they had at selection - not the career they built after.”</p><div class="by">the one rule that keeps this rubric fair</div></div></div>
 
 <section id="compare"><div class="wrap">
-  <div class="head"><p class="eyebrow">Head to head</p><h2>Compare any two, at selection</h2><p>Pick two honorees — or “You”, using your score above.</p></div>
+  <div class="head"><p class="eyebrow">Head to head</p><h2>Compare any two, at selection</h2><p>Pick two honorees - or “You”, using your score above.</p></div>
   <div class="card pad">
     <div class="row2" style="max-width:640px;margin:0 auto 6px"><div class="field"><label>Profile A</label><select id="cmpA"></select></div><div class="field"><label>Profile B</label><select id="cmpB"></select></div></div>
     <div class="two" style="margin-top:6px"><div><canvas id="cmpRadar" data-h="440"></canvas></div><div id="cmpTable"></div></div>
@@ -204,11 +204,11 @@ footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-s
 <section id="how"><div class="wrap">
   <div class="head"><p class="eyebrow">How it works</p><h2>Methodology &amp; honesty</h2></div>
   <div class="method">
-    <p>Every person is scored on the record they held <b>when they were a Glocal honoree</b> — the teen record the jury evaluated — not the career they built afterward. Comparing a current 15-year-old to someone's later university or startup years would be apples-to-oranges, so we don't. Each profile keeps a “now” note for where they went.</p>
+    <p>Every person is scored on the record they held <b>when they were a Glocal honoree</b> - the teen record the jury evaluated - not the career they built afterward. Comparing a current 15-year-old to someone's later university or startup years would be apples-to-oranges, so we don't. Each profile keeps a “now” note for where they went.</p>
     <h3>Seven dimensions</h3>
     <div id="mDims"></div>
     <h3>Where scores come from</h3>
-    <p>Deep public research per person (press, the program's pages, LinkedIn/GitHub/portfolios). Higher-footprint honorees are well sourced; low-footprint ones get conservative estimates, flagged <code>est</code>. Weights live in the <a id="repo" href="#" style="color:var(--ink);text-decoration:underline">repo</a> — change them and re-run.</p>
+    <p>Deep public research per person (press, the program's pages, LinkedIn/GitHub/portfolios). Higher-footprint honorees are well sourced; low-footprint ones get conservative estimates, flagged <code>est</code>. Weights live in the <a id="repo" href="#" style="color:var(--ink);text-decoration:underline">repo</a> - change them and re-run.</p>
     <p style="margin-top:16px;font-size:12.5px">A self-assessment tool built by a 2026 applicant. Scores reflect public information and a documented rubric, not the jury's decision. Not affiliated with Glocal Pvt. Ltd.</p>
   </div>
 </div></section>
@@ -280,14 +280,14 @@ function drawRadar(c,series){
 
 function opts(){return C.slice().sort((a,b)=>tot(b.s)-tot(a.s)).map(h=>`<option value="${h.name}|${h.year}">${h.name} (${h.year}, ${h.award})</option>`).join("");}
 function findH(v){const i=v.lastIndexOf("|");const n=v.slice(0,i),y=v.slice(i+1);return C.find(h=>h.name===n&&String(h.year)===y);}
-function profOf(v){if(v==="__you")return{name:"You",s:YOU,total:tot(YOU),now:"—"};const h=findH(v);return h&&{name:h.name,s:h.s,total:tot(h.s),now:h.now};}
+function profOf(v){if(v==="__you")return{name:"You",s:YOU,total:tot(YOU),now:"-"};const h=findH(v);return h&&{name:h.name,s:h.s,total:tot(h.s),now:h.now};}
 function refreshCompare(){const A=profOf($("cmpA").value),B=profOf($("cmpB").value);if(!A||!B)return;
   drawRadar($("cmpRadar"),[[A.s,"ink"],[B.s,"b"]]);
   $("cmpTable").innerHTML=`<div style="display:grid;grid-template-columns:1fr auto auto;gap:7px 16px;font-size:13.5px;align-items:center">
     <div></div><div style="font-weight:700;text-align:right">${A.name}</div><div style="font-weight:700;text-align:right;color:var(--accentB)">${B.name}</div>
     ${DIMS.map(([k,l])=>`<div style="color:var(--muted)">${l}</div><div class="mono" style="text-align:right">${A.s[k]||0}</div><div class="mono" style="text-align:right">${B.s[k]||0}</div>`).join("")}
     <div style="font-weight:700;border-top:1px solid var(--line);padding-top:7px">Total</div><div class="mono" style="font-weight:700;text-align:right;border-top:1px solid var(--line);padding-top:7px">${A.total.toFixed(2)}</div><div class="mono" style="font-weight:700;text-align:right;border-top:1px solid var(--line);padding-top:7px">${B.total.toFixed(2)}</div>
-  </div>${(A.now&&A.now!=="—")||(B.now&&B.now!=="—")?`<div style="margin-top:14px;font-size:12.5px;color:var(--muted)"><b style="color:var(--ink)">Now:</b> ${A.name}: ${A.now||"—"} · ${B.name}: ${B.now||"—"}</div>`:""}`;
+  </div>${(A.now&&A.now!=="-")||(B.now&&B.now!=="-")?`<div style="margin-top:14px;font-size:12.5px;color:var(--muted)"><b style="color:var(--ink)">Now:</b> ${A.name}: ${A.now||"-"} · ${B.name}: ${B.now||"-"}</div>`:""}`;
 }
 
 let lbFilt="All";
@@ -297,7 +297,7 @@ function board(){
   [...$("lbTabs").children].forEach(b=>b.onclick=()=>{lbFilt=b.dataset.t;board();});
   const list=C.filter(h=>lbFilt==="All"||h.award===lbFilt||h.me).sort((a,b)=>tot(b.s)-tot(a.s));
   $("lbList").innerHTML=list.map((h,i)=>`<div class="lbrow${h.me?' me':''}"><div class="rk">${['①','②','③'][i]||(i+1)}</div>
-    <div><div class="nm">${h.name}${h.me?' · you':''}</div><div class="meta">${h.award} · ${h.year}${h.now&&h.now!=="—"&&!h.me?' · now: '+h.now:''}</div></div>
+    <div><div class="nm">${h.name}${h.me?' · you':''}</div><div class="meta">${h.award} · ${h.year}${h.now&&h.now!=="-"&&!h.me?' · now: '+h.now:''}</div></div>
     <div class="sc">${tot(h.s).toFixed(2)}</div></div>`).join("");
 }
 
@@ -322,7 +322,7 @@ function drawGrid(){
       <div class="bd" id="${id}">${h.then}</div>
       <div class="foot"><div class="sc">${tot(h.s).toFixed(2)}<span style="color:var(--muted);font-weight:400;font-size:11px;font-family:var(--sans)"> / 5</span></div><div class="lk">${L||'<span style="color:var(--muted);font-size:11px">public data</span>'}</div></div></div>`;}).join("");
 }
-function tn(id,which,btn){const d=NOW[id];$(id).textContent=which?(d.now||"—"):d.then;[...btn.parentElement.children].forEach((b,i)=>b.setAttribute("aria-pressed",String(i===which)));}
+function tn(id,which,btn){const d=NOW[id];$(id).textContent=which?(d.now||"-"):d.then;[...btn.parentElement.children].forEach((b,i)=>b.setAttribute("aria-pressed",String(i===which)));}
 
 function boot(){
   if(!document.documentElement.getAttribute('data-theme'))document.documentElement.setAttribute('data-theme','light');
@@ -420,10 +420,10 @@ boot();
 
   /* egg 1: konami */
   var K=[38,38,40,40,37,39,37,39,66,65],ki=0;
-  addEventListener("keydown",function(e){ki=(e.keyCode===K[ki])?ki+1:(e.keyCode===K[0]?1:0);if(ki===K.length){ki=0;confetti();toast("🐊 you found it — the whole thing is <a href='"+RE+"' target='_blank'>open source</a>. built by Aarjan.");}});
+  addEventListener("keydown",function(e){ki=(e.keyCode===K[ki])?ki+1:(e.keyCode===K[0]?1:0);if(ki===K.length){ki=0;confetti();toast("🐊 you found it - the whole thing is <a href='"+RE+"' target='_blank'>open source</a>. built by Aarjan.");}});
 
   /* egg 2: logo taps */
-  var lc=0,lt=0;var brand=document.querySelector(".brand");if(brand)brand.addEventListener("click",function(){var n=performance.now();lc=(n-lt<800)?lc+1:1;lt=n;if(lc>=5){lc=0;confetti();toast("▲ made in Biratnagar, Nepal 🇳🇵 — world-class, rooted at home.");}});
+  var lc=0,lt=0;var brand=document.querySelector(".brand");if(brand)brand.addEventListener("click",function(){var n=performance.now();lc=(n-lt<800)?lc+1:1;lt=n;if(lc>=5){lc=0;confetti();toast("▲ made in Biratnagar, Nepal 🇳🇵 - world-class, rooted at home.");}});
 
   /* egg 3: type the author's name in the paste box */
   var at=document.getElementById("appText"),fired=false;

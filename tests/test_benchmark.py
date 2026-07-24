@@ -78,7 +78,7 @@ class TestRetrievers(unittest.TestCase):
 class TestRAG(unittest.TestCase):
     def setUp(self):
         self.c = load()
-        self.idx = build_index(self.c, backend="tfidf")
+        self.idx = build_index(self.c)
 
     def test_query_returns_k(self):
         hits = self.idx.query("astronomy space rocket", k=5)
@@ -102,7 +102,7 @@ class TestRAG(unittest.TestCase):
         self.assertIn("hybrid(", out)
 
     def test_default_methods_is_the_cv_selected_config(self):
-        # The default is not a guess — python -m gth cv 5-fold cross-validates
+        # The default is not a guess: python -m gth cv 5-fold cross-validates
         # every candidate and char-ngram alone wins every fold (see eval.py).
         self.assertEqual(self.idx.default_methods, ["char"])
 
@@ -149,7 +149,7 @@ class TestEval(unittest.TestCase):
         self.assertLessEqual(lo, hi)
 
     def test_nested_cross_validate_reports_held_out_scores_in_range(self):
-        # small fold counts to keep the suite fast — full 5x4 grid search is
+        # small fold counts to keep the suite fast; the full 5x4 grid search is
         # exercised via `python -m gth ncv`, not on every test run
         c = load()
         result = ev.nested_cross_validate(c, n_outer=2, n_inner=2)

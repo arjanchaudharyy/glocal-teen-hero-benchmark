@@ -7,7 +7,7 @@ Command-line interface.
     python -m gth ask "who worked on menstrual health?" [--k 5] [--hybrid]
     python -m gth eval [--per-query]             # Recall/Prec/MRR/nDCG/MAP + bootstrap CI
     python -m gth cv [--folds 5]                 # k-fold cross-validated config selection
-    python -m gth ncv [--outer 5] [--inner 4]    # nested CV — hyperparams tuned in-fold only
+    python -m gth ncv [--outer 5] [--inner 4]    # nested CV, hyperparams tuned in-fold only
     python -m gth tune                           # BM25 (k1,b) grid search
     python -m gth score --file profile.json      # {"social_impact":4, ...}
 """
@@ -32,7 +32,7 @@ def _cmd_rank(a):
     if a.tier:
         tier = _TIER[a.tier]
         ranked = [r for r in ranked if r.hero.award == tier]
-    print(f"\nGLOCAL TEEN HERO — AT-SELECTION RANKING  ({len(corpus)} honorees)\n" + "=" * 62)
+    print(f"\nGLOCAL TEEN HERO - AT-SELECTION RANKING  ({len(corpus)} honorees)\n" + "=" * 62)
     print(f"{'#':<4}{'Name':<26}{'Year':<6}{'Tier':<11}{'Score':>6}")
     print("-" * 62)
     for i, r in enumerate(ranked[: a.top], 1):
@@ -52,7 +52,7 @@ def _cmd_stats(a):
 def _cmd_similar(a):
     for r in similar(a.name, k=a.k, hybrid=a.hybrid):
         prov = ",".join(f"{m}#{rk}" for m, rk in sorted(r.sources.items()))
-        print(f"{r.score:>8}  {r.hero.name} ({r.hero.year}, {r.hero.award}) [{prov}] — {r.hero.then[:80]}")
+        print(f"{r.score:>8}  {r.hero.name} ({r.hero.year}, {r.hero.award}) [{prov}] - {r.hero.then[:80]}")
 
 
 def _cmd_ask(a):

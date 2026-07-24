@@ -1,24 +1,25 @@
 """
 The retrieval benchmark: a real IR test collection over the corpus (gold
-queries + relevance judgments + compared systems), which is the one part of
-this project that earns the word "benchmark" — the rubric scoring elsewhere
-in this package is a documented methodology applied to a fixed cohort, not a
-standardized task multiple systems are measured against.
+queries, relevance judgments, compared systems). This is the one part of
+this project that earns the word "benchmark". The rubric scoring elsewhere
+in this package is a documented methodology applied to a fixed cohort, not
+a standardized task multiple systems are measured against.
 
-A hand-labeled query set (query -> honorees a human judges relevant) plus
-standard IR metrics — Recall@k, Precision@k, MRR, nDCG@k, MAP — computed for
-every retrieval configuration, with a bootstrap 95% CI on the winner and an
-optional per-query breakdown. Also: k-fold and nested cross-validation to
-select the shipped default, and a paired significance test.
+The 39 gold queries are deliberately NOT copied phrases from the honorees'
+bios. An earlier version used queries like "menstrual health hygiene periods
+dignity" against bios that literally contain "menstrual hygiene", so any
+substring-matching retriever won by construction. These queries describe
+the same topics in different words, so a retriever actually has to bridge
+vocabulary rather than find a copy of itself.
 
     python -m gth eval                 # comparison table + CI
     python -m gth eval --per-query     # per-query nDCG breakdown
     python -m gth cv                   # k-fold cross-validated config selection
-    python -m gth ncv                  # nested CV — publish-safe estimate
+    python -m gth ncv                  # nested CV, publish-safe estimate
     python -m gth sig                  # paired significance test
     python -m gth tune                 # BM25 (k1,b) grid search
 
-Labels are judgment-based ground truth for *this* corpus: they measure whether
+Labels are judgment-based ground truth for this corpus: they measure whether
 the engine finds the on-topic honorees, not the honorees' rubric scores.
 """
 from __future__ import annotations
@@ -30,126 +31,122 @@ from typing import Dict, List, Sequence, Tuple
 from .corpus import Corpus, load
 from .retrieval import HybridRetriever
 
-# query -> list of (name, year) a human judges clearly relevant
+# query -> list of (name, year) a human judges clearly relevant.
+# Queries paraphrase the topic; they avoid copying the bio's own wording.
 GOLD: List[Tuple[str, List[Tuple[str, int]]]] = [
-    ("astronomy space rocket satellite olympiad", [
+    ("young stargazers who build flying machines and compete worldwide", [
         ("Rahul Ranjan Sah", 2022), ("Swaraj Sagar Pradhan", 2020),
         ("Lucky Sah", 2022), ("Aamod Paudel", 2022), ("Osish Niraula", 2025)]),
-    ("menstrual health hygiene periods dignity", [
-        ("Ruchi Ojha", 2025), ("Dipisha Bhujel", 2018),
-        ("Sinshiya K.C.", 2024), ("Sushan Shrestha", 2023)]),
-    ("robotics hardware engineering invention", [
+    ("teens breaking taboos around a private monthly health topic for girls", [
+        ("Ruchi Ojha", 2025), ("Sinshiya K.C.", 2024),
+        ("Bidhata Pathak", 2022), ("Manushi Neupane", 2025)]),
+    ("self-taught tinkerers who build machines with their own hands", [
         ("Lov Panthi", 2019), ("Bikalpa Dhungana", 2018),
         ("Santosh Lamichhane", 2016), ("Lucky Sah", 2022), ("Sahil K Gupta", 2018)]),
-    ("climate environment tree planting sustainability", [
+    ("young organizers fighting to protect a warming planet", [
         ("Kaushal Niraula", 2024), ("Sushant Sapkota", 2020),
         ("Nischal Dhungana", 2025), ("Shrijana Gautam", 2022), ("Sagar Budha", 2023)]),
-    ("artificial intelligence machine learning developer", [
-        ("Aryan Basnet", 2024), ("Safal Poudel", 2025), ("Sagar Gupta", 2023),
-        ("Amit Timalsina", 2020), ("Aarjan Chaudhary", 2026)]),
-    ("child rights child marriage advocacy", [
+    ("coders building smart software that learns from data", [
+        ("Aryan Basnet", 2024), ("Safal Poudel", 2025),
+        ("Sagar Gupta", 2023), ("Aarjan Chaudhary", 2026)]),
+    ("campaigners working to stop underage weddings", [
         ("Bipana Sharma", 2015), ("Prashansha KC", 2018),
         ("Namrata Dahal", 2020), ("Prakash Badu", 2023)]),
-    ("startup founder entrepreneur business", [
+    ("teens who launched their own companies with paying customers", [
         ("Kunal Sah", 2022), ("Samir Phuyal", 2019), ("Grace Thapa", 2020),
         ("Nischal Singh Bista", 2022), ("Mohammad Aftab Sheikh", 2025)]),
-    ("filmmaker documentary storytelling", [
+    ("young directors capturing real lives on camera", [
         ("Aditya Khadka", 2015), ("Bimarsha Poudel", 2022), ("Phurwa Tsering Gurung", 2025)]),
-    ("mathematics physics olympiad medal", [
-        ("Prakash Pant", 2023), ("Madhav Khanal", 2023),
-        ("Aamod Paudel", 2022), ("Abhishek Karna", 2020)]),
-    ("mental health awareness youth wellbeing", [
-        ("Manushi Neupane", 2025), ("Aayushman Puri", 2024), ("Sarwagya Bhattarai", 2022)]),
-    ("programming app development software building", [
+    ("students who won top honors at international science contests", [
+        ("Prakash Pant", 2023), ("Madhav Khanal", 2023), ("Aamod Paudel", 2022),
+        ("Shakti K.C.", 2024), ("Swaraj Sagar Pradhan", 2020)]),
+    ("teens helping peers cope with emotional struggles", [
+        ("Anugraha Ghale", 2021), ("Diwash Sarraf", 2023)]),
+    ("young builders shipping real mobile and web products", [
         ("Prashim Timsina", 2024), ("Safal Poudel", 2025), ("Sagar Gupta", 2023),
         ("Shreejay Subedi", 2024), ("Aarjan Chaudhary", 2026)]),
-    ("girls empowerment gender equality women", [
+    ("advocates fighting for girls to be treated as equals", [
         ("Bipana Sharma", 2015), ("Prashansha KC", 2018), ("Namrata Dahal", 2020)]),
-    ("healthcare medical diagnosis disease", [
-        ("Rachin Kalakheti", 2019), ("Safal Poudel", 2025)]),
-    ("young scientist research science community", [
-        ("Amit Timalsina", 2020), ("Rahul Ranjan Sah", 2022), ("Rachin Kalakheti", 2019)]),
-    ("social impact community changemaker", [
+    ("teens working on tools and campaigns to keep people well", [
+        ("Rachin Kalakheti", 2019), ("Safal Poudel", 2025),
+        ("Sadiksha Ghimire", 2023), ("Dhurbesh Dhami", 2025)]),
+    ("curious teens running their own research and hobbyist science groups", [
+        ("Amit Timalsina", 2020), ("Rahul Ranjan Sah", 2022), ("Rachin Kalakheti", 2019),
+        ("Sambridhi Deo", 2022), ("Sagar Gupta", 2023)]),
+    ("young leaders trying to fix problems in their community", [
         ("Sushant Sapkota", 2020), ("Anugraha Ghale", 2021), ("Kunal Sah", 2022)]),
-    ("cybersecurity ethical hacking vulnerability", [
-        ("Aarjan Chaudhary", 2026), ("Sajan Adhikari", 2025), ("Nischal Bhattarai", 2024)]),
-    ("physics quantum research education", [
-        ("Aabiskar Thapa Kshetri", 2021), ("Abhishek Karna", 2020),
-        ("Sambridhi Deo", 2022), ("Swaraj Sagar Pradhan", 2020), ("Rakshit Poudel", 2025)]),
-    ("robotics club robot competition building", [
+    ("teens finding flaws in digital systems before criminals do", [
+        ("Aarjan Chaudhary", 2026), ("Sajan Adhikari", 2025),
+        ("Nischal Bhattarai", 2024), ("Anil Pradhan", 2018)]),
+    ("students spreading a love of hard science to other kids", [
+        ("Aabiskar Thapa Kshetri", 2021), ("Abhishek Karna", 2020), ("Sambridhi Deo", 2022),
+        ("Swaraj Sagar Pradhan", 2020), ("Rakshit Poudel", 2025)]),
+    ("teens who founded clubs where kids build and race machines", [
         ("Ekraj Ghimire", 2020), ("Bikram Parajuli", 2019), ("Aashish Shah", 2022),
         ("Lucky Sah", 2022), ("Lov Panthi", 2019), ("Tanmay Chaudhary", 2017)]),
-    ("coding education teaching students programming", [
+    ("teens who taught thousands of other kids to write software", [
         ("Samir Phuyal", 2019), ("Aashish Panthi", 2024), ("Aryan Sigdel", 2023),
         ("Sabhya Rai", 2021), ("Johnson Subedi", 2021)]),
-    ("blood donation platform app", [
+    ("a system connecting donors to patients who need transfusions", [
         ("Prashim Timsina", 2024), ("Krishtina Khanal", 2024)]),
-    ("snake wildlife rescue conservation", [
+    ("teens who rescue dangerous animals instead of killing them", [
         ("Ganesh Sah Sudi", 2019), ("Khusbu Bhandari", 2021)]),
-    ("poetry writing author novel book", [
+    ("young authors who published their own written work", [
         ("Madhav Khanal", 2023), ("Aryan Basnet", 2024), ("Samata Shrestha", 2016),
         ("Deepshikha Ghimire", 2018), ("Preeti Pantha", 2023)]),
-    ("anti-caste dalit discrimination equality", [
+    ("activists confronting caste-based discrimination", [
         ("Bishnu Mijar", 2019), ("Gobind Pajiyar", 2021), ("Rajaram Basnet", 2017)]),
-    ("agriculture farming crops food", [
+    ("teens improving how farmers grow and harvest their crops", [
         ("Renuka Singh", 2025), ("Laxman Poudel", 2020), ("Safal Poudel", 2025),
         ("Kishor Shahi", 2024), ("Risham Kumar Sah", 2023)]),
-    ("recycling waste plastic pollution", [
-        ("Shruti Tiwari", 2023), ("Sabina Shakya", 2021), ("Sumitra Acharya", 2023),
-        ("Bidhi Mandal", 2019)]),
-    ("sexual reproductive health SRHR education", [
+    ("young innovators turning trash into something useful", [
+        ("Shruti Tiwari", 2023), ("Sabina Shakya", 2021),
+        ("Sumitra Acharya", 2023), ("Bidhi Mandal", 2019)]),
+    ("peer educators teaching classmates about their bodies and relationships", [
         ("Mandira Shrestha", 2020), ("Sarwagya Bhattarai", 2022),
         ("Aayushman Puri", 2024), ("Sinshiya K.C.", 2024)]),
-    ("public speaking debate leadership", [
+    ("confident young voices who present in front of large crowds", [
         ("Vaibhav Nahata", 2020), ("Nischal Bhattarai", 2024),
         ("Shivu Pandey", 2019), ("Krish Yadav", 2025)]),
-    ("science education outreach youtube", [
+    ("teens making free online videos to explain school subjects", [
         ("Anurag Chapagain", 2021), ("Atith Adhikari", 2023),
         ("Aryan Sigdel", 2023), ("Amit Timalsina", 2020)]),
-    ("entrepreneurship internship jobs platform", [
-        ("Kunal Sah", 2022), ("Tushar Shah", 2024), ("Hangsam Nembang", 2024),
-        ("Aryan Sigdel", 2023)]),
-    ("music rapper singer artist", [
+    ("young founders connecting workers with paid opportunities", [
+        ("Kunal Sah", 2022), ("Tushar Shah", 2024),
+        ("Hangsam Nembang", 2024), ("Aryan Sigdel", 2023)]),
+    ("teen performers making original songs", [
         ("Avinash Kumar Paswan", 2023), ("Mohammad Aftab Sheikh", 2025)]),
-    ("education access marginalized rural children", [
+    ("teens bringing schooling to kids who would otherwise be left out", [
         ("Mohan Budha", 2021), ("Sabhya Rai", 2021), ("Ashish Banjara", 2024),
         ("Saurab Banstola", 2024), ("Reet Kafle", 2020)]),
-    ("chemistry sanitizer materials polymer", [
+    ("young chemists inventing new cleaning and lab materials", [
         ("Suyog Vardan Acharya", 2021), ("Sambridhi Deo", 2022)]),
-    ("STEM access foundation education", [
-        ("Saksham Rupakheti", 2025), ("Ranjan Shankar", 2022),
-        ("Sampanna Jyoti Tuladhar", 2022)]),
-    ("climate activism youth organizing", [
+    ("nonprofits started by teens to widen access to technical subjects", [
+        ("Saksham Rupakheti", 2025), ("Ranjan Shankar", 2022), ("Sampanna Jyoti Tuladhar", 2022)]),
+    ("young Nepali voices demanding action on a heating planet", [
         ("Sanif Kandel", 2020), ("Shrijana Gautam", 2022), ("Bidhata Pathak", 2022),
         ("Kovid Bhusan Pathak", 2019), ("Nischal Dhungana", 2025), ("Prajesh Khanal", 2017)]),
-    ("girls education anti child marriage", [
+    ("advocates keeping young girls in school instead of getting married off", [
         ("Ganga Sah", 2022), ("Albina Prawin", 2017), ("Babita Pariyar", 2019),
         ("Namrata Dahal", 2020), ("Ashna Poudel", 2017)]),
-    ("space nasa rocket camp launch", [
+    ("young Nepalis connected to America's space agency and rocketry programs", [
         ("Lucky Sah", 2022), ("Prashim Timsina", 2024), ("Risham Kumar Sah", 2023),
         ("Swaraj Sagar Pradhan", 2020), ("Aamod Paudel", 2022)]),
-    ("sports self defense taekwondo", [
+    ("athletes teaching others how to protect themselves physically", [
         ("Suraj Sapkota", 2021), ("Sanskriti Phuyal", 2020), ("Ruby Tamang", 2017)]),
-    ("disability blind accessibility assistive technology", [
+    ("builders making daily life easier for people with disabilities", [
         ("Pranjal Chalise", 2021), ("Sulav Subedi", 2020), ("Shubham Jha", 2021)]),
-    ("olympiad international medal representation", [
+    ("students who flew abroad to represent Nepal in academic competitions", [
         ("Prakash Pant", 2023), ("Madhav Khanal", 2023), ("Rahul Ranjan Sah", 2022),
         ("Osish Niraula", 2025), ("Shakti K.C.", 2024)]),
 ]
 
-# NOTE: methods is always spelled out explicitly here (never None) — the
-# default `HybridRetriever.default_methods` is itself the CV-selected winner
-# (char-ngram alone, see cross_validate()), so leaving it implicit would make
-# every "hybrid(...)" row silently collapse to a single-method run.
 _HYBRID = ["bm25", "tfidf", "char"]
 CONFIGS = [
     ("tfidf",           dict(methods=["tfidf"], expand=None, rerank=None)),
     ("bm25",            dict(methods=["bm25"], expand=None, rerank=None)),
-    ("qlm",             dict(methods=["qlm"], expand=None, rerank=None)),
     ("char-ngram",      dict(methods=["char"], expand=None, rerank=None)),
     ("hybrid(rrf)",     dict(methods=_HYBRID, fusion="rrf", expand=None, rerank=None)),
-    ("hybrid(combsum)", dict(methods=_HYBRID, fusion="combsum", expand=None, rerank=None)),
-    ("hybrid(combmnz)", dict(methods=_HYBRID, fusion="combmnz", expand=None, rerank=None)),
     ("hybrid+rm3",      dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank=None)),
     ("hybrid+rm3+mmr",  dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank="mmr")),
 ]
@@ -221,9 +218,9 @@ def bootstrap_ci(values, n=2000, seed=0, alpha=0.05):
 
 
 def paired_bootstrap_diff(a_values, b_values, n=5000, seed=0, alpha=0.05):
-    """95% CI on mean(a) - mean(b), resampling QUERY INDICES jointly (not each
+    """95% CI on mean(a) - mean(b), resampling query indices jointly (not each
     list independently) since both configs are scored on the same queries.
-    The correct test for 'does config A beat config B', as opposed to two
+    The correct test for "does config A beat config B", as opposed to two
     separate bootstrap_ci calls that would ignore the pairing."""
     assert len(a_values) == len(b_values)
     m = len(a_values)
@@ -248,7 +245,7 @@ def significance(corpus=None, k=10, name_a="char-ngram", name_b="hybrid+rm3+mmr"
     a = evaluate(idx, corpus, cfg_a, k)["_ndcg_list"]
     b = evaluate(idx, corpus, cfg_b, k)["_ndcg_list"]
     result = paired_bootstrap_diff(a, b)
-    print(f"\nPAIRED SIGNIFICANCE TEST  ·  {name_a}  vs.  {name_b}  ·  nDCG@{k}  ·  n={len(a)}")
+    print(f"\nPAIRED SIGNIFICANCE TEST  -  {name_a}  vs.  {name_b}  -  nDCG@{k}  -  n={len(a)}")
     print("=" * 68)
     print(f"  mean({name_a}) = {sum(a)/len(a):.4f}")
     print(f"  mean({name_b}) = {sum(b)/len(b):.4f}")
@@ -263,17 +260,13 @@ def significance(corpus=None, k=10, name_a="char-ngram", name_b="hybrid+rm3+mmr"
 def run(corpus=None, k=10, per_query=False):
     corpus = corpus or load()
     index = HybridRetriever(corpus)
-    configs = list(CONFIGS)
-    from .retrieval import _try_cross_encoder
-    if _try_cross_encoder():  # add a neural-reranker row only when available
-        configs.append(("hybrid+rm3+cross", dict(methods=None, fusion="rrf", expand="rm3", rerank="cross")))
-    rows = [(name, evaluate(index, corpus, cfg, k)) for name, cfg in configs]
+    rows = [(name, evaluate(index, corpus, cfg, k)) for name, cfg in CONFIGS]
     _print(rows, k, sum(1 for _, g in GOLD if _resolve(corpus, g)))
     best = max(rows, key=lambda r: r[1]["ndcg"])
     lo, hi = bootstrap_ci(best[1]["_ndcg_list"])
-    print(f"\n  best: {best[0]}  ·  nDCG@{k} = {best[1]['ndcg']:.3f}  (95% CI {lo:.3f}–{hi:.3f}, bootstrap)")
+    print(f"\n  best: {best[0]}  -  nDCG@{k} = {best[1]['ndcg']:.3f}  (95% CI {lo:.3f}-{hi:.3f}, bootstrap)")
     if per_query:
-        _per_query(index, corpus, configs, best[0], k)
+        _per_query(index, corpus, CONFIGS, best[0], k)
     return rows
 
 
@@ -289,15 +282,11 @@ def _per_query(index, corpus, configs, name, k):
 
 
 def tune(corpus=None, k=10):
-    """Grid-search BM25 (k1, b) on the hybrid+rm3+mmr config; report best nDCG@k.
-
-    (BM25 params only matter when bm25 is actually in play — the CV-selected
-    HybridRetriever default is char-ngram alone, so this pins methods explicitly.)
-    """
+    """Grid-search BM25 (k1, b) on the hybrid+rm3+mmr config; report best nDCG@k."""
     corpus = corpus or load()
     cfg = dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank="mmr")
     grid = [(k1, b) for k1 in (1.0, 1.2, 1.5, 2.0) for b in (0.4, 0.6, 0.75)]
-    print(f"\nBM25 GRID SEARCH  ·  hybrid+rm3+mmr  ·  nDCG@{k}\n" + "=" * 40)
+    print(f"\nBM25 GRID SEARCH  -  hybrid+rm3+mmr  -  nDCG@{k}\n" + "=" * 40)
     results = []
     for k1, b in grid:
         idx = HybridRetriever(corpus, bm25_k1=k1, bm25_b=b)
@@ -314,12 +303,12 @@ CV_CANDIDATES = [
     ("tfidf",         dict(methods=["tfidf"], expand=None, rerank=None), {}),
     ("bm25",          dict(methods=["bm25"], expand=None, rerank=None), {}),
     ("char",          dict(methods=["char"], expand=None, rerank=None), {}),
-    ("hybrid(rrf)",   dict(methods=["bm25", "tfidf", "char"], fusion="rrf", expand=None, rerank=None), {"char": 0.3}),
-    ("hybrid+rm3",    dict(methods=["bm25", "tfidf", "char"], fusion="rrf", expand="rm3", rerank=None), {"char": 0.3}),
-    ("hybrid+rm3+mmr w=0.3", dict(methods=["bm25", "tfidf", "char"], fusion="rrf", expand="rm3", rerank="mmr"), {"char": 0.3}),
-    ("hybrid+rm3+mmr w=0.5", dict(methods=["bm25", "tfidf", "char"], fusion="rrf", expand="rm3", rerank="mmr"), {"char": 0.5}),
-    ("hybrid+rm3+mmr w=0.7", dict(methods=["bm25", "tfidf", "char"], fusion="rrf", expand="rm3", rerank="mmr"), {"char": 0.7}),
-    ("hybrid+rm3+mmr w=1.0", dict(methods=["bm25", "tfidf", "char"], fusion="rrf", expand="rm3", rerank="mmr"), {"char": 1.0}),
+    ("hybrid(rrf)",   dict(methods=_HYBRID, fusion="rrf", expand=None, rerank=None), {"char": 0.3}),
+    ("hybrid+rm3",    dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank=None), {"char": 0.3}),
+    ("hybrid+rm3+mmr w=0.3", dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank="mmr"), {"char": 0.3}),
+    ("hybrid+rm3+mmr w=0.5", dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank="mmr"), {"char": 0.5}),
+    ("hybrid+rm3+mmr w=0.7", dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank="mmr"), {"char": 0.7}),
+    ("hybrid+rm3+mmr w=1.0", dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank="mmr"), {"char": 1.0}),
 ]
 
 
@@ -329,12 +318,12 @@ def _folds(n_folds: int, gold=None):
     return [[q for i, q in enumerate(gold) if i % n_folds == f] for f in range(n_folds)]
 
 
-# Grids searched INSIDE nested_cross_validate — never fit on the full 39-query
+# Grids searched INSIDE nested_cross_validate, never fit on the full 39-query
 # set, so the reported held-out score carries no tuning leakage at all. (The
-# CV_CANDIDATES weights above, e.g. char=0.3, WERE originally picked from a
-# manual sweep on the full gold set — fine for `cross_validate`'s apples-to-
-# apples comparison of named strategies, but not a clean generalization bound
-# on hyperparameter selection. Nested CV re-derives them from scratch per fold.)
+# CV_CANDIDATES weights above, e.g. char=0.3, WERE picked from a manual sweep
+# on the full gold set: fine for cross_validate's apples-to-apples comparison
+# of named strategies, but not a clean generalization bound on hyperparameter
+# selection. Nested CV re-derives them from scratch per fold.)
 _BM25_GRID = [(k1, b) for k1 in (1.0, 1.5, 2.0) for b in (0.4, 0.6, 0.75)]
 _CHAR_WEIGHT_GRID = (0.0, 0.3, 0.5, 0.7, 1.0)
 
@@ -357,9 +346,9 @@ def _inner_select(corpus, train_gold, k, n_inner):
         return sum(scores) / len(scores) if scores else 0.0
 
     best = None
-    for name, methods in (("tfidf", ["tfidf"]), ("bm25", ["bm25"]), ("qlm", ["qlm"]), ("char", ["char"])):
+    for name, methods in (("tfidf", ["tfidf"]), ("bm25", ["bm25"]), ("char", ["char"])):
         cfg = dict(methods=methods, expand=None, rerank=None)
-        score = inner_ndcg(cfg, {}, 1.5, 0.4)  # bm25/b only matter for the "bm25" row
+        score = inner_ndcg(cfg, {}, 1.5, 0.4)  # bm25 k1/b only matter for the "bm25" row
         if best is None or score > best[0]:
             best = (score, name, cfg, {}, 1.5, 0.4)
     cfg = dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank="mmr")
@@ -375,12 +364,12 @@ def nested_cross_validate(corpus=None, k=10, n_outer=5, n_inner=4):
     """Nested k-fold CV: hyperparameters (BM25 k1/b, char fusion weight) are
     grid-searched INSIDE each outer training fold via an inner CV split, never
     touching the outer test fold and never fit on the full gold set. This is
-    the unbiased generalization estimate — the number safe to publish, since
-    `cross_validate`'s weight grid was itself picked by eyeballing the full set.
+    the unbiased generalization estimate, the number safe to publish, since
+    cross_validate's weight grid was itself picked by eyeballing the full set.
     """
     corpus = corpus or load()
     folds = _folds(n_outer, GOLD)
-    print(f"\nNESTED {n_outer}x{n_inner}-FOLD CROSS-VALIDATION  ·  {len(GOLD)} queries  ·  k={k}")
+    print(f"\nNESTED {n_outer}x{n_inner}-FOLD CROSS-VALIDATION  -  {len(GOLD)} queries  -  k={k}")
     print("=" * 68)
     winners, held_out = [], []
     for f in range(n_outer):
@@ -400,19 +389,19 @@ def nested_cross_validate(corpus=None, k=10, n_outer=5, n_inner=4):
     from collections import Counter as _C
     families = _C(w.split("(")[0] for w in winners)
     print(f"  winning family per fold: {dict(families)}")
-    print(f"  nested cross-validated nDCG@{k} = {avg:.3f}  (95% CI {lo:.3f}–{hi:.3f} over folds)")
+    print(f"  nested cross-validated nDCG@{k} = {avg:.3f}  (95% CI {lo:.3f}-{hi:.3f} over folds)")
     return {"folds": winners, "held_out_ndcg": held_out, "mean": avg, "ci": (lo, hi)}
 
 
 def cross_validate(corpus=None, k=10, n_folds=5):
     """K-fold CV: on each fold's TRAIN queries, pick the best candidate config by
     nDCG@k; score it on the held-out TEST queries. Reports the honest,
-    out-of-fold generalization estimate — the number that actually justifies a
+    out-of-fold generalization estimate, the number that actually justifies a
     shipped default, as opposed to a config tuned and reported on the same set.
     """
     corpus = corpus or load()
     folds = _folds(n_folds, GOLD)
-    print(f"\n{n_folds}-FOLD CROSS-VALIDATION  ·  {len(GOLD)} queries  ·  cutoff k={k}")
+    print(f"\n{n_folds}-FOLD CROSS-VALIDATION  -  {len(GOLD)} queries  -  cutoff k={k}")
     print("=" * 68)
     winners, held_out = [], []
     for f in range(n_folds):
@@ -439,21 +428,21 @@ def cross_validate(corpus=None, k=10, n_folds=5):
     from collections import Counter as _C
     tally = _C(winners)
     print(f"  winner per fold: {dict(tally)}")
-    print(f"  cross-validated nDCG@{k} = {avg:.3f}  (95% CI {lo:.3f}–{hi:.3f} over folds)")
+    print(f"  cross-validated nDCG@{k} = {avg:.3f}  (95% CI {lo:.3f}-{hi:.3f} over folds)")
     return {"folds": winners, "held_out_ndcg": held_out, "mean": avg, "ci": (lo, hi)}
 
 
 def _print(rows, k, n_queries):
-    print(f"\nRETRIEVAL EVALUATION  ·  {n_queries} labeled queries  ·  cutoff k={k}")
+    print(f"\nRETRIEVAL EVALUATION  -  {n_queries} labeled queries  -  cutoff k={k}")
     print("=" * 68)
     print(f"{'config':<18}{'Recall@k':>10}{'Prec@k':>9}{'MRR':>8}{'nDCG@k':>9}{'MAP':>8}")
     print("-" * 68)
     best = max(r[1]["ndcg"] for r in rows)
     for name, m in rows:
-        star = "  ★" if m["ndcg"] == best else ""
+        star = "  *" if m["ndcg"] == best else ""
         print(f"{name:<18}{m['recall']:>10.3f}{m['prec']:>9.3f}{m['mrr']:>8.3f}{m['ndcg']:>9.3f}{m['map']:>8.3f}{star}")
     print("-" * 68)
-    print("  ★ = best nDCG@k. Higher is better on every metric (range 0–1).")
+    print("  * = best nDCG@k. Higher is better on every metric (range 0-1).")
 
 
 if __name__ == "__main__":

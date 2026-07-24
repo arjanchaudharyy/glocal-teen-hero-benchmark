@@ -1,6 +1,6 @@
 .PHONY: help test eval tune cv ncv rank stats ask similar build serve
 help:            ## show targets
-	@grep -E '^[a-z].*:.*##' Makefile | sed 's/:.*##/ —/'
+	@grep -E '^[a-z].*:.*##' Makefile | sed 's/:.*##/ -/'
 test:            ## run the unit tests (stdlib, zero deps)
 	python3 -m unittest discover -s tests -v
 eval:            ## retrieval evaluation: Recall / MRR / nDCG / MAP

@@ -1,25 +1,21 @@
 """
-Retrieval engine for the honoree corpus — a full, from-scratch IR stack.
+Retrieval engine for the honoree corpus.
 
-Retrievers (each: .search(query) -> [(doc_idx, score)] sorted desc):
-  * TfidfIndex    — smoothed-IDF TF-IDF, L2-normalized sparse vectors, cosine.
-  * BM25Index     — Okapi BM25 (k1, b tunable).
-  * QLMIndex      — query-likelihood language model, Dirichlet smoothing.
-  * CharNGramIndex— character 3–4-gram TF-IDF cosine (typo / transliteration robust).
-  * DenseIndex    — optional MiniLM sentence-embeddings (sentence-transformers).
+Deliberately small. At 192 short documents, this does not need five
+retrievers, three fusion strategies, and a neural reranker; an earlier
+version of this file had all of that, and most of it never won a single
+comparison in gth/eval.py. What is here is what actually earned its place:
 
-Fusion (combine heterogeneous retrievers):
-  * reciprocal_rank_fusion — rank-level, scale-free, weightable (RRF).
-  * comb_sum / comb_mnz    — score-level, min-max normalized (CombSUM / CombMNZ).
+  * TfidfIndex     - smoothed-IDF TF-IDF, L2-normalized sparse vectors, cosine.
+  * BM25Index      - Okapi BM25 (k1, b tunable).
+  * CharNGramIndex - character 3-4-gram TF-IDF cosine (typo / transliteration
+                     robust, and the strongest single retriever on this corpus).
+  * reciprocal_rank_fusion - the one fusion strategy tested and kept (RRF).
+  * rm3            - RM3 relevance-model pseudo-relevance feedback.
+  * mmr            - Maximal Marginal Relevance diversity re-ranking.
 
-Expansion & re-ranking:
-  * rm3            — RM3 relevance-model pseudo-relevance feedback.
-  * prf_expand     — lightweight Rocchio-style expansion (kept for comparison).
-  * mmr            — Maximal Marginal Relevance diversity re-ranking.
-  * cross-encoder  — optional neural re-ranker over the fused top-k.
-
-The corpus is ~192 short docs, so exact search over sparse vectors is instant
-and fully interpretable — no ANN index needed. Everything is deterministic.
+Every result carries provenance (which method(s) surfaced it, and at what
+rank), so `describe()` on HybridRetriever always reflects what actually ran.
 """
 from __future__ import annotations
 
@@ -29,7 +25,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Sequence, Tuple
 
-from .corpus import Corpus, Hero, load
+from .corpus import Corpus, Hero
 
 # ----------------------------------------------------------------------------- tokenizer
 _TOKEN = re.compile(r"[a-z0-9]+")
@@ -41,7 +37,7 @@ _STOP = frozenset(
 
 
 def _stem(w: str) -> str:
-    """Conservative suffix stripping — bridges plural/tense without over-stemming."""
+    """Conservative suffix stripping, bridges plural/tense without over-stemming."""
     if len(w) > 4 and w.endswith("ing"):
         w = w[:-3]
     elif len(w) > 4 and w.endswith("ed"):
@@ -118,7 +114,7 @@ class TfidfIndex:
 
 
 class CharNGramIndex(TfidfIndex):
-    """TF-IDF cosine over character n-grams — robust to spelling / transliteration."""
+    """TF-IDF cosine over character n-grams, robust to spelling and transliteration."""
     name = "char"
 
     def __init__(self, docs: Sequence[str]):
@@ -157,69 +153,6 @@ class BM25Index:
         return out
 
 
-# ----------------------------------------------------------------------------- Query-Likelihood LM
-class QLMIndex:
-    """Query-likelihood language model with Dirichlet smoothing."""
-    name = "qlm"
-
-    def __init__(self, docs: Sequence[str], mu: float = 200.0):
-        self.mu = mu
-        self.tokens = [tokenize(d) for d in docs]
-        self.dl = [len(t) for t in self.tokens]
-        self.tf = [Counter(tk) for tk in self.tokens]
-        cf: Counter = Counter()
-        for tk in self.tokens:
-            cf.update(tk)
-        self.total = sum(cf.values()) or 1
-        self.pc = {w: c / self.total for w, c in cf.items()}
-
-    def search(self, query: str) -> List[Tuple[int, float]]:
-        q = tokenize(query)
-        out = []
-        for i, tf in enumerate(self.tf):
-            dl = self.dl[i]
-            s = 0.0
-            for w in q:
-                pc = self.pc.get(w, 1e-9)
-                s += math.log((tf.get(w, 0) + self.mu * pc) / (dl + self.mu))
-            out.append((i, s))
-        out.sort(key=lambda t: t[1], reverse=True)
-        return out
-
-
-# ----------------------------------------------------------------------------- dense (optional)
-def _try_dense(docs: Sequence[str]):
-    try:
-        import numpy as np  # noqa
-        from sentence_transformers import SentenceTransformer
-    except Exception:
-        return None
-
-    class DenseIndex:
-        name = "dense"
-
-        def __init__(self, docs):
-            import numpy as np
-            self.model = SentenceTransformer("all-MiniLM-L6-v2")
-            self.E = np.asarray(self.model.encode(list(docs), normalize_embeddings=True))
-
-        def search(self, query):
-            import numpy as np
-            q = self.model.encode([query], normalize_embeddings=True)[0]
-            sims = self.E @ q
-            return [(int(i), float(sims[int(i)])) for i in np.argsort(-sims)]
-
-    return DenseIndex(docs)
-
-
-def _try_cross_encoder():
-    try:
-        from sentence_transformers import CrossEncoder
-        return CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-    except Exception:
-        return None
-
-
 # ----------------------------------------------------------------------------- fusion
 def reciprocal_rank_fusion(rankings: Dict[str, Sequence[int]],
                            weights: Optional[Dict[str, float]] = None,
@@ -242,28 +175,12 @@ def _minmax(scored: Sequence[Tuple[int, float]]) -> Dict[int, float]:
     return {i: (s - lo) / rng for i, s in scored}
 
 
-def comb_sum(scored_lists: Dict[str, Sequence[Tuple[int, float]]],
-             weights: Optional[Dict[str, float]] = None, mnz: bool = False) -> List[Tuple[int, float]]:
-    """CombSUM / CombMNZ over min-max normalized scores."""
-    acc: Dict[int, float] = defaultdict(float)
-    hits: Dict[int, int] = defaultdict(int)
-    for name, sl in scored_lists.items():
-        w = (weights or {}).get(name, 1.0)
-        for i, s in _minmax(sl).items():
-            acc[i] += w * s
-            if s > 0:
-                hits[i] += 1
-    if mnz:
-        acc = {i: v * hits[i] for i, v in acc.items()}
-    return sorted(acc.items(), key=lambda t: t[1], reverse=True)
-
-
 # ----------------------------------------------------------------------------- expansion & rerank
 def mmr(rel: Dict[int, float], cand_idx, tfidf: TfidfIndex, lam: float = 0.7, k: int = 10) -> List[int]:
     """Maximal Marginal Relevance re-ranking.
 
-    `rel` maps candidate index -> its (fused) relevance in [0, 1]; diversity is
-    measured with TF-IDF cosine between docs. This balances the *fused* ranking
+    `rel` maps candidate index to its (fused) relevance in [0, 1]; diversity is
+    measured with TF-IDF cosine between docs. This balances the fused ranking
     against redundancy, so every upstream retriever actually influences output.
     """
     selected: List[int] = []
@@ -280,15 +197,6 @@ def mmr(rel: Dict[int, float], cand_idx, tfidf: TfidfIndex, lam: float = 0.7, k:
     return selected
 
 
-def prf_expand(query: str, tfidf: TfidfIndex, top_m: int = 4, n_terms: int = 8) -> str:
-    top = [i for i, _ in tfidf.search(query)[:top_m]]
-    weights: Counter = Counter()
-    for i in top:
-        for w, x in tfidf.vecs[i].items():
-            weights[w] += x
-    return query + " " + " ".join(w for w, _ in weights.most_common(n_terms))
-
-
 def rm3(query: str, bm25: BM25Index, top_m: int = 8, n_terms: int = 10,
         lam: float = 0.5, scale: int = 3) -> str:
     """RM3 relevance model: interpolate the query LM with a feedback LM from the
@@ -296,9 +204,8 @@ def rm3(query: str, bm25: BM25Index, top_m: int = 8, n_terms: int = 10,
     ranked = bm25.search(query)[:top_m]
     if not ranked:
         return query
-    # relevance model P(t|R) weighted by (softmaxed) retrieval score
+    # relevance model P(t|R), weighted by softmaxed retrieval score
     scores = [s for _, s in ranked]
-    lo = min(scores)
     ws = [math.exp(s - max(scores)) for s in scores]
     z = sum(ws) or 1.0
     fb: Dict[str, float] = defaultdict(float)
@@ -310,8 +217,8 @@ def rm3(query: str, bm25: BM25Index, top_m: int = 8, n_terms: int = 10,
     qmodel = {t: qter.count(t) / len(qter) for t in set(qter)} if qter else {}
     terms = set(fb) | set(qmodel)
     mixed = {t: (1 - lam) * qmodel.get(t, 0.0) + lam * fb.get(t, 0.0) for t in terms}
-    # deterministic ordering: weight desc, then term asc (ties must not depend on
-    # per-process set/hash ordering, or results become non-reproducible).
+    # deterministic ordering: weight desc, then term asc. Ties must not depend
+    # on per-process set/hash ordering, or results become non-reproducible.
     top = sorted(mixed.items(), key=lambda kv: (-kv[1], kv[0]))[:n_terms]
     if not top:
         return query
@@ -332,47 +239,40 @@ def _snippet(text: str, query: str, width: int = 120) -> str:
         if hits > best_hits:
             best_hits, best = hits, i
     seg = " ".join(words[best:best + win])
-    return (("…" if best else "") + seg)[:width]
+    return (("..." if best else "") + seg)[:width]
 
 
 # ----------------------------------------------------------------------------- hybrid
-# Weights + defaults tuned on the labeled gold set (see `python -m gth tune` and eval.py).
-_DEFAULT_WEIGHTS = {"bm25": 1.0, "tfidf": 1.0, "qlm": 0.9, "dense": 1.1, "char": 0.3}
+# Weight tuned on the labeled gold set (see gth/eval.py). BM25 and TF-IDF get
+# equal weight; char n-gram is down-weighted in fusion because it dominates on
+# its own and would otherwise drown out the other two.
+_DEFAULT_WEIGHTS = {"bm25": 1.0, "tfidf": 1.0, "char": 0.3}
 
 
 class HybridRetriever:
-    def __init__(self, corpus: Corpus, use_dense: bool = False, pool: int = 50,
-                 bm25_k1: float = 1.5, bm25_b: float = 0.4):
+    def __init__(self, corpus: Corpus, pool: int = 50, bm25_k1: float = 1.5, bm25_b: float = 0.4):
         self.corpus = corpus
         self.docs = [h.doc for h in corpus.heroes]
         self.tfidf = TfidfIndex(self.docs)
         self.bm25 = BM25Index(self.docs, k1=bm25_k1, b=bm25_b)
-        self.qlm = QLMIndex(self.docs)
         self.char = CharNGramIndex(self.docs)
-        self.dense = _try_dense(self.docs) if use_dense else None
-        self._cross = None
         self.pool = pool
         self.weights = dict(_DEFAULT_WEIGHTS)
-        self._all = {"bm25": self.bm25, "tfidf": self.tfidf, "qlm": self.qlm, "char": self.char}
-        if self.dense:
-            self._all["dense"] = self.dense
-        # Default methods/expand/rerank are the CV-selected config, not a guess:
-        # `python -m gth cv` 5-fold cross-validates every candidate (single
-        # retrievers AND the fancier RM3+MMR hybrid) and char-ngram alone wins
-        # every fold on held-out queries — the fusion/expansion machinery is
-        # real and available, but on THIS corpus it overfits in-sample rather
-        # than generalizing. Ship what the evidence says; keep the rest opt-in.
+        self._all = {"bm25": self.bm25, "tfidf": self.tfidf, "char": self.char}
+        # Default is the cross-validated winner, not a guess: `python -m gth cv`
+        # (and, closing a leakage path, `python -m gth ncv`) both pick char
+        # n-gram alone over the full BM25+TF-IDF+char+RM3+MMR ensemble on
+        # held-out queries. The ensemble is real and available (hybrid=True);
+        # it just doesn't generalize better here, so it isn't the default.
         self.default_methods = ["char"]
-        self.full_hybrid_methods = ["bm25", "tfidf", "char"] + (["dense"] if self.dense else [])
+        self.full_hybrid_methods = ["bm25", "tfidf", "char"]
 
     def _indices(self, methods):
         methods = methods or self.default_methods
         return {m: self._all[m] for m in methods if m in self._all}
 
     def describe(self, methods=None, fusion: str = "rrf", expand=None, rerank=None) -> str:
-        """Human-readable config label — reflects the ACTUAL params of a call,
-        not a static guess (a prior version always reported "hybrid(...)" even
-        when a caller passed a single method)."""
+        """Human-readable config label. Reflects the actual params of a call."""
         methods = methods or self.default_methods
         tag = "+".join(methods) if len(methods) == 1 else f"hybrid({'+'.join(methods)},{fusion})"
         if expand:
@@ -385,11 +285,7 @@ class HybridRetriever:
               expand: Optional[str] = None, rerank: Optional[str] = None,
               exclude: Optional[str] = None, snippets: bool = False) -> List[Retrieval]:
         idxs = self._indices(methods)
-        q = text
-        if expand == "rm3":
-            q = rm3(text, self.bm25)
-        elif expand == "prf":
-            q = prf_expand(text, self.tfidf)
+        q = rm3(text, self.bm25) if expand == "rm3" else text
 
         scored = {name: ix.search(q)[: self.pool] for name, ix in idxs.items()}
         rank_maps = {name: _rank_map([i for i, s in sl if s != 0]) for name, sl in scored.items()}
@@ -399,10 +295,6 @@ class HybridRetriever:
         elif fusion == "rrf":
             fused = reciprocal_rank_fusion(
                 {n: [i for i, s in sl if s != 0] for n, sl in scored.items()}, self.weights)
-        elif fusion == "combsum":
-            fused = comb_sum(scored, self.weights)
-        elif fusion == "combmnz":
-            fused = comb_sum(scored, self.weights, mnz=True)
         else:
             raise ValueError(f"unknown fusion {fusion!r}")
 
@@ -415,8 +307,6 @@ class HybridRetriever:
             rel = _minmax([(i, dict(fused).get(i, 0.0)) for i in head])
             order = mmr(rel, head, self.tfidf, k=k)
             cand = order + [i for i in cand if i not in order]
-        elif rerank == "cross" and cand:
-            cand = self._cross_rerank(text, cand, k)
 
         score_of = dict(fused)
         out = []
@@ -426,14 +316,3 @@ class HybridRetriever:
             snip = _snippet(h.then, text) if snippets else ""
             out.append(Retrieval(h, round(score_of.get(i, 0.0), 5), srcs, snip))
         return out
-
-    def _cross_rerank(self, text, cand, k):
-        if self._cross is None:
-            self._cross = _try_cross_encoder() or False
-        if not self._cross:
-            return cand
-        head = cand[: max(k * 5, 25)]
-        pairs = [(text, self.corpus.heroes[i].then) for i in head]
-        scores = self._cross.predict(pairs)
-        order = [i for i, _ in sorted(zip(head, scores), key=lambda t: t[1], reverse=True)]
-        return order + [i for i in cand if i not in set(order)]
