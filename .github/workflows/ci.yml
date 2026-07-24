@@ -29,7 +29,7 @@ jobs:
         run: ruff check gth/ tests/ build.py
 
       - name: Mypy (type-check)
-        run: mypy gth/
+        run: mypy gth/ build.py
 
       - name: Rebuild the corpus (build.py must run clean)
         run: python build.py

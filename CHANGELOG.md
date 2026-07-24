@@ -2,6 +2,39 @@
 
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 1.7.1
+
+A second audit pass over 1.7.0, specifically looking for anything the first
+pass introduced or missed. It found real things:
+
+- Profiling (not guessing) after 1.7.0's fixes shipped showed `mmr()` was
+  still the dominant cost even after the index-reconstruction fix landed;
+  the actual bottleneck was its O(k^2) recomputation of max-diversity from
+  scratch every round. Fixed with an incrementally-updated running max
+  (mathematically identical output). This is documented in the 1.7.0 entry
+  below because it was folded into that work once found; noted here for
+  the record since it's what the second pass actually caught.
+- Every retriever rewritten around an inverted index, closing a second,
+  related bug as a side effect: the single-retriever query path used to
+  silently pad results with zero-relevance documents when fewer than `k`
+  genuine matches existed. Confirmed with a reproducing test.
+- `pyproject.toml` now runs mypy in full `--strict` mode (was a handful of
+  individual flags before), with every module in `gth/` and `build.py`
+  fully type-annotated to pass it cleanly, zero suppressions. Strict mode
+  surfaced the `Metrics` dataclass refactor (see 1.7.0): a `dict[str,
+  float]` with one smuggled `list[float]` value was invisible to a human
+  skimming the code but immediately flagged once mypy could see the real
+  types passing through it.
+- A `SearchableIndex` `Protocol` now types the structural "has a
+  `.search(query)`" relationship between `BM25Index`, `TfidfIndex`, and
+  `CharNGramIndex`, which otherwise share no common base class.
+- Fixed a self-inflicted bug while writing this changelog: backticks
+  inside a double-quoted `git commit` message got interpreted by the
+  shell as command substitution, silently deleting a code reference from
+  the previous commit's message (not from any tracked file). Caught by
+  reading the commit back before pushing, and amended.
+- CI and `mypy` now also check `build.py` under the same strict config.
+
 ## 1.7.0
 
 ### Fixed

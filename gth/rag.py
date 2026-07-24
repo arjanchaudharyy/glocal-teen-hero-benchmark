@@ -13,6 +13,7 @@ the default because it does not out-generalize the simple retriever here.
 from __future__ import annotations
 
 import weakref
+from typing import Any
 
 from .corpus import Corpus, load
 from .retrieval import HybridRetriever, Retrieval
@@ -36,12 +37,12 @@ def build_index(corpus: Corpus | None = None) -> HybridRetriever:
     return idx
 
 
-def _hybrid_kwargs(index: HybridRetriever) -> dict:
+def _hybrid_kwargs(index: HybridRetriever) -> dict[str, Any]:
     return dict(methods=index.full_hybrid_methods, fusion="rrf", expand="rm3", rerank="mmr")
 
 
 def similar(name: str, k: int = 5, corpus: Corpus | None = None,
-            index: HybridRetriever | None = None, hybrid: bool = False, **kw) -> list[Retrieval]:
+            index: HybridRetriever | None = None, hybrid: bool = False, **kw: Any) -> list[Retrieval]:
     corpus = corpus or load()
     index = index or build_index(corpus)
     hero = corpus.get(name)
@@ -53,7 +54,7 @@ def similar(name: str, k: int = 5, corpus: Corpus | None = None,
 
 
 def ask(query: str, k: int = 5, corpus: Corpus | None = None,
-        index: HybridRetriever | None = None, hybrid: bool = False, **kw) -> str:
+        index: HybridRetriever | None = None, hybrid: bool = False, **kw: Any) -> str:
     """Retrieval-augmented answer. Defaults to the cross-validated best config
     (char n-gram); pass hybrid=True for the full BM25+TF-IDF+char+RM3+MMR stack."""
     corpus = corpus or load()

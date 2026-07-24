@@ -41,6 +41,7 @@ from .retrieval import HybridRetriever
 # list[str], expand/rerank/fusion are str | None) for HybridRetriever.query;
 # Any is the honest, not-overly-clever type for "whatever .query() accepts".
 Config = dict[str, Any]
+Gold = list[tuple[str, list[tuple[str, int]]]]
 
 
 @dataclass
@@ -180,22 +181,22 @@ CONFIGS: list[tuple[str, Config]] = [
 
 
 # --------------------------------------------------------------------------- metrics
-def recall_at_k(ranked, rel, k):
+def recall_at_k(ranked: list[str], rel: set[str], k: int) -> float:
     return len(set(ranked[:k]) & rel) / len(rel) if rel else 0.0
 
 
-def precision_at_k(ranked, rel, k):
+def precision_at_k(ranked: list[str], rel: set[str], k: int) -> float:
     return len(set(ranked[:k]) & rel) / k if k else 0.0
 
 
-def reciprocal_rank(ranked, rel):
+def reciprocal_rank(ranked: list[str], rel: set[str]) -> float:
     for i, d in enumerate(ranked, 1):
         if d in rel:
             return 1.0 / i
     return 0.0
 
 
-def average_precision(ranked, rel):
+def average_precision(ranked: list[str], rel: set[str]) -> float:
     hits, ap = 0, 0.0
     for i, d in enumerate(ranked, 1):
         if d in rel:
@@ -204,17 +205,18 @@ def average_precision(ranked, rel):
     return ap / len(rel) if rel else 0.0
 
 
-def ndcg_at_k(ranked, rel, k):
+def ndcg_at_k(ranked: list[str], rel: set[str], k: int) -> float:
     dcg = sum(1.0 / math.log2(i + 1) for i, d in enumerate(ranked[:k], 1) if d in rel)
     idcg = sum(1.0 / math.log2(i + 1) for i in range(1, min(len(rel), k) + 1))
     return dcg / idcg if idcg else 0.0
 
 
-def _resolve(corpus, pairs):
+def _resolve(corpus: Corpus, pairs: list[tuple[str, int]]) -> set[str]:
     return {h.key for h in (corpus.get(n, y) for n, y in pairs) if h is not None}
 
 
-def evaluate(index, corpus, cfg: Config, k=10, gold=None) -> Metrics:
+def evaluate(index: HybridRetriever, corpus: Corpus, cfg: Config, k: int = 10,
+             gold: Gold | None = None) -> Metrics:
     gold = GOLD if gold is None else gold
     per: dict[str, list[float]] = {"recall": [], "prec": [], "mrr": [], "ndcg": [], "map": []}
     for query, g in gold:
@@ -231,7 +233,8 @@ def evaluate(index, corpus, cfg: Config, k=10, gold=None) -> Metrics:
     return Metrics(**means, ndcg_list=per["ndcg"])
 
 
-def bootstrap_ci(values, n=2000, seed=0, alpha=0.05):
+def bootstrap_ci(values: list[float], n: int = 2000, seed: int = 0,
+                  alpha: float = 0.05) -> tuple[float, float]:
     if not values:
         return (0.0, 0.0)
     rnd = random.Random(seed)
@@ -243,7 +246,8 @@ def bootstrap_ci(values, n=2000, seed=0, alpha=0.05):
     return (means[int(alpha / 2 * n)], means[int((1 - alpha / 2) * n)])
 
 
-def paired_bootstrap_diff(a_values, b_values, n=5000, seed=0, alpha=0.05):
+def paired_bootstrap_diff(a_values: list[float], b_values: list[float], n: int = 5000,
+                           seed: int = 0, alpha: float = 0.05) -> dict[str, Any]:
     """95% CI on mean(a) - mean(b), resampling query indices jointly (not each
     list independently) since both configs are scored on the same queries.
     The correct test for "does config A beat config B", as opposed to two
@@ -263,7 +267,8 @@ def paired_bootstrap_diff(a_values, b_values, n=5000, seed=0, alpha=0.05):
     return {"mean_diff": mean_diff, "ci": (lo, hi), "significant": lo > 0 or hi < 0}
 
 
-def significance(corpus=None, k=10, name_a="char-ngram", name_b="hybrid+rm3+mmr", verbose=True):
+def significance(corpus: Corpus | None = None, k: int = 10, name_a: str = "char-ngram",
+                  name_b: str = "hybrid+rm3+mmr", verbose: bool = True) -> dict[str, Any]:
     """Paired bootstrap significance test between two named CONFIGS rows."""
     corpus = corpus or load()
     cfg_a = dict(next(c for n, c in CONFIGS if n == name_a))
@@ -287,7 +292,8 @@ def significance(corpus=None, k=10, name_a="char-ngram", name_b="hybrid+rm3+mmr"
     return result
 
 
-def run(corpus=None, k=10, per_query=False, verbose=True):
+def run(corpus: Corpus | None = None, k: int = 10, per_query: bool = False,
+        verbose: bool = True) -> list[tuple[str, Metrics]]:
     corpus = corpus or load()
     index = HybridRetriever(corpus)
     rows = [(name, evaluate(index, corpus, cfg, k)) for name, cfg in CONFIGS]
@@ -302,7 +308,8 @@ def run(corpus=None, k=10, per_query=False, verbose=True):
     return rows
 
 
-def _per_query(index, corpus, configs, name, k, verbose=True):
+def _per_query(index: HybridRetriever, corpus: Corpus, configs: list[tuple[str, Config]],
+               name: str, k: int, verbose: bool = True) -> list[tuple[str, float]]:
     cfg = dict(next(c for n, c in configs if n == name))
     out = []
     for query, gold in GOLD:
@@ -318,7 +325,7 @@ def _per_query(index, corpus, configs, name, k, verbose=True):
     return out
 
 
-def tune(corpus=None, k=10, verbose=True):
+def tune(corpus: Corpus | None = None, k: int = 10, verbose: bool = True) -> list[tuple[tuple[float, float], float]]:
     """Grid-search BM25 (k1, b) on the hybrid+rm3+mmr config; report best nDCG@k.
 
     Builds one HybridRetriever and mutates its BM25 params per grid point
@@ -365,7 +372,7 @@ _BM25_GRID = [(k1, b) for k1 in (1.0, 1.5, 2.0) for b in (0.4, 0.6, 0.75)]
 _CHAR_WEIGHT_GRID = (0.0, 0.3, 0.5, 0.7, 1.0)
 
 
-def _folds(n_folds: int, gold=None):
+def _folds(n_folds: int, gold: Gold | None = None) -> list[Gold]:
     """Deterministic, non-contiguous k-fold split by index striping (no randomness)."""
     gold = GOLD if gold is None else gold
     return [[q for i, q in enumerate(gold) if i % n_folds == f] for f in range(n_folds)]
@@ -373,7 +380,7 @@ def _folds(n_folds: int, gold=None):
 
 def _select_best(idx: HybridRetriever, corpus: Corpus,
                   candidates: list[tuple[str, Config, dict[str, float], float, float]],
-                  k: int, gold) -> tuple[str, Config, dict[str, float], float, float, float]:
+                  k: int, gold: Gold) -> tuple[str, Config, dict[str, float], float, float, float]:
     """Shared fold-selection core for cross_validate and nested_cross_validate:
     given (name, cfg, weights, k1, b) candidates, mutate `idx` in place for
     each one (cheap: set_bm25_params + weights.update, no reconstruction) and
@@ -392,7 +399,8 @@ def _select_best(idx: HybridRetriever, corpus: Corpus,
     return best
 
 
-def _inner_select(idx: HybridRetriever, corpus: Corpus, train_gold, k: int, n_inner: int):
+def _inner_select(idx: HybridRetriever, corpus: Corpus, train_gold: Gold, k: int,
+                   n_inner: int) -> tuple[float, str, Config, dict[str, float], float, float]:
     """Grid-search BM25 (k1,b) x char-fusion-weight, plus every plain single
     retriever, using ONLY an inner k-fold split of train_gold. Mutates and
     reuses the passed-in `idx` rather than constructing new retrievers."""
@@ -425,7 +433,8 @@ def _inner_select(idx: HybridRetriever, corpus: Corpus, train_gold, k: int, n_in
     return best
 
 
-def nested_cross_validate(corpus=None, k=10, n_outer=5, n_inner=4, verbose=True):
+def nested_cross_validate(corpus: Corpus | None = None, k: int = 10, n_outer: int = 5,
+                           n_inner: int = 4, verbose: bool = True) -> dict[str, Any]:
     """Nested k-fold CV: hyperparameters (BM25 k1/b, char fusion weight) are
     grid-searched INSIDE each outer training fold via an inner CV split, never
     touching the outer test fold and never fit on the full gold set. This is
@@ -466,7 +475,8 @@ def nested_cross_validate(corpus=None, k=10, n_outer=5, n_inner=4, verbose=True)
     return {"folds": winners, "held_out_ndcg": held_out, "mean": avg, "ci": (lo, hi)}
 
 
-def cross_validate(corpus=None, k=10, n_folds=5, verbose=True):
+def cross_validate(corpus: Corpus | None = None, k: int = 10, n_folds: int = 5,
+                    verbose: bool = True) -> dict[str, Any]:
     """K-fold CV: on each fold's TRAIN queries, pick the best candidate config by
     nDCG@k; score it on the held-out TEST queries. Reports the honest,
     out-of-fold generalization estimate, the number that actually justifies a
@@ -506,7 +516,7 @@ def cross_validate(corpus=None, k=10, n_folds=5, verbose=True):
     return {"folds": winners, "held_out_ndcg": held_out, "mean": avg, "ci": (lo, hi)}
 
 
-def _print(rows, k, n_queries):
+def _print(rows: list[tuple[str, Metrics]], k: int, n_queries: int) -> None:
     print(f"\nRETRIEVAL EVALUATION  -  {n_queries} labeled queries  -  cutoff k={k}")
     print("=" * 68)
     print(f"{'config':<18}{'Recall@k':>10}{'Prec@k':>9}{'MRR':>8}{'nDCG@k':>9}{'MAP':>8}")

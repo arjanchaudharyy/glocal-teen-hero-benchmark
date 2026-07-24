@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from functools import lru_cache
+from typing import Any
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _DATA = os.path.join(os.path.dirname(_HERE), "data", "heroes.json")
@@ -49,21 +51,21 @@ class Corpus:
     built from the same file are still logically distinct instances for
     caching purposes."""
     heroes: list[Hero]
-    rubric: dict
+    rubric: dict[str, Any]
     # Built once in __post_init__, not part of the dataclass's identity
     # (compare/repr excluded): O(1) lookup for the (name, year) case, which
     # is what every retrieval/eval call actually does. get(name) with no
     # year is the rarer path and stays a linear scan.
     _by_name_year: dict[tuple[str, int], Hero] = field(default_factory=dict, repr=False, compare=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         index = {(h.name.lower(), h.year): h for h in self.heroes}
         object.__setattr__(self, "_by_name_year", index)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Hero]:
         return iter(self.heroes)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.heroes)
 
     def by_tier(self, tier: str) -> list[Hero]:

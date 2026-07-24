@@ -15,7 +15,7 @@ No other dependencies: the package itself is pure standard library.
 
 ```bash
 ruff check gth/ tests/ build.py          # lint
-mypy gth/                                # type-check
+mypy gth/ build.py                       # type-check
 python -m unittest discover -s tests -v  # tests
 python build.py                          # regenerate data/heroes.json + corpus.js
 ```

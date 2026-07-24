@@ -15,6 +15,7 @@ Run:  python3 build.py
 import json
 import os
 import sys
+from typing import Any
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -242,8 +243,8 @@ Saksham Ghimire|2025|20under20|3,3,3,3,2,4,3|high|Founder Hamro Niti (civic/poli
 Saksham Rupakheti|2025|20under20|3,3,3,3,2,4,3|med|Co-founder ThinkNiti Foundation (STEM access); TEDxBaneshwor|Unknown|
 """
 
-def parse_socials(s):
-    d = {}
+def parse_socials(s: str) -> dict[str, str]:
+    d: dict[str, str] = {}
     for kv in s.split(";"):
         kv = kv.strip()
         if "=" in kv:
@@ -252,7 +253,7 @@ def parse_socials(s):
     return d
 
 
-heroes = []
+heroes: list[dict[str, Any]] = []
 for line in DATA.strip().splitlines():
     p = [x.strip() for x in line.split("|")]
     if len(p) < 8:
@@ -289,7 +290,7 @@ with open(os.path.join(HERE, "corpus.js"), "w", encoding="utf-8") as f:
     f.write("window.__RUBRIC__=" + json.dumps(RUBRIC, separators=(",", ":")) + ";\n")
 
 
-def tot(s):
+def tot(s: dict[str, float]) -> float:
     return sum(s[k] * WEIGHTS[k] for k in WEIGHTS)
 
 

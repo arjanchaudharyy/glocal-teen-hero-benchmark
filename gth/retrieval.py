@@ -23,10 +23,19 @@ from __future__ import annotations
 import math
 import re
 from collections import Counter, defaultdict
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
+from typing import Protocol
 
 from .corpus import Corpus, Hero
+
+
+class SearchableIndex(Protocol):
+    """Structural type for "has a .search(query)": TfidfIndex, CharNGramIndex,
+    and BM25Index all satisfy this without sharing a common base class beyond
+    it (BM25Index is otherwise unrelated to the TF-IDF family)."""
+    def search(self, query: str) -> list[tuple[int, float]]: ...
+
 
 # ----------------------------------------------------------------------------- tokenizer
 _TOKEN = re.compile(r"[a-z0-9]+")
@@ -106,7 +115,7 @@ class TfidfIndex:
     """
     name = "tfidf"
 
-    def __init__(self, docs: Sequence[str] | None = None, tok=tokenize,
+    def __init__(self, docs: Sequence[str] | None = None, tok: Callable[[str], list[str]] = tokenize,
                  *, tokens: Sequence[list[str]] | None = None):
         self._tok = tok
         if tokens is not None:
@@ -116,7 +125,7 @@ class TfidfIndex:
                 raise ValueError("must pass either docs or tokens")
             toks = [tok(d) for d in docs]
         n = len(toks)
-        df: Counter = Counter()
+        df: Counter[str] = Counter()
         for tk in toks:
             df.update(set(tk))
         self.idf = {w: math.log((1 + n) / (1 + c)) + 1.0 for w, c in df.items()}
@@ -134,7 +143,7 @@ class TfidfIndex:
 
     def search(self, query: str) -> list[tuple[int, float]]:
         q = self._vec(self._tok(query))
-        candidates: set = set()
+        candidates: set[int] = set()
         for w in q:
             candidates.update(self.postings.get(w, ()))
         scored = [(i, _cos(q, self.vecs[i])) for i in candidates]
@@ -179,7 +188,7 @@ class BM25Index:
         self.dl = [len(t) for t in self.tokens]
         n = len(self.tokens)
         self.avgdl = (sum(self.dl) / n) if n else 0.0
-        df: Counter = Counter()
+        df: Counter[str] = Counter()
         for tk in self.tokens:
             df.update(set(tk))
         self.idf = {w: math.log(1 + (n - c + 0.5) / (c + 0.5)) for w, c in df.items()}
@@ -228,7 +237,8 @@ def _minmax(scored: Sequence[tuple[int, float]]) -> dict[int, float]:
 
 
 # ----------------------------------------------------------------------------- expansion & rerank
-def mmr(rel: dict[int, float], cand_idx, tfidf: TfidfIndex, lam: float = 0.7, k: int = 10) -> list[int]:
+def mmr(rel: dict[int, float], cand_idx: Sequence[int], tfidf: TfidfIndex,
+        lam: float = 0.7, k: int = 10) -> list[int]:
     """Maximal Marginal Relevance re-ranking.
 
     `rel` maps candidate index to its (fused) relevance in [0, 1]; diversity is
@@ -328,7 +338,7 @@ class HybridRetriever:
         self.char = CharNGramIndex(self.docs)
         self.pool = pool
         self.weights = dict(_DEFAULT_WEIGHTS)
-        self._all = {"bm25": self.bm25, "tfidf": self.tfidf, "char": self.char}
+        self._all: dict[str, SearchableIndex] = {"bm25": self.bm25, "tfidf": self.tfidf, "char": self.char}
         # Default is the cross-validated winner, not a guess: `python -m gth cv`
         # (and, closing a leakage path, `python -m gth ncv`) both pick char
         # n-gram alone over the full BM25+TF-IDF+char+RM3+MMR ensemble on
@@ -346,14 +356,15 @@ class HybridRetriever:
         self.bm25.k1 = k1
         self.bm25.b = b
 
-    def _indices(self, methods):
+    def _indices(self, methods: list[str] | None) -> dict[str, SearchableIndex]:
         methods = methods or self.default_methods
         unknown = [m for m in methods if m not in self._all]
         if unknown:
             raise ValueError(f"unknown retrieval method(s) {unknown!r}; valid: {sorted(self._all)}")
         return {m: self._all[m] for m in methods}
 
-    def describe(self, methods=None, fusion: str = "rrf", expand=None, rerank=None) -> str:
+    def describe(self, methods: list[str] | None = None, fusion: str = "rrf",
+                 expand: str | None = None, rerank: str | None = None) -> str:
         """Human-readable config label. Reflects the actual params of a call."""
         methods = methods or self.default_methods
         tag = "+".join(methods) if len(methods) == 1 else f"hybrid({'+'.join(methods)},{fusion})"
@@ -363,7 +374,7 @@ class HybridRetriever:
             tag += f"+{rerank}"
         return tag
 
-    def query(self, text: str, k: int = 5, *, methods=None, fusion: str = "rrf",
+    def query(self, text: str, k: int = 5, *, methods: list[str] | None = None, fusion: str = "rrf",
               expand: str | None = None, rerank: str | None = None,
               exclude: str | None = None, snippets: bool = False,
               pool: int | None = None) -> list[Retrieval]:

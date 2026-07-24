@@ -4,7 +4,7 @@
 
 **An open dataset of every Glocal Teen Hero (Nepal) honoree, 2015-2025, scored on the record they held at selection via a documented rubric, with a small retrieval benchmark over the same corpus.**
 
-[![CI](https://github.com/arjanchaudharyy/glocal-teen-hero-corpus/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml) [![tests](https://img.shields.io/badge/tests-43%20passing-2f7d54)](tests/) [![python](https://img.shields.io/badge/python-3.9%2B-16233e)](pyproject.toml) [![core deps](https://img.shields.io/badge/core%20deps-0-16233e)](pyproject.toml) [![types](https://img.shields.io/badge/mypy-clean-16233e)](pyproject.toml) [![license](https://img.shields.io/badge/license-MIT-b3906a)](LICENSE)
+[![CI](https://github.com/arjanchaudharyy/glocal-teen-hero-corpus/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml) [![tests](https://img.shields.io/badge/tests-43%20passing-2f7d54)](tests/) [![python](https://img.shields.io/badge/python-3.9%2B-16233e)](pyproject.toml) [![core deps](https://img.shields.io/badge/core%20deps-0-16233e)](pyproject.toml) [![types](https://img.shields.io/badge/mypy%20--strict-clean-16233e)](pyproject.toml) [![license](https://img.shields.io/badge/license-MIT-b3906a)](LICENSE)
 
 [Live tool](https://arjanchaudharyy.github.io/glocal-teen-hero-corpus/) · [Paper](PAPER.md) · [Dataset card](DATA_CARD.md) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 

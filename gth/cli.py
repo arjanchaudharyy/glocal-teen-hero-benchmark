@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections.abc import Sequence
 
 from . import __version__
 from .corpus import load
@@ -26,7 +27,7 @@ from .scoring import cohort_stats, percentile_vs, rank_all, rank_of, verdict
 _TIER = {"winner": "Winner", "finalist": "Finalist", "20under20": "20under20", "applicant": "Applicant"}
 
 
-def _cmd_rank(a):
+def _cmd_rank(a: argparse.Namespace) -> None:
     corpus = load()
     ranked = rank_all(corpus)
     if a.tier:
@@ -42,49 +43,49 @@ def _cmd_rank(a):
     print("  (* = heuristic estimate)")
 
 
-def _cmd_stats(a):
+def _cmd_stats(a: argparse.Namespace) -> None:
     corpus = load()
     for tier in ("Winner", "Finalist", "20under20"):
         s = cohort_stats(corpus, tier)
         print(f"{tier:<11} n={s['n']:<4} mean={s['mean']:.2f} min={s['min']:.2f} max={s['max']:.2f}")
 
 
-def _cmd_similar(a):
+def _cmd_similar(a: argparse.Namespace) -> None:
     for r in similar(a.name, k=a.k, hybrid=a.hybrid):
         prov = ",".join(f"{m}#{rk}" for m, rk in sorted(r.sources.items()))
         print(f"{r.score:>8}  {r.hero.name} ({r.hero.year}, {r.hero.award}) [{prov}] - {r.hero.then[:80]}")
 
 
-def _cmd_ask(a):
+def _cmd_ask(a: argparse.Namespace) -> None:
     print(ask(a.query, k=a.k, hybrid=a.hybrid))
 
 
-def _cmd_eval(a):
+def _cmd_eval(a: argparse.Namespace) -> None:
     from .eval import run
     run(k=a.k, per_query=a.per_query)
 
 
-def _cmd_tune(a):
+def _cmd_tune(a: argparse.Namespace) -> None:
     from .eval import tune
     tune(k=a.k)
 
 
-def _cmd_cv(a):
+def _cmd_cv(a: argparse.Namespace) -> None:
     from .eval import cross_validate
     cross_validate(k=a.k, n_folds=a.folds)
 
 
-def _cmd_ncv(a):
+def _cmd_ncv(a: argparse.Namespace) -> None:
     from .eval import nested_cross_validate
     nested_cross_validate(k=a.k, n_outer=a.outer, n_inner=a.inner)
 
 
-def _cmd_sig(a):
+def _cmd_sig(a: argparse.Namespace) -> None:
     from .eval import significance
     significance(k=a.k, name_a=a.a, name_b=a.b)
 
 
-def _cmd_score(a):
+def _cmd_score(a: argparse.Namespace) -> None:
     corpus = load()
     if a.file:
         with open(a.file, encoding="utf-8") as f:
@@ -105,7 +106,7 @@ _HYBRID_HELP = ("use the full BM25+TF-IDF+char+RM3+MMR ensemble instead of "
                 "the cross-validated char-ngram default")
 
 
-def main(argv=None):
+def main(argv: Sequence[str] | None = None) -> None:
     p = argparse.ArgumentParser(
         prog="gth",
         description="Glocal Teen Hero corpus, at-selection rubric, and retrieval benchmark",

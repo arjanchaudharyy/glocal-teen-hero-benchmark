@@ -38,7 +38,7 @@ from .retrieval import (
 from .rubric import DIMENSIONS, LABELS, WEIGHTS, weighted_total
 from .scoring import cohort_stats, percentile_vs, rank_all, rank_of, verdict
 
-__version__ = "1.7.0"
+__version__ = "1.7.1"
 __all__ = [
     "Corpus", "Hero", "load", "WEIGHTS", "LABELS", "DIMENSIONS", "weighted_total",
     "rank_all", "cohort_stats", "percentile_vs", "rank_of", "verdict",

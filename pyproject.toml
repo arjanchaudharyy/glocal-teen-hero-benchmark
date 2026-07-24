@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gth-corpus"
-version = "1.7.0"
+version = "1.7.1"
 description = "Open, reproducible corpus of every Glocal Teen Hero (Nepal) honoree, with a documented at-selection scoring rubric and an included IR retrieval benchmark over the corpus."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -41,6 +41,12 @@ ignore = ["E501"]  # long lines: many are intentionally wide table-formatting pr
 # the test suite under 3.9). Safe because every module uses `from __future__
 # import annotations`, so PEP 604/585 syntax is never evaluated at runtime.
 python_version = "3.10"
-warn_unused_ignores = true
-warn_redundant_casts = true
-check_untyped_defs = true
+strict = true
+
+[[tool.mypy.overrides]]
+# unittest test methods are conventionally `def test_x(self):` with no
+# return annotation; requiring `-> None` on every one is boilerplate with
+# no real safety benefit. strict's other checks (wrong argument types,
+# etc.) still apply to test code.
+module = "tests.*"
+disallow_untyped_defs = false
