@@ -1,152 +1,256 @@
 #!/usr/bin/env python3
 """
-Build data/heroes.json from the full Glocal Teen Hero roster.
+Build data/heroes.json for the Glocal Teen Hero (Nepal) AT-SELECTION benchmark.
 
-Two scoring tiers, both documented and reproducible:
-  * WINNERS + a few deeply-profiled honorees  -> hand-scored from public records (SCORES below).
-  * The wider cohort (20under20 + finalists)   -> a transparent tier+field HEURISTIC.
-    These are labeled est=True so the UI/README can flag them as modeled, not researched.
+IMPORTANT METHODOLOGY: every person is scored on the record they had AT THE TIME
+they were a Glocal honoree (the teen record the jury actually saw) -- NOT the
+career they built in the years since. This is the only fair basis for the question
+"would I be selected as a Glocal Teen Hero". A separate "now" note captures each
+alum's later trajectory for a where-are-they-now view.
 
-Run:  python3 build.py   ->  writes data/heroes.json  (+ corpus.js for the web app)
+Scores 0-5 per dimension, hand-derived from deep public research per person.
+Run:  python3 build.py
 """
-import json, os, re
+import json, os
+HERE=os.path.dirname(os.path.abspath(__file__))
+RUBRIC={"description":"Seven dimensions from Glocal Teen Hero's stated criteria, scored on each person's AT-SELECTION teen record (not their later career). 0-5 each; weights sum to 1.0.",
+ "dimensions":{
+  "social_impact":{"weight":0.20,"definition":"Scale & measurability of positive change, at selection."},
+  "leadership":{"weight":0.20,"definition":"Orgs founded/led, teams, mentoring, at selection."},
+  "innovation":{"weight":0.15,"definition":"Technical depth/novelty of what they had built by then."},
+  "entrepreneurship":{"weight":0.15,"definition":"Ventures/traction they had by then."},
+  "recognition":{"weight":0.10,"definition":"Verifiable awards/media/credits held at selection."},
+  "glocal_fit":{"weight":0.10,"definition":"Global-grade work rooted in local impact."},
+  "character":{"weight":0.10,"definition":"Self-drive, resilience, initiative."}}}
+DIMS=list(RUBRIC["dimensions"].keys())
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-
-RUBRIC = {
-  "description": "Dimensions from Glocal Teen Hero's stated criteria + organizer write-ups of why winners won. 0-5 each, weights sum to 1.0.",
-  "dimensions": {
-    "social_impact":   {"weight":0.20,"definition":"Scale and measurability of positive change for people/community."},
-    "leadership":      {"weight":0.20,"definition":"Founding/leading orgs, teams, movements; mentoring others."},
-    "innovation":      {"weight":0.15,"definition":"Technical depth and novelty of what was actually built."},
-    "entrepreneurship":{"weight":0.15,"definition":"Ventures, traction, revenue/commitments, exits."},
-    "recognition":     {"weight":0.10,"definition":"External verifiable credibility: media, awards, credits, CVEs."},
-    "glocal_fit":      {"weight":0.10,"definition":"Global-grade work rooted in local (Nepal/South Asia) impact."},
-    "character":       {"weight":0.10,"definition":"Self-drive, resilience, initiative, will to learn."},
-  }
-}
-DIMS = list(RUBRIC["dimensions"].keys())
-
-# ---- hand-scored: winners + Arjan + one enriched honoree (from detailed public records) ----
-HAND = {
- ("Bipana Sharma",2015):        (dict(social_impact=5,leadership=4,innovation=2,entrepreneurship=2,recognition=5,glocal_fit=4,character=5),
-   "Founded Ekta Child Club at 11; campaigned against child marriage/trafficking. Asian Girls Human Rights Award; her story became the UNICEF/Govt film 'JYOTI'; TED speaker.",
-   {"web":"https://www.ted.com/talks/bipana_sharma_children_breaking_barriers"}),
- ("Santosh Lamichhane",2016):   (dict(social_impact=2,leadership=3,innovation=5,entrepreneurship=3,recognition=3,glocal_fit=4,character=5),
-   "Self-taught mechanical inventor: corn-thresher machine, car-to-walking-robot builds; won the National Mechanical Exhibition; science advisor on a feature film.",
-   {"web":"https://instagram.com/lamichhane_santosh"}),
- ("Sachin Dangi",2017):         (dict(social_impact=4,leadership=5,innovation=2,entrepreneurship=4,recognition=3,glocal_fit=3,character=4),
-   "President of the Teenage Society of Nepal (~5,000 members); co-founded Bizonomics and Skillathon; NY Academy of Sciences ambassador.",{}),
- ("Prashansha KC",2018):        (dict(social_impact=5,leadership=4,innovation=2,entrepreneurship=2,recognition=5,glocal_fit=4,character=5),
-   "Ran the 21-day 'Eradication of Kidnap Marriage' project in Rukum (~2,400 reached); Zonta Young Women in Public Affairs Award; UNICEF Nepal youth advocate; TED speaker.",
-   {"x":"https://x.com/prashanshakc23"}),
- ("Samir Phuyal",2019):         (dict(social_impact=4,leadership=3,innovation=4,entrepreneurship=4,recognition=3,glocal_fit=4,character=4),
-   "Built NayaKinmel.com and student apps; taught 10,000+ people Django; runs the 'Hamro Tech' YouTube channel teaching web dev in Nepali.",{}),
- ("Mandira Shrestha",2020):     (dict(social_impact=5,leadership=4,innovation=2,entrepreneurship=2,recognition=4,glocal_fit=3,character=5),
-   "Health/SRHR activist and RN; led the child-led UPR 2020 report; founder of 'Triple H'; Asia-Pacific Youth of the Year 2024.",{}),
- ("Pranjal Chalise",2021):      (dict(social_impact=4,leadership=3,innovation=4,entrepreneurship=3,recognition=3,glocal_fit=4,character=4),
-   "Built Drishti Nepal (open-source app for the visually impaired); founded e-educators Nepal and Students Research Council Nepal.",
-   {"li":"https://linkedin.com/in/pranjalchalise/","web":"https://github.com/pranjalchalise"}),
- ("Rahul Ranjan Sah",2022):     (dict(social_impact=3,leadership=4,innovation=5,entrepreneurship=4,recognition=4,glocal_fit=4,character=5),
-   "Astropreneur behind 'Arohan' (toward Nepal's first private space mission); astronomy outreach to 7,000+ rural students; IAAC ambassador; now at Furman University.",
-   {"li":"https://linkedin.com/in/rahulranjansah/","web":"https://rahulranjansah.com.np"}),
- ("Shruti Tiwari",2023):        (dict(social_impact=5,leadership=4,innovation=2,entrepreneurship=2,recognition=5,glocal_fit=4,character=5),
-   "Plasticman Campaign + Chure tree-planting (WWF/Save the Children); helped stop 12 child marriages; mentored ~20 Dalit/Janjati girls; interviewed by BBC UK.",{}),
- ("Ghanashyam Bishwakarma",2024):(dict(social_impact=5,leadership=5,innovation=2,entrepreneurship=2,recognition=4,glocal_fit=3,character=5),
-   "8+ yrs activism; President of the National Adolescent Boys Network Nepal; radio host on child rights; represented Nepal at World Social Forum 2024.",{}),
- ("Krish Yadav",2025):          (dict(social_impact=3,leadership=4,innovation=3,entrepreneurship=4,recognition=5,glocal_fit=3,character=4),
-   "Content creator; Associate Creative Head at The Nepali Comment (405k+ subs); hosts TNC Debates (15.5k+); leads the Himalayan Linguistics Olympiad and youth-ed projects.",
-   {"web":"https://youtube.com/@TheNepaliComment"}),
- ("Aarjan Chaudhary",2026):     (dict(social_impact=4,leadership=5,innovation=5,entrepreneurship=5,recognition=5,glocal_fit=5,character=5),
-   "'Youngest Hacker of Nepal'; CVE-2025-51588; research credited by Google, Twitch, EA, Stanford. AI-security researcher with published arXiv papers and one incoming at NeurIPS. Security engineer at Dench (YC S24); founder of kroda.ai ($20k+ binding LOIs). Founded Arniko Hack Club (Nepal's largest teen tech community, 400+ members); ran Daydream (250+) and Campfire (150+) and the InventionNovelty hacker house; built & exited ggamechamps (7k+ users).",
-   {"web":"https://arjanchaudharyy.lol","x":"https://x.com/arjanchaudharyy"}),
-}
-
-WINNER_KEYS = set(HAND) - {("Aarjan Chaudhary",2026)}
-
-# ---- roster of the wider cohort: "name | year | edition | tier | field | home" ----
-# tier: finalist (top-6, non-winner) or 20under20. Winners live in HAND above.
-ROSTER = """
-# 2015-2016 finalists
-Aditya Khadka|2015|Nepal|finalist|documentary|;Avaneesh Yadav|2015|Nepal|finalist|entrepreneur|;Ravi Mandal|2015|Nepal|finalist|app developer|;Samprada Chapagain|2015|Nepal|finalist|social activist|;Swastik Ghimire|2015|Nepal|finalist|writer|
-Anil Kharel|2016|Nepal|finalist|social|;Deepak B.K|2016|Nepal|finalist|child rights|;Gaurav Pokhrel|2016|Nepal|finalist|journalism|;Samata Shrestha|2016|Nepal|finalist|poetry|
-# 2017 20under20
-Albina Prawin|2017|Nepal|20under20|social activist|Inaruwa;Aayush Pandey|2017|Nepal|20under20|coder|;Ashna Poudel|2017|Nepal|20under20|social activist|;Bhabish Shrestha|2017|Nepal|20under20|social activist|;Pramish Paudel|2017|Nepal|20under20|technology|;Rajaram Basnet|2017|Nepal|20under20|child activist|;Rizma Joshi|2017|Nepal|20under20|innovator|;Ruby Tamang|2017|Nepal|20under20|sports|;Pradip Adhikari|2017|Nepal|20under20|coder|;Prajesh Khanal|2017|Nepal|20under20|environmentalist|;Prashant Kandel|2017|Nepal|20under20|app developer|;Prithu Singh Thakuri|2017|Nepal|20under20|entrepreneur|;Bijay Acharya|2017|Nepal|20under20|innovator|;Biplov Jha|2017|Nepal|20under20|technology|;Narayan Gautam|2017|Nepal|20under20|child activist|;Nivesh Kumar|2017|Nepal|20under20|journalist|;Sagar Parajuli|2017|Nepal|20under20|social activist|;Sanjay Kumar Yadav|2017|Nepal|20under20|social activist|;Tanmay Chaudhary|2017|Nepal|20under20|innovator|
-# 2018 20under20
-Aanchal Adhikari|2018|Nepal|20under20|social activist|;Aashutosh Sapkota|2018|Nepal|20under20|technology|;Abhishek Adhikari|2018|Nepal|20under20|entrepreneur|;Amit Khanal|2018|Nepal|20under20|technology|;Anil Pradhan|2018|Nepal|20under20|technology|;Anisha Ruchal|2018|Nepal|20under20|social activist|;Bikalpa Dhungana|2018|Nepal|20under20|innovator|;Deepa Adhikari|2018|Nepal|20under20|social activist|;Deepshikha Ghimire|2018|Nepal|20under20|social activist|;Dipisha Bhujel|2018|Nepal|20under20|social activist|;Kovid Raj Panthy|2018|Nepal|20under20|coder|;Nibesh Baral|2018|Nepal|20under20|social activist|;Palisha Shakya|2018|Nepal|20under20|social activist|;Rhythm Sah|2018|Nepal|20under20|coder|;Sahil K Gupta|2018|Nepal|20under20|technology|;Saugat Tiwari|2018|Nepal|20under20|entrepreneur|;Sudarshan Subedi|2018|Nepal|20under20|ecopreneur|;Swornim Shrestha|2018|Nepal|20under20|entrepreneur|;Yatish Ojha|2018|Nepal|20under20|social activist|
-# 2019 20under20
-Aanand Kumar Sahani|2019|Nepal|20under20|child rights|;Arjun Acharya|2019|Nepal|20under20|social activist|;Babita Pariyar|2019|Nepal|20under20|child rights|;Bidhi Mandal|2019|Nepal|20under20|entrepreneur|;Bikram Parajuli|2019|Nepal|20under20|tech educator|;Bishnu Mijar|2019|Nepal|20under20|social activist|;Ganesh Sah Sudi|2019|Nepal|20under20|wildlife conservation|;Jyoti Singh|2019|Nepal|20under20|programmer|;Kovid Bhusan Pathak|2019|Nepal|20under20|social activist|;Lov Panthi|2019|Nepal|20under20|innovator|;Nischal Bhandari|2019|Nepal|20under20|social activist|;Rachin Kalakheti|2019|Nepal|20under20|technopreneur|;Rishi Kumar Gupta|2019|Nepal|20under20|innovator|;Rohan Bagale|2019|Nepal|20under20|social activist|;Samarth Jha|2019|Nepal|20under20|social activist|;Sameer Chapagain|2019|Nepal|20under20|journalist|;Shivu Pandey|2019|Nepal|20under20|cyber security|;Supriya Maharjan Sapkota|2019|Nepal|20under20|social activist|;Thalama Malla|2019|Nepal|20under20|social activist|
-# 2020 20under20
-Abhishek Karna|2020|Nepal|20under20|technopreneur|Mahottari;Amit Timalsina|2020|Nepal|20under20|technopreneur|Rupandehi;Ankit Mishra|2020|Nepal|20under20|child rights|Banke;Dikshya Gautam|2020|Nepal|20under20|child rights|Kathmandu;Ekraj Ghimire|2020|Nepal|20under20|environmentalist|Palpa;Grace Thapa|2020|Nepal|20under20|entrepreneur|Lalitpur;Laxman Poudel|2020|Nepal|20under20|innovator|Rupandehi;Namrata Dahal|2020|Nepal|20under20|child rights|Jhapa;Preksha Dhami|2020|Nepal|20under20|social activist|Kailali;Reet Kafle|2020|Nepal|20under20|educator|Morang;Sanif Kandel|2020|Nepal|20under20|youth activist|Rupandehi;Sanskriti Phuyal|2020|Nepal|20under20|social activist|Kathmandu;Seliya Shrestha|2020|Nepal|20under20|social activist|Jhapa;Subhash Sharma|2020|Nepal|20under20|coder|Janakpur;Sulav Subedi|2020|Nepal|20under20|innovator|Ilam;Sushant Sapkota|2020|Nepal|20under20|environmentalist|Surkhet;Swaraj Sagar Pradhan|2020|Nepal|20under20|programmer|Lalitpur;Vaibhav Nahata|2020|Nepal|20under20|entrepreneur|Morang;Youbesh Dhaubhadel|2020|Nepal|20under20|photographer|Kathmandu
-# 2021 20under20 (+finalists)
-Aabiskar Thapa Kshetri|2021|Nepal|20under20|engineering|Pyuthan;Aaditya Singh Thapa|2021|Nepal|20under20|child rights|Banke;Amrit Rijal|2021|Nepal|20under20|child rights|Sunsari;Anugraha Ghale|2021|Nepal|20under20|entrepreneur|Lalitpur;Anurag Chapagain|2021|Nepal|finalist|content creator|Nawalparasi;Deepak Sutihar|2021|Nepal|finalist|social entrepreneur|Saptari;Gobind Pajiyar|2021|Nepal|20under20|entrepreneur|Siraha;Johnson Subedi|2021|Nepal|20under20|technopreneur|Parbat;Jwala Dhakal|2021|Nepal|20under20|writer|Jhapa;Khusbu Bhandari|2021|Nepal|finalist|wildlife conservation|Chitwan;Mohan Budha|2021|Nepal|20under20|social activist|Humla;Neha Gurung|2021|Nepal|finalist|social activist|Kathmandu;Om Prakash Wasti|2021|Nepal|20under20|social activist|Kailali;Reyan Kumar Sapkota|2021|Nepal|20under20|social entrepreneur|Bhaktapur;Sabhya Rai|2021|Nepal|finalist|education activist|Ilam;Sabina Shakya|2021|Nepal|20under20|environmentalist|Lalitpur;Shubham Jha|2021|Nepal|20under20|filmmaker|Mahottari;Suraj Sapkota|2021|Nepal|20under20|social activist|Nawalparasi;Suyog Vardan Acharya|2021|Nepal|20under20|innovator|Kaski
-# 2022 20under20 (+finalists)
-Aamod Paudel|2022|Nepal|20under20|tech activist|Rupandehi;Aashish Shah|2022|Nepal|finalist|edu-technologist|Dhanusha;Bidhata Pathak|2022|Nepal|20under20|activist|Nuwakot;Bimarsha Poudel|2022|Nepal|finalist|filmmaker|Chitwan;Binita Dhakal|2022|Nepal|20under20|social entrepreneur|Gorkha;Bishnu Shah|2022|Nepal|20under20|education activist|Dhanusha;Darshana Rijal|2022|Nepal|finalist|women rights|Morang;Ganga Sah|2022|Nepal|20under20|female education|Mahottari;Kunal Sah|2022|Nepal|20under20|tech-intrapreneur|Morang;Lucky Sah|2022|Nepal|20under20|technology|Mahottari;Nischal Singh Bista|2022|Nepal|finalist|ecopreneur|Achham;Prithak Shrestha|2022|Nepal|20under20|social activist|Chitwan;Rahul Mandal|2022|Nepal|20under20|tech educator|Dhanusha;Ranjan Shankar|2022|Nepal|20under20|STEM education|Terhathum;Sampanna Jyoti Tuladhar|2022|Nepal|20under20|education|Kathmandu;Sambridhi Deo|2022|Nepal|20under20|artist|Hetauda;Sanskriti Duwadi|2022|Nepal|20under20|gender activist|Kathmandu;Sarwagya Bhattarai|2022|Nepal|20under20|health activist|Kathmandu;Shrijana Gautam|2022|Nepal|finalist|social activist|Morang
-# 2023 20under20 (+finalists)
-Aryan Sigdel|2023|Nepal|finalist|educator|;Atith Adhikari|2023|Nepal|finalist|social entrepreneur|;Avinash Kumar Paswan|2023|Nepal|20under20|musician|;Dikshya Bharati|2023|Nepal|20under20|health activist|;Diwash Sarraf|2023|Nepal|20under20|social activist|;Madhav Khanal|2023|Nepal|finalist|writer|;Nirajan Rimal|2023|Nepal|finalist|science|;Prakash Badu|2023|Nepal|20under20|child rights|;Prakash Pant|2023|Nepal|20under20|mathematician|;Preeti Pantha|2023|Nepal|finalist|social activist|;Raushan Pandit|2023|Nepal|20under20|technology|;Risham Kumar Sah|2023|Nepal|20under20|environmentalist|;Sadiksha Ghimire|2023|Nepal|20under20|health activist|;Sagar Budha|2023|Nepal|20under20|environmentalist|;Sagar Gupta|2023|Nepal|20under20|AI researcher|;Samip Paudel|2023|Nepal|20under20|technology|;Shubham Upreti|2023|Nepal|20under20|artist|;Sumitra Acharya|2023|Nepal|20under20|activist|;Sushan Shrestha|2023|Nepal|20under20|activist|
-# 2024 20under20 (+finalists)
-Aadesh Regmi|2024|Nepal|20under20|social activist|;Aashish Panthi|2024|Nepal|finalist|tech education|Kapilvastu;Aayushman Puri|2024|Nepal|20under20|social activist|;Aryan Basnet|2024|Nepal|20under20|IT|;Ashish Banjara|2024|Nepal|20under20|social activist|;Hangsam Nembang|2024|Nepal|20under20|entrepreneur|;Kaushal Niraula|2024|Nepal|20under20|environment|;Kishor Shahi|2024|Nepal|20under20|climate|;Krishtina Khanal|2024|Nepal|20under20|technology|;Nischal Bhattarai|2024|Nepal|finalist|education|Syangja;Prashim Timsina|2024|Nepal|20under20|technopreneur|;Purnima Timsina|2024|Nepal|finalist|child rights|Jhapa;Sajani Sharma|2024|Nepal|finalist|social activism|Kaski;Saurab Banstola|2024|Nepal|20under20|STEM activist|;Shakti K.C.|2024|Nepal|20under20|AI|;Shreejay Subedi|2024|Nepal|finalist|tech|Parsa;Sinshiya K.C.|2024|Nepal|20under20|health activist|;Sugam Parajuli|2024|Nepal|20under20|entrepreneur|;Tushar Shah|2024|Nepal|20under20|innovator|
-# 2025 20under20 (+finalists)
-Aawish Khanal|2025|Nepal|20under20|entrepreneur|Butwal;Dhurbesh Dhami|2025|Nepal|20under20|campaigner|Bajura;Gokul Shrestha|2025|Nepal|20under20|researcher|Baglung;Nishant Raj Sarraf|2025|Nepal|20under20|AI researcher|Birgunj;Manushi Neupane|2025|Nepal|finalist|SRHR advocate|Syangja;Mohammad Aftab Sheikh|2025|Nepal|20under20|entrepreneur|Birgunj;Nischal Dhungana|2025|Nepal|finalist|climate justice|Kapilvastu;Osish Niraula|2025|Nepal|20under20|child rights|Sunsari;Oxford Acharya|2025|Nepal|finalist|policy advocate|Jumla;Phurwa Tsering Gurung|2025|Nepal|20under20|documentary|Dolpo;Pooja Mainali|2025|Nepal|20under20|teen leadership|Jhapa;Rakshit Poudel|2025|Nepal|20under20|STEM educator|Butwal;Renuka Singh|2025|Nepal|finalist|agropreneur|Sarlahi;Ritu Gharti|2025|Nepal|20under20|peer educator|Nawalpur;Ruchi Ojha|2025|Nepal|20under20|menstrual health|Kathmandu;Safal Poudel|2025|Nepal|finalist|AI developer|Rupandehi;Sajan Adhikari|2025|Nepal|20under20|SDG activist|Chitwan;Saksham Ghimire|2025|Nepal|20under20|policy advocate|Rupandehi;Saksham Rupakheti|2025|Nepal|20under20|social entrepreneur|Kapilvastu
+# name | year | tier | si,ld,in,en,rc,gf,ch | conf | THEN (at-selection) | NOW (trajectory) | socials
+DATA="""
+Aarjan Chaudhary|2026|Applicant|4,5,5,4,5,5,5|high|CVE-2025-51588; research credited by Google, Twitch, EA & Stanford; founder of Arniko Hack Club (Nepal's largest teen tech community, 400+); ran Daydream (250+) & Campfire (150+) & the InventionNovelty hacker house; building kroda.ai ($20k+ LOIs); security engineer at Dench (YC S24); exited ggamechamps (7k+ users)|Applicant (2026)|web=https://arjanchaudharyy.lol;x=https://x.com/arjanchaudharyy
+Bipana Sharma|2015|Winner|5,4,1,1,4,4,4|med|Founded Ekta Child Club at 11; led anti-child-marriage/trafficking network; Asian Girls Human Rights Award 2015; helped make Sunwal a child-friendly municipality|Pursued LLB; child-rights advocacy|web=https://www.ted.com/talks/bipana_sharma_children_breaking_barriers
+Santosh Lamichhane|2016|Winner|2,3,4,1,2,3,3|low|Self-taught teen inventor: corn-thresher machine, walking-robot car builds; won National Mechanical Exhibition|Untraceable|
+Sachin Dangi|2017|Winner|3,4,2,3,3,3,3|low|President, Teenage Society of Nepal; co-founded Bizonomics & Skillathon|Youth organizer/writer; trail cold after 2019|
+Prashansha KC|2018|Winner|4,4,2,1,3,4,4|med|21-day anti-kidnap-marriage campaign in Rukum (~2,400 reached); documentaries|Filmmaker; 'Iron Gate' at Sheffield DocFest 2022; UNICEF youth advocate|x=https://x.com/prashanshakc23
+Samir Phuyal|2019|Winner|4,3,4,4,3,4,4|high|Built NayaKinmel + student apps; taught 10,000+ Django; 'Hamro Tech' YouTube|Founder/CEO Karobar (300k+ downloads); GSEA Nepal 2023; MIT Solve|li=https://linkedin.com/in/samirphuyal
+Mandira Shrestha|2020|Winner|4,4,1,1,3,4,4|med|SRHR/child-rights; led child-authored UPR 2020 report; SRHR trainer|Registered Nurse; NGO boards|
+Pranjal Chalise|2021|Winner|4,3,4,3,3,4,4|high|Drishti Nepal (open-source app for the blind); founded e-educators & Students Research Council Nepal|CS+Math at Amherst; Fermilab research|li=https://linkedin.com/in/pranjalchalise;gh=https://github.com/pranjalchalise
+Rahul Ranjan Sah|2022|Winner|3,4,4,3,4,4,4|high|Bronze, Intl Astronomy Olympiad 2019; astronomy outreach to 7,000+; founded SXC|Furman grad; computational/quant research|li=https://linkedin.com/in/rahulranjansah;gh=https://github.com/rahulranjansah
+Shruti Tiwari|2023|Winner|4,3,1,1,3,4,4|med|Plasticman Campaign + Chure tree-planting (WWF/Save the Children); child-marriage interventions|Trajectory unverified|
+Ghanashyam Bishwakarma|2024|Winner|4,4,1,1,3,3,4|med|President, National Adolescent Boys Network Nepal; child-rights radio; World Social Forum 2024|Grassroots activism|
+Krish Yadav|2025|Winner|3,4,3,3,4,3,4|med|Content creator; Associate Creative Head, The Nepali Comment; TNC Debates; Himalayan Linguistics Olympiad|Content creator (recent)|web=https://youtube.com/@TheNepaliComment
+Aditya Khadka|2015|Finalist|3,2,4,1,4,4,3|med|Award-winning teen documentary 'Dhartiputra' (Chicago Children's FF etc.)|Unknown|
+Avaneesh Yadav|2015|Finalist|2,2,2,2,1,2,2|low|Entrepreneur finalist; no footprint|Unknown|
+Ravi Mandal|2015|Finalist|4,3,5,3,4,4,4|high|Microsoft Innovation Center apps; Imagine Cup Nepal 1st + world semifinalist; UNICEF/UNDP disaster apps|Founder/CEO ZeroTB (SF); Microsoft MVP|li=https://linkedin.com/in/ravimandal
+Samprada Chapagain|2015|Finalist|2,2,1,1,1,2,2|low|Social-activist finalist; no footprint|Unknown|
+Swastik Ghimire|2015|Finalist|3,3,1,1,2,3,3|low|Scouts/volunteering; writer|Unknown|
+Anil Kharel|2016|Finalist|3,3,2,2,3,3,3|low|Top-6 finalist 2016 (age 15, Rupandehi)|Unknown|
+Deepak B.K|2016|Finalist|2,2,1,1,1,2,2|low|Child-rights finalist; no footprint|Unknown|
+Gaurav Pokhrel|2016|Finalist|2,2,1,1,2,3,3|low|Journalism finalist|Unknown|
+Samata Shrestha|2016|Finalist|2,2,2,1,2,3,3|low|Poetry honoree (Jhapa)|Unknown|
+Albina Prawin|2017|Finalist|5,4,2,2,4,5,5|med|Chair, Babiya Young Women Org (Plan Intl); Muslim girls' anti-child-marriage/GBV campaigner|Unknown|
+Aayush Pandey|2017|Finalist|2,3,4,3,3,4,3|low|Teen programmer finalist (Rupandehi)|Unknown|
+Prithu Singh Thakuri|2017|Finalist|2,3,3,4,3,4,3|high|Founded WPAll Club at 18; WordCamp Kathmandu speaker/organizer|Editorial Manager, RebelCode|li=https://linkedin.com/in/prithu-singh-thakuri
+Rajaram Basnet|2017|Finalist|3,3,1,1,3,4,3|low|Domestic worker to President, District Child Club Network|Unknown|
+Tanmay Chaudhary|2017|Finalist|2,3,3,2,3,4,3|med|Robotics Association of Nepal coordinator; built a 3-wheel RC car|UX designer/cinematographer|li=https://linkedin.com/in/tanmay-chaudhary-72173a175
+Ashna Poudel|2017|20under20|4,4,2,3,3,5,4|med|Founder Sukarmi (skills training + paid employment for girls)|Business studies|
+Bhabish Shrestha|2017|20under20|2,2,2,1,2,3,3|low|Social activist honoree|Unknown|
+Pramish Paudel|2017|20under20|3,3,5,3,4,4,4|high|Built Proto News app (20k+ downloads) at 15; ICT Rising Star finalist|CV researcher; INSAIT intern|li=https://linkedin.com/in/pramish-paudel-554b2796;web=https://pramishp.github.io
+Rizma Joshi|2017|20under20|2,2,2,1,2,2,3|low|Innovator honoree|Unknown|
+Ruby Tamang|2017|20under20|1,2,1,1,2,2,3|low|Sports honoree|Unknown|
+Pradip Adhikari|2017|20under20|1,2,2,1,2,2,3|low|Coder honoree|Unknown|
+Prajesh Khanal|2017|20under20|4,4,3,2,4,5,4|med|Founder 'I Consume My Oxygen' (UNESCO ESD recognition)|UN MGCY; Youth Co:Lab|
+Prashant Kandel|2017|20under20|1,2,2,1,2,2,3|low|App developer honoree|Unknown|
+Bijay Acharya|2017|20under20|2,2,3,2,2,3,3|low|Innovator honoree|Unknown|
+Biplov Jha|2017|20under20|2,3,4,2,3,4,3|med|Technology honoree|Ex-Tesla engineer; MS Texas A&M|li=https://linkedin.com/in/biplov-jha
+Narayan Gautam|2017|20under20|3,3,1,1,2,3,3|low|Child activist honoree|Unknown|
+Nivesh Kumar|2017|20under20|2,2,1,1,2,3,3|low|Journalist honoree|Unknown|
+Sagar Parajuli|2017|20under20|4,3,2,2,3,4,4|med|Youth gender activist, UN Women Nepal|Public Health Officer|li=https://linkedin.com/in/sagar-parajuli-172732175
+Sanjay Kumar Yadav|2017|20under20|2,2,1,1,2,3,3|low|Social activist honoree|Unknown|
+Bikalpa Dhungana|2018|Finalist|3,3,5,2,4,3,3|med|Teen inventor: police-tested anti-drunk-driving cutoff, bomb-disposal robot; Yuba Pratibha Puraskar|EEE at Kathmandu University|li=https://linkedin.com/in/bikalpa-dhungana-b11b44197
+Deepshikha Ghimire|2018|Finalist|3,4,2,2,3,4,3|med|Writer, Kathmandu Post bylines; founder AAYAM|Psychology; writer|
+Saugat Tiwari|2018|Finalist|3,3,2,3,3,3,3|low|Ran youth 'Talk Series' (Chitwan)|Unknown|
+Sudarshan Subedi|2018|Finalist|4,4,3,3,3,4,3|med|Co-founder Nepal Eco Club; British Council Schools Ambassador|British Council Nepal|li=https://linkedin.com/in/idebus95
+Swornim Shrestha|2018|Finalist|2,3,3,4,3,3,3|med|Tinybits Foundation + Pahilo Deal e-commerce|E-commerce ads agency|
+Aanchal Adhikari|2018|20under20|3,3,1,1,2,3,3|low|Social activist honoree|Unknown|
+Aashutosh Sapkota|2018|20under20|2,3,3,3,2,3,3|low|Technology honoree|Unknown|
+Abhishek Adhikari|2018|20under20|2,3,2,3,2,3,3|low|Entrepreneur honoree|Unknown|
+Amit Khanal|2018|20under20|2,2,3,2,2,3,3|low|Technology honoree (age 15)|Unknown|
+Anil Pradhan|2018|20under20|2,3,4,2,3,3,3|low|Built 'Smart Key' vehicle-security app; school science demos|Unknown|
+Anisha Ruchal|2018|20under20|3,2,1,1,2,3,3|low|Social activist (age 14)|Unknown|
+Deepa Adhikari|2018|20under20|3,2,2,2,2,3,3|low|Social activist honoree|Unknown|
+Dipisha Bhujel|2018|20under20|3,3,1,1,2,3,3|med|Drug-addiction/child-rights awareness via flashmobs/drama (age 14)|Founder Sparsa (compostable pads); Iris STEM Prize; Zonta award|li=https://linkedin.com/in/dipisha-bhujel;web=https://theirisproject.org/winner/dipisha-bhujel
+Kovid Raj Panthy|2018|20under20|2,3,4,3,3,4,3|med|IBM Champion 2019; coding author (age 14)|Founder Techsamaj; coding educator|li=https://linkedin.com/in/kovidpanthy
+Nibesh Baral|2018|20under20|2,3,3,3,2,3,3|med|Social entrepreneur honoree|Creative Head, Ad Sathi|li=https://linkedin.com/in/nibeshnick
+Palisha Shakya|2018|20under20|3,3,2,2,2,3,3|low|Drug-addiction/child-rights awareness (age 14)|Unknown|
+Rhythm Sah|2018|20under20|1,2,3,2,2,3,3|low|Coder honoree|Unknown|
+Sahil K Gupta|2018|20under20|2,2,4,2,3,4,3|low|Built Mars-rover model + drone; science expo (age 15)|Unknown|
+Yatish Ojha|2018|20under20|3,3,2,2,3,3,3|med|Social activist honoree|Lawyer; Gen-Z Front figure; 2025 HoR candidate|
+Bidhi Mandal|2019|Finalist|4,4,4,4,3,4,4|med|Won Infrastructure Idea Hunt; 2nd Yunus Challenge & UNDP Youth Co:Lab; plastic-to-brick venture|Compliance analyst, Fidelity|
+Bikram Parajuli|2019|Finalist|3,4,4,3,3,4,3|med|Founded 'The Nepalions'; Karkhana maker-mentor; robotics programs|Software developer|
+Lov Panthi|2019|Finalist|3,3,5,3,4,4,3|med|Co-built patent-registered first Nepali-speaking robot (with twin)|Lov Kush Robotics|
+Rachin Kalakheti|2019|Finalist|2,3,4,3,3,4,3|med|Teen healthcare-AI + robotics work|Stanford; founder Cedro Finance|li=https://linkedin.com/in/akalakheti
+Supriya Maharjan Sapkota|2019|Finalist|4,4,3,3,4,4,4|high|MARIAN Female Champion; Project Hope 2; won Infrastructure Idea Hunt|UX/branding, Dallas|x=https://x.com/supriyamss;web=https://supriyasapkota.com.np
+Aanand Kumar Sahani|2019|20under20|3,2,1,1,3,3,3|low|Child-rights honoree (age 17)|Unknown|
+Arjun Acharya|2019|20under20|3,2,2,1,3,3,3|low|Social activist/poet honoree|Unknown|
+Babita Pariyar|2019|20under20|3,2,2,1,3,4,3|med|Child-marriage work; Ekikrit Child Club|Law student|
+Bishnu Mijar|2019|20under20|4,4,2,2,3,5,4|med|Founder 'Ma Dalit?' anti-caste campaign|Dalit-rights activist|
+Ganesh Sah Sudi|2019|20under20|4,3,4,2,4,5,4|med|Wildlife/snake rescuer; co-authored peer-reviewed krait paper (2020)|Mithila Wildlife Trust|web=https://mwt.org.np
+Jyoti Singh|2019|20under20|3,2,3,3,2,3,3|low|Self-taught web dev; study apps (age 13)|Unknown|
+Kovid Bhusan Pathak|2019|20under20|3,3,2,1,3,4,3|med|Fridays for Future Nepal; Sakhaa Nepal|Unknown|x=https://x.com/not_kovid
+Nischal Bhandari|2019|20under20|3,2,1,1,2,3,3|low|Social activist honoree (age 18)|Unknown|
+Rishi Kumar Gupta|2019|20under20|2,2,3,2,2,3,3|low|Innovator honoree|Unknown|
+Rohan Bagale|2019|20under20|4,3,2,1,3,4,4|med|Child-rights advocacy|Child reintegration officer|
+Samarth Jha|2019|20under20|3,3,2,1,2,3,3|low|'Mental mathematician'; school motivational programs|Unknown|
+Sameer Chapagain|2019|20under20|2,3,2,1,3,3,3|low|Journalist honoree (Chitwan)|Unknown|
+Shivu Pandey|2019|20under20|2,3,2,1,3,3,3|low|Public speaker; peer educator|US (Business IT/CS); recruiter|li=https://linkedin.com/in/shivu-pandey
+Thalama Malla|2019|20under20|2,2,1,1,3,3,3|low|Social activist honoree (Nuwakot)|Unknown|
+Ekraj Ghimire|2020|Finalist|3,3,3,3,4,4,3|med|Founded Butwal Robotics Club; Plant-for-the-Planet ambassador; campus app|IT professional|web=https://ekrajghimire.com.np
+Reet Kafle|2020|Finalist|4,4,3,3,4,5,4|high|ETC Global Teacher Award 2020; early-childhood education work|Founder Early Years Stage Nepal|li=https://linkedin.com/in/reet-kafle-6739671a0;web=https://eysn.com.np
+Subhash Sharma|2020|Finalist|2,2,3,2,3,4,3|low|Coder finalist (Janakpur)|Unknown|
+Sulav Subedi|2020|Finalist|4,3,4,2,3,4,3|med|Self-taught roboticist; COVID assistive devices; mentored 30+|Unknown|
+Vaibhav Nahata|2020|Finalist|4,4,3,4,4,5,4|high|Nepal Youth Icon; TEDx speaker; 'Being Champions' TV; Success Society International|Speaker/entrepreneur; Fulbright UGRAD|li=https://linkedin.com/in/championvaibhav;ig=https://instagram.com/championvaibhav
+Abhishek Karna|2020|20under20|3,4,4,3,4,4,4|high|Founder 'Ecstatic Paradox' (physics+tech education)|Duke physics researcher|li=https://linkedin.com/in/abhishekkarna;web=https://abhishekkarna.com.np
+Amit Timalsina|2020|20under20|3,4,3,3,3,4,4|high|Founder/President Young Scientists Community|AI entrepreneur (Blintic AI)|li=https://linkedin.com/in/amittimalsina
+Ankit Mishra|2020|20under20|4,3,1,1,3,4,4|low|Child-rights (Nepalgunj)|Unknown|
+Dikshya Gautam|2020|20under20|3,3,1,1,3,3,3|low|Child-rights; TV reporter|Unknown|
+Grace Thapa|2020|20under20|3,3,3,4,3,4,4|med|Founder Graceful Nature (natural skincare)|Same brand|li=https://linkedin.com/in/grace-thapa-46843b1b3
+Laxman Poudel|2020|20under20|3,4,5,3,4,5,4|high|Agrobot (MoEST-recognized); Anti-rape Watch (CAN best tech award)|ECE at Lafayette College|li=https://linkedin.com/in/coderlax;gh=https://github.com/techylax
+Namrata Dahal|2020|20under20|4,4,2,2,3,5,4|med|VP Damak Child Network; stopped several child marriages|Unknown|
+Preksha Dhami|2020|20under20|2,2,1,1,3,4,3|low|Social activist (Kailali)|Unknown|
+Sanif Kandel|2020|20under20|4,4,3,2,3,5,4|med|Nepal Teen Leaders; 'We' for Change; climate organizing|Unknown|
+Sanskriti Phuyal|2020|20under20|4,4,3,3,4,5,4|med|Founded 'Sports for Equality'; HER TURN Leadership Award|National cricketer (Bagmati)|web=https://cricnepal.com
+Seliya Shrestha|2020|20under20|3,3,2,1,3,4,4|low|Child-rights RJ (Damak, age 15)|Unknown|
+Sushant Sapkota|2020|20under20|5,4,3,3,4,5,4|high|Founder 'Go Green Go Clean' (300k+ reached), environmentalist|WAFF Global Teen Leader 2025; World Bank presenter|li=https://linkedin.com/in/susanleads
+Swaraj Sagar Pradhan|2020|20under20|3,4,4,2,4,5,4|high|Gold, 8th APCYS 2019; SEDS 'Garuda' rocket; co-founder Physics Initiatives Nepal|Physics at Stony Brook|li=https://linkedin.com/in/swaraj-sagar-pradhan-827327139
+Youbesh Dhaubhadel|2020|20under20|3,4,3,3,4,4,3|high|British Council 'Your World' national winner; photography|Econ at Idaho; US museum solo exhibition|li=https://linkedin.com/in/youbeshdhdl;ig=https://instagram.com/youbesh.dhdl;web=https://youbesh.com
+Anurag Chapagain|2021|Finalist|3,3,3,3,3,4,3|med|Founder College Guide Nepal; science YouTube (~1,200 students)|University student|
+Deepak Sutihar|2021|Finalist|3,3,2,2,3,4,3|med|Organized quiz raising ~Rs 3 lakh for an orphanage|Unknown|
+Khusbu Bhandari|2021|Finalist|4,4,3,2,4,5,5|med|First girl snake-rescuer in Nepal (BBC News Nepal); Raise Hands Nepal|Healthcare in Canada|
+Neha Gurung|2021|Finalist|4,4,3,2,4,4,4|med|First girl president, Ktm District Child Club Network; anti-online-abuse radio (10 FMs); 2 libraries|Unknown|
+Sabhya Rai|2021|Finalist|4,4,3,3,4,5,4|high|Taught 500+ children in the pandemic; adviser at Sikaai; scholarship directory|CS at Fisk; Microsoft SWE intern|li=https://linkedin.com/in/sabhya-rai-420012228
+Aabiskar Thapa Kshetri|2021|20under20|3,4,4,3,4,4,3|high|Founder Quantum Physics@SRCN; OneQuantum Nepal lead; ran 'Summer of Quantum'|CS at Lehigh; Goldman Sachs|li=https://linkedin.com/in/aabiskar-thapa-kshetri
+Aaditya Singh Thapa|2021|20under20|3,3,1,1,3,4,3|low|Child-rights (Nepalgunj)|Unknown|
+Amrit Rijal|2021|20under20|4,4,3,2,3,5,4|med|Founder '1000 hands, 500 trees' & Lakshyadeep|Unknown|
+Anugraha Ghale|2021|20under20|4,4,3,4,4,5,4|high|Founder Gharmai Productions (art + mental-health social enterprise)|US Embassy Youth Council 2025|li=https://linkedin.com/in/anugrahaghale
+Gobind Pajiyar|2021|20under20|3,3,3,4,3,4,3|high|Co-founder Griham & Pyume; coder's club; Dalit education work|Digital marketing officer|
+Johnson Subedi|2021|20under20|4,4,4,4,3,4,4|med|Co-founder AuraED (digital literacy, 1000+ students)|Software developer|li=https://linkedin.com/in/johnson-subedi;gh=https://github.com/I-Johnson
+Jwala Dhakal|2021|20under20|2,3,2,2,3,4,3|low|Young writer (Jhapa)|Unknown|
+Mohan Budha|2021|20under20|3,3,2,2,3,4,3|med|Free radio education for marginalized students (Humla); YUWA|Unknown|
+Om Prakash Wasti|2021|20under20|3,3,2,1,2,3,3|low|Youth activist (Kailali); radio presenter|Unknown|
+Reyan Kumar Sapkota|2021|20under20|3,4,4,4,4,4,4|med|Founding board NECSA; Team Nepal captain IBCOL finals; LOCUS Young Innovator|Engineering at Pulchowk; EWB|li=https://linkedin.com/in/reyan-k-sapkota
+Sabina Shakya|2021|20under20|4,3,4,3,3,4,4|med|Built 'Safa Sahar' recycling app; tree-planting; mentored 20+ girls|Conservation researcher (probable)|
+Shubham Jha|2021|20under20|3,3,3,3,3,4,3|med|Directed ~24 short films; built Drishti Nepal & Kisan Nepal apps|IT/media|
+Suraj Sapkota|2021|20under20|3,3,2,1,2,3,3|med|Taekwondo self-defense instructor; girls' workshops|Unknown|
+Suyog Vardan Acharya|2021|20under20|2,2,3,2,3,4,3|med|Organic-chemistry sanitizer; drones/vacuum from waste (age 14)|Unknown|
+Aashish Shah|2022|Finalist|3,4,4,4,3,4,3|med|Co-founded RoboTeach Nepal (25+ events, 20 schools, 2000+ students)|Same; Ashoka society|li=https://np.linkedin.com/in/aashishshah1
+Bimarsha Poudel|2022|Finalist|3,3,3,3,3,4,3|med|Filmmaker; AYON short-film win; co-founder Seedlings Nepal|Filmmaker|
+Darshana Rijal|2022|Finalist|5,4,3,3,4,5,4|high|Women Deliver Young Leader; VP YUWA; WHO temporary advisor|Same|web=https://yuwanepal.org
+Nischal Singh Bista|2022|Finalist|4,3,3,4,4,4,3|med|Co-founder Bharyang Group (compostable products, ~28 lakh seed); ed projects 4,500+|Same|
+Shrijana Gautam|2022|Finalist|4,4,3,2,4,4,4|med|VP 'We' for Change; led 'Hariyo Pusta' (1,500+ youth, 21 eco-clubs)|Unknown|
+Aamod Paudel|2022|20under20|3,3,5,2,5,4,4|med|CERN Beamline for Schools shortlist; Imagine Cup Jr 1st; ESA Space Launchpad winner; Weizmann fellow|Computational science|web=https://aamodpaudel.com.np
+Bidhata Pathak|2022|20under20|4,3,3,2,3,4,4|med|UNEP Tunza; CliMates Nepal; green-menstruation campaigns|Swarthmore (climate)|li=https://linkedin.com/in/bidhatapathak
+Binita Dhakal|2022|20under20|4,4,3,4,3,4,4|high|Social entrepreneur; ex-Incubate Nepal researcher|CS at USM; Girls Who Code USM founder|li=https://linkedin.com/in/binitadhakal
+Bishnu Shah|2022|20under20|4,3,2,3,3,4,4|low|Co-founder Revamp Youth Foundation; ENGin tutor|Unknown|
+Ganga Sah|2022|20under20|4,3,2,1,3,4,4|med|Girls' education/anti-child-marriage (Mahottari); CWIN board|Unknown|web=https://school.digitalrightsnepal.org/fellow/ganga-sah
+Kunal Sah|2022|20under20|3,4,3,4,3,3,3|high|Founder InternSathi (200+ placements)|Founder/CEO HireShore|li=https://linkedin.com/in/digitalkunalsah
+Lucky Sah|2022|20under20|3,3,4,2,3,3,3|med|World Robotics Olympiad selection; NASA Space Apps|Unknown|
+Prithak Shrestha|2022|20under20|3,2,1,1,2,3,3|low|Social activist honoree (Chitwan)|Unknown|
+Rahul Mandal|2022|20under20|3,2,2,1,2,3,3|low|Tech educator honoree (Dhanusha)|Unknown|
+Ranjan Shankar|2022|20under20|2,2,2,1,2,3,2|low|STEM education honoree (Terhathum)|Unknown|
+Sampanna Jyoti Tuladhar|2022|20under20|4,4,3,3,3,4,4|high|Founded Beyond The Classroom (~10,000 students) with Nepal Economic Forum|Grinnell College|li=https://linkedin.com/in/sampannajtuladhar
+Sambridhi Deo|2022|20under20|3,3,3,2,3,3,3|med|President, Initiative for Girls in Physics; polymer research|Artist/tech|
+Sanskriti Duwadi|2022|20under20|2,2,2,1,2,3,2|low|Writer/gender activist honoree|Unknown|
+Sarwagya Bhattarai|2022|20under20|3,3,2,2,3,3,3|med|Y-PEER peer educator (300+ SRHR)|Unknown|
+Aryan Sigdel|2023|Finalist|3,3,3,4,3,4,3|med|Educational YouTube (1M+ views); jobs platform (1200+)|Content creator|
+Atith Adhikari|2023|Finalist|4,4,4,4,3,4,3|med|Founded Sci-Pi (2020; ~200k visitors)|President, AskMattrab|li=https://linkedin.com/in/atith-adhikari;web=https://scipitutor.com
+Madhav Khanal|2023|Finalist|3,4,3,2,5,4,4|high|Best-selling novel 'Avichal Karmayoddha' (10k+ copies); IPhO 2023 representative|CS at Rollins|li=https://linkedin.com/in/madhav-khanal-603b2a331
+Nirajan Rimal|2023|Finalist|3,3,4,3,3,4,3|med|Innovation Exposure Series (robot battles, drone racing, rocket expo)|CEO, Astrobotech|
+Preeti Pantha|2023|Finalist|3,3,3,2,3,4,3|med|Founder, The Orbona kids' magazine|Student; Incubate Nepal|li=https://linkedin.com/in/preeti-pantha-132a98279
+Avinash Kumar Paswan|2023|20under20|3,3,4,3,3,4,3|med|Pioneered 'MAITH HOP' Maithili fusion music|Producer|
+Dikshya Bharati|2023|20under20|3,3,2,1,3,3,3|low|EU Youth Sounding Board; digital literacy|Unknown|
+Diwash Sarraf|2023|20under20|4,3,3,2,3,4,3|med|UNICEF/CWIN mental-health advocacy; chatbot contribution|Unknown|
+Prakash Badu|2023|20under20|3,3,2,1,3,4,3|med|UNFPA Rupantaran facilitator; anti-child-marriage (age 15)|Unknown|
+Prakash Pant|2023|20under20|2,3,4,1,4,4,4|high|Represented Nepal at IMO 2023 (2nd-highest Nepali score)|Math at UVM|li=https://linkedin.com/in/prakash-pant-7786711ab
+Raushan Pandit|2023|20under20|2,2,2,1,2,3,2|low|Tech enthusiast honoree|Unknown|
+Risham Kumar Sah|2023|20under20|3,3,3,2,3,4,3|med|Mentored Nepal's first Rocket Camp; 'Bambana' eco-packaging (200+ farmers)|Unknown|
+Sadiksha Ghimire|2023|20under20|3,2,1,1,3,4,3|low|Health activist honoree|Unknown|
+Sagar Budha|2023|20under20|4,3,2,2,3,4,3|med|'Clean and Green Surkhet' (30,000+ trees; 100+ clean-ups)|Unknown|
+Sagar Gupta|2023|20under20|2,2,3,1,3,3,3|low|AI researcher; cardiovascular math model|Unknown|
+Samip Paudel|2023|20under20|2,2,3,1,3,3,3|low|AI/ML enthusiast (age 16)|Unknown|
+Shubham Upreti|2023|20under20|3,3,2,3,3,4,3|med|Founder Student Alliance For Creation (art/heritage)|Unknown|
+Sumitra Acharya|2023|20under20|3,2,1,1,3,4,3|med|Child-rights (Ekikrit Child Club); Plasticman|Unknown|
+Sushan Shrestha|2023|20under20|3,3,1,1,3,4,3|med|President, Municipal Child Club Network (Sunwal)|Unknown|
+Aashish Panthi|2024|Finalist|4,4,4,3,4,5,4|high|Cosog Nepal 'Code for Charity' (3,000+ students); Surakshya app; Koded YouTube|Same|li=https://linkedin.com/in/aashishpanthi;gh=https://github.com/aashishpanthi;web=https://aashishpanthi.name.np
+Nischal Bhattarai|2024|Finalist|4,4,3,2,4,5,4|med|Public-speaking programs (1,235+ teens); cybercrime-safety education|Student|
+Purnima Timsina|2024|Finalist|4,4,2,1,4,4,4|med|President DPL Teens; Board, National Adolescent Girls' Network; child-protection|Paramedic|
+Sajani Sharma|2024|Finalist|4,3,2,1,4,4,3|med|Women's empowerment; clean-ups; tree-planting|Unknown|
+Shreejay Subedi|2024|Finalist|4,4,4,4,4,5,4|high|Founder Venture Tech Nepal (bus app 1000+ users); award-winning documentary; Nayachapter 300+|CS at Howard; AI-bias research|li=https://linkedin.com/in/shreejay-subedi-168735213
+Aadesh Regmi|2024|20under20|3,3,2,1,3,4,3|low|Social activist/education honoree (Parbat)|Unknown|
+Aayushman Puri|2024|20under20|4,3,2,1,3,4,4|med|YUWA Youth Council; SRHR/CSE peer advocacy|Public health student|
+Aryan Basnet|2024|20under20|4,4,4,3,3,5,4|med|Authored 'Foundations of ML for High Schoolers'; AI-for-TB research; Nepal Hiking Society co-founder|IT/AI educator|
+Ashish Banjara|2024|20under20|4,3,2,1,3,4,4|med|Radio education debate; 'Reusing the Book' (3,000+ students)|Unknown|
+Hangsam Nembang|2024|20under20|3,4,3,4,4,5,3|med|Founder Junior Entrepreneurship Circle (1,500+); TEDx event head; Jiva Organics|KMC full-ride scholar|li=https://linkedin.com/in/hangsam-nembang-bb3520238
+Kaushal Niraula|2024|20under20|4,4,3,2,4,5,4|med|Founder Climate Care Network; British Council Youth for Climate|Env science at KU|ig=https://instagram.com/niraulakaushal
+Kishor Shahi|2024|20under20|3,2,2,1,3,4,3|low|Climate (Dailekh); surveyed 100+ farmers|Unknown|
+Krishtina Khanal|2024|20under20|4,3,4,3,4,5,3|med|Cosog outreach; designer, Ragat Nepal blood platform (5,000+ donors); DevTrack|Tech-for-good|
+Prashim Timsina|2024|20under20|3,4,4,4,4,4,4|high|Built BloodDonor, Khoja, DevTrack; NASA Cubes-in-Space project|Software engineer; Incubate Nepal|li=https://linkedin.com/in/prashimpy;gh=https://github.com/prashim;web=https://prashim.com.np
+Purnima Timsina 2|2024|skip|0,0,0,0,0,0,0|low|dup|dup|
+Saurab Banstola|2024|20under20|4,4,4,3,4,4,4|high|Founder Rising Pupil (12,000+ students); co-authored calculus book (with Univ. of Sydney prof)|Teacher, Bloom Nepal|li=https://linkedin.com/in/saurab-banstola-b3ab561b0
+Shakti K.C.|2024|20under20|3,3,3,3,3,3,3|med|IJSO 2021 Nepal finalist; asteroid-hunting (IASC)|Frontend/AI dev|web=https://kcshakti.com.np
+Sinshiya K.C.|2024|20under20|4,4,2,2,4,4,4|med|Menstrual hygiene/CSE sessions across all municipality wards|Unknown|
+Sugam Parajuli|2024|20under20|3,3,3,4,4,4,3|med|MD, Sugam Computer Sewa; Incubate Nepal researcher (DevTrack)|Unknown|
+Tushar Shah|2024|20under20|4,3,4,4,4,4,3|med|Work Root Venture (60+ businesses); DevTrack|Unknown|
+Manushi Neupane|2025|Finalist|4,4,3,3,4,4,4|high|Co-builder Pyari Periods (Kathmandu Post); Smart Cheli; Engineers Without Borders Nepal|Yale (full ride)|li=https://linkedin.com/in/manushi-neupane-6080bb2bb;web=https://pyari.org
+Nischal Dhungana|2025|Finalist|3,3,2,1,3,4,4|med|Represented Climate Vulnerable Forum / V20 at climate dialogues|Env science student|
+Oxford Acharya|2025|Finalist|3,4,2,2,3,5,4|med|Founder United Junior Red Cross Circle (2,000-student network claim); age 15, rural Jumla|Student|web=https://thegcsc.org
+Renuka Singh|2025|Finalist|3,3,3,3,3,4,3|med|Rooftop/organic dragon-fruit farming; Women LEAD grad|Agro-entrepreneur|
+Safal Poudel|2025|Finalist|3,3,4,3,3,4,3|high|Builds AI tools (PlantMD, Medforce AI, AgroBot); NPLCoder; shipped GitHub code|Web/AI dev|li=https://linkedin.com/in/safal-poudel-0900581b8;gh=https://github.com/safal808;web=https://safal-poudel.com.np
+Aawish Khanal|2025|20under20|2,2,2,3,2,3,3|low|Aspiring entrepreneur (Butwal)|Unknown|
+Dhurbesh Dhami|2025|20under20|3,3,2,1,2,4,3|med|Public-health/child-rights campaigns; Leo Club (Bajura)|Unknown|
+Gokul Shrestha|2025|20under20|4,3,4,2,4,4,4|high|2024 Rise Global Winner (elite, Rhodes/Schmidt); corn-based water filtration; APCYS bronze|Researcher|web=https://risefortheworld.org/winners/gokul-shrestha
+Nishant Raj Sarraf|2025|20under20|2,3,3,3,2,3,3|med|Founder RedPaper (legal-tech); Polygence scholar; iGEM remote fellow|AI/social innovator|web=https://polygence.org/scholars/nishant-raj-sarraf
+Mohammad Aftab Sheikh|2025|20under20|2,3,3,4,2,3,3|med|Co-founder Grocery Gunj & Build Nepal Group; rapper|Entrepreneur|li=https://linkedin.com/in/mohammadaftabsheikh
+Osish Niraula|2025|20under20|3,3,2,2,3,4,3|med|IOAA 2024 (selective); co-founder Learn2Lead Nepal; UN HLPF 2023|Unknown|li=https://linkedin.com/in/osish-niraula-ab7202282
+Phurwa Tsering Gurung|2025|20under20|2,2,3,2,2,4,3|low|Documentary filmmaker (Dolpo)|Unknown|
+Pooja Mainali|2025|20under20|2,3,1,1,2,3,3|low|Youth-leadership coordination|Unknown|
+Rakshit Poudel|2025|20under20|3,3,2,2,2,4,3|med|Physics/STEM educator; Olympiad math teaching|Unknown|li=https://linkedin.com/in/rakshit-poudel-659230374
+Ritu Gharti|2025|20under20|3,2,1,1,2,4,3|low|Peer educator (Nawalpur)|Unknown|
+Ruchi Ojha|2025|20under20|3,3,2,2,2,3,3|med|'Katha Yatra' menstrual-health; certified MHM trainer|Unknown|li=https://linkedin.com/in/ruchi-ojha-9ba2a2283
+Sajan Adhikari|2025|20under20|3,3,2,2,2,3,3|med|Founder Initiation Lakshya (cybersecurity/sustainability); TEDx organizer|Unknown|li=https://linkedin.com/in/sajan-adhikari-10620620a
+Saksham Ghimire|2025|20under20|3,3,3,3,2,4,3|high|Founder Hamro Niti (civic/policy newsletter with real published articles)|Same|li=https://linkedin.com/in/sakshamghimire10;web=https://hamroniti.com
+Saksham Rupakheti|2025|20under20|3,3,3,3,2,4,3|med|Co-founder ThinkNiti Foundation (STEM access); TEDxBaneshwor|Unknown|
 """
 
-def field_tags(f):
-    f=f.lower()
-    t=set()
-    if re.search(r"tech|coder|program|app|develop|it\b|robot|cyber|ai|innovat|engineer|stem|science|space|astronom|math",f): t.add("tech")
-    if re.search(r"preneur|entrepreneur|business|startup|intrapreneur",f): t.add("biz")
-    if re.search(r"child|rights|activist|social|environment|climate|health|srhr|gender|menstrual|conservation|advocate|sdg|peer|volunteer|campaign|women|education activist|female",f): t.add("social")
-    if re.search(r"content|film|document|artist|writer|music|photo|journal|creator|poet",f): t.add("media")
-    if re.search(r"educat|mentor|teacher|leadership|olympiad|researcher|research",f): t.add("edu")
-    return t
+def parse_socials(s):
+    d={}
+    for kv in s.split(";"):
+        kv=kv.strip()
+        if "=" in kv:
+            k,v=kv.split("=",1); d[k.strip()]=v.strip()
+    return d
 
-def heuristic(tier,f):
-    # Deliberately conservative: these are modeled estimates from only name/field/tier,
-    # so the cohort should sit BELOW the hand-verified winners rather than leapfrog them.
-    tags=field_tags(f)
-    base = 3.0 if tier=="finalist" else 2.7
-    lo   = 2.2 if tier=="finalist" else 2.0
-    s={"social_impact":base,"leadership":base,"innovation":lo,"entrepreneurship":lo,
-       "recognition":lo+0.3,"glocal_fit":base,"character":base+0.3}
-    if "tech" in tags: s["innovation"]+=1.0
-    if "biz" in tags:  s["entrepreneurship"]+=1.1; s["leadership"]+=0.3
-    if "social" in tags: s["social_impact"]+=0.9; s["leadership"]+=0.3
-    if "media" in tags: s["recognition"]+=0.9; s["social_impact"]+=0.3
-    if "edu" in tags: s["leadership"]+=0.5; s["social_impact"]+=0.3
-    if tags & {"tech","biz"}: s["glocal_fit"]+=0.3
-    return {k:round(min(5.0,max(0.0,v)),1) for k,v in s.items()}
-
-# ---- assemble ----
 heroes=[]
-seen=set()
-# winners + hand-scored first
-for (name,year),(sc,summ,links) in HAND.items():
-    ed = "India" if name=="Rudhvik Dharamkar" else "Sri Lanka" if name=="Risanga Abeygunasekara" else "Bangladesh" if name=="Talha Zubair" else "Nepal"
-    award = "Applicant" if year==2026 else "Winner" if (name,year) in WINNER_KEYS else "20under20"
-    heroes.append({"name":name,"year":year,"ed":ed,"award":award,"field":"","sum":summ,"s":sc,"est":False,"links":links,"me":year==2026})
-    seen.add((name,year))
+for line in DATA.strip().splitlines():
+    p=[x.strip() for x in line.split("|")]
+    if len(p)<8: continue
+    name,year,tier,scores,conf,then,now,socials=p[0],int(p[1]),p[2],p[3],p[4],p[5],p[6],p[7]
+    if tier=="skip": continue
+    sv=[int(x) for x in scores.split(",")]
+    s={DIMS[i]:sv[i] for i in range(7)}
+    heroes.append({"name":name,"year":year,"award":tier,"s":s,"conf":conf,
+                   "then":then,"now":now,"links":parse_socials(socials),
+                   "me":tier=="Applicant","est":conf=="low"})
 
-for line in ROSTER.strip().splitlines():
-    line=line.strip()
-    if not line or line.startswith("#"): continue
-    for rec in line.split(";"):
-        parts=[p.strip() for p in rec.split("|")]
-        if len(parts)<5: continue
-        name,year,ed,tier,field=parts[0],int(parts[1]),parts[2],parts[3],parts[4]
-        home=parts[5] if len(parts)>5 else ""
-        if (name,year) in seen: continue  # winner/hand overrides win
-        seen.add((name,year))
-        heroes.append({"name":name,"year":year,"ed":ed,"award":("Finalist" if tier=="finalist" else "20under20"),
-                       "field":field,"home":home,"sum":(field.capitalize()+(" · "+home if home else "")),
-                       "s":heuristic(tier,field),"est":True,"links":{}})
+out={"rubric":RUBRIC,
+ "note":"AT-SELECTION benchmark: each person scored on the record they held when they were a Glocal honoree, NOT their later career. 'now' field holds their subsequent trajectory for a separate view.",
+ "heroes":heroes}
+json.dump(out,open(os.path.join(HERE,"data","heroes.json"),"w"),indent=1)
+open(os.path.join(HERE,"corpus.js"),"w").write("window.__CORPUS__="+json.dumps(heroes,separators=(',',':'))+";")
 
-out={"rubric":RUBRIC,"generated_note":"Only the 11 winners + the applicant are hand-scored from public records (est=false). Every other honoree (finalists + 20under20) is scored by the documented, deliberately-conservative tier+field heuristic in build.py (est=true) — modeled estimates, not per-person research, and intentionally kept below the verified winners.","heroes":heroes}
-with open(os.path.join(HERE,"data","heroes.json"),"w") as f: json.dump(out,f,indent=1)
-
-# emit corpus.js for the web app (inline, no fetch needed)
-with open(os.path.join(HERE,"corpus.js"),"w") as f:
-    f.write("window.__CORPUS__="+json.dumps(heroes,separators=(',',':'))+";")
-
-# summary
-nw=sum(1 for h in heroes if h["award"]=="Winner")
-print(f"heroes: {len(heroes)} | winners: {nw} | finalists: {sum(1 for h in heroes if h['award']=='Finalist')} | 20under20: {sum(1 for h in heroes if h['award']=='20under20')} | hand-scored: {sum(1 for h in heroes if not h['est'])}")
+W={k:v["weight"] for k,v in RUBRIC["dimensions"].items()}
+tot=lambda s:sum(s[k]*W[k] for k in W)
+wins=[h for h in heroes if h["award"]=="Winner"]
+print(f"heroes:{len(heroes)} winners:{len(wins)} finalists:{sum(1 for h in heroes if h['award']=='Finalist')} 20u20:{sum(1 for h in heroes if h['award']=='20under20')}")
+rank=sorted(heroes,key=lambda h:-tot(h["s"]))
+print("TOP 12 (at-selection):")
+for i,h in enumerate(rank[:12],1): print(f"{i:>2}. {h['name']:<24}{h['year']} {h['award']:<10}{tot(h['s']):.2f}")
