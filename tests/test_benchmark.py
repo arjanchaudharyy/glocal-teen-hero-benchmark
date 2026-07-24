@@ -137,6 +137,27 @@ class TestEval(unittest.TestCase):
             self.assertLessEqual(v, 1.0)
         self.assertEqual(len(result["folds"]), 3)
 
+    def test_paired_bootstrap_diff_symmetry(self):
+        result = ev.paired_bootstrap_diff([0.8, 0.6, 0.7], [0.2, 0.4, 0.3])
+        self.assertAlmostEqual(result["mean_diff"], 0.4, places=6)
+        self.assertTrue(result["significant"])  # a uniformly dominates b
+
+    def test_significance_runs_and_returns_ci(self):
+        c = load()
+        result = ev.significance(c)
+        lo, hi = result["ci"]
+        self.assertLessEqual(lo, hi)
+
+    def test_nested_cross_validate_reports_held_out_scores_in_range(self):
+        # small fold counts to keep the suite fast — full 5x4 grid search is
+        # exercised via `python -m gth ncv`, not on every test run
+        c = load()
+        result = ev.nested_cross_validate(c, n_outer=2, n_inner=2)
+        self.assertEqual(len(result["held_out_ndcg"]), 2)
+        for v in result["held_out_ndcg"]:
+            self.assertGreaterEqual(v, 0.0)
+            self.assertLessEqual(v, 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()

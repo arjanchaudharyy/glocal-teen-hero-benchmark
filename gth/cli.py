@@ -7,6 +7,7 @@ Command-line interface.
     python -m gth ask "who worked on menstrual health?" [--k 5] [--hybrid]
     python -m gth eval [--per-query]             # Recall/Prec/MRR/nDCG/MAP + bootstrap CI
     python -m gth cv [--folds 5]                 # k-fold cross-validated config selection
+    python -m gth ncv [--outer 5] [--inner 4]    # nested CV — hyperparams tuned in-fold only
     python -m gth tune                           # BM25 (k1,b) grid search
     python -m gth score --file profile.json      # {"social_impact":4, ...}
 """
@@ -73,6 +74,16 @@ def _cmd_cv(a):
     cross_validate(k=a.k, n_folds=a.folds)
 
 
+def _cmd_ncv(a):
+    from .eval import nested_cross_validate
+    nested_cross_validate(k=a.k, n_outer=a.outer, n_inner=a.inner)
+
+
+def _cmd_sig(a):
+    from .eval import significance
+    significance(k=a.k, name_a=a.a, name_b=a.b)
+
+
 def _cmd_score(a):
     corpus = load()
     scores = json.load(open(a.file)) if a.file else json.loads(sys.stdin.read())
@@ -98,6 +109,8 @@ def main(argv=None):
     e = sub.add_parser("eval"); e.add_argument("--k", type=int, default=10); e.add_argument("--per-query", action="store_true"); e.set_defaults(fn=_cmd_eval)
     t = sub.add_parser("tune"); t.add_argument("--k", type=int, default=10); t.set_defaults(fn=_cmd_tune)
     cv = sub.add_parser("cv"); cv.add_argument("--k", type=int, default=10); cv.add_argument("--folds", type=int, default=5); cv.set_defaults(fn=_cmd_cv)
+    ncv = sub.add_parser("ncv"); ncv.add_argument("--k", type=int, default=10); ncv.add_argument("--outer", type=int, default=5); ncv.add_argument("--inner", type=int, default=4); ncv.set_defaults(fn=_cmd_ncv)
+    sg = sub.add_parser("sig"); sg.add_argument("--k", type=int, default=10); sg.add_argument("--a", default="char-ngram"); sg.add_argument("--b", default="hybrid+rm3+mmr"); sg.set_defaults(fn=_cmd_sig)
     sc = sub.add_parser("score"); sc.add_argument("--file"); sc.set_defaults(fn=_cmd_score)
 
     args = p.parse_args(argv)

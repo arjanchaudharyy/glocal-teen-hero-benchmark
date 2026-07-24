@@ -4,9 +4,9 @@
 
 **An open, reproducible benchmark of every Glocal Teen Hero (Nepal) honoree, 2015–2025 — scored on the record they held _at selection_ — with a hybrid retrieval (RAG) engine and a real IR evaluation harness over the corpus.**
 
-[![tests](https://img.shields.io/badge/tests-20%20passing-2f7d54)](tests/) [![python](https://img.shields.io/badge/python-3.9%2B-16233e)](pyproject.toml) [![core deps](https://img.shields.io/badge/core%20deps-0-16233e)](pyproject.toml) [![retrieval](https://img.shields.io/badge/retrieval-BM25%20·%20TF--IDF%20·%20QLM%20·%20char%20·%20RRF%20·%20RM3%20·%20MMR-b3906a)](gth/retrieval.py) [![nDCG@10 (5-fold CV)](https://img.shields.io/badge/nDCG%4010%20(5--fold%20CV)-0.578-6aa9d8)](gth/eval.py) [![deterministic](https://img.shields.io/badge/deterministic-✓-2f7d54)](gth/eval.py) [![license](https://img.shields.io/badge/license-MIT-b3906a)](LICENSE)
+[![tests](https://img.shields.io/badge/tests-23%20passing-2f7d54)](tests/) [![python](https://img.shields.io/badge/python-3.9%2B-16233e)](pyproject.toml) [![core deps](https://img.shields.io/badge/core%20deps-0-16233e)](pyproject.toml) [![retrieval](https://img.shields.io/badge/retrieval-BM25%20·%20TF--IDF%20·%20QLM%20·%20char%20·%20RRF%20·%20RM3%20·%20MMR-b3906a)](gth/retrieval.py) [![nDCG@10 (5-fold CV)](https://img.shields.io/badge/nDCG%4010%20(5--fold%20CV)-0.578-6aa9d8)](gth/eval.py) [![deterministic](https://img.shields.io/badge/deterministic-✓-2f7d54)](gth/eval.py) [![license](https://img.shields.io/badge/license-MIT-b3906a)](LICENSE)
 
-[**Live tool**](https://arjanchaudharyy.github.io/glocal-teen-hero-benchmark/) · [Dataset card](DATA_CARD.md) · [Retrieval stack](#the-retrieval-stack) · [Evaluation](#evaluation) · [Cross-validation](#cross-validation--proving-the-default-instead-of-guessing-it) · [Methodology](#methodology)
+[**Live tool**](https://arjanchaudharyy.github.io/glocal-teen-hero-benchmark/) · [**Paper**](PAPER.md) · [Dataset card](DATA_CARD.md) · [Retrieval stack](#the-retrieval-stack) · [Evaluation](#evaluation) · [Cross-validation](#cross-validation--proving-the-default-instead-of-guessing-it) · [Methodology](#methodology)
 
 </div>
 
@@ -18,7 +18,7 @@
 - A **full IR retrieval engine** treats each honoree's record as a document: **five retrievers** (BM25, TF-IDF cosine, query-likelihood LM, character n-gram, + optional MiniLM dense), **three fusion strategies** (RRF, CombSUM, CombMNZ), **RM3 relevance-model** query expansion, and **MMR** diversity re-ranking — with an optional neural **cross-encoder**.
 - A **real evaluation harness** — 39 hand-labeled queries, standard IR metrics (Recall@k, Precision@k, MRR, nDCG@k, MAP), **bootstrap 95% CI**, per-query breakdown, and a **grid-search tuner**.
 - **A 5-fold cross-validation harness picks the shipped default** — not the eval table. It caught real overfitting: the elaborate BM25+TF-IDF+char+RM3+MMR ensemble looks best when tuned and measured on the same queries, but **plain character n-gram retrieval wins on held-out queries in all 5 folds.** So that's what ships as the default; the full ensemble is real, tested, and available behind one flag (`hybrid=True`) — we just don't pretend it's the better default when the evidence says otherwise.
-- **Zero dependencies** in the default path. Pure standard library. **20 tests.** Fully **deterministic** (verified across hash seeds). Runs anywhere Python 3.9+ runs.
+- **Zero dependencies** in the default path. Pure standard library. **23 tests.** Fully **deterministic** (verified across hash seeds). Runs anywhere Python 3.9+ runs.
 
 ## Why this exists
 
@@ -179,6 +179,36 @@ This is the difference between a config that was *picked* and one that was *prov
 | failure mode it catches | — | overfitting to tuned parameters (BM25 k1/b, fusion weights) |
 | what happened here | hybrid+rm3+mmr *looked* competitive (MRR 0.739, best in-table) | char alone still won every fold on the metric that matters (nDCG) |
 
+**One more source of leakage worth closing:** `cross_validate`'s hybrid candidates use a fusion weight (char=0.3) and BM25 params (k1=1.5, b=0.4) that were themselves picked by eyeballing the *full* gold set in an earlier session — fine for comparing named strategies, not a clean bound on hyperparameter selection. `python -m gth ncv` runs **nested** cross-validation: an inner 4-fold split, entirely inside each outer training fold, grid-searches BM25 (k1,b) × char-fusion-weight from scratch — those hyperparameters never see the full dataset, let alone the outer test fold.
+
+```
+python -m gth ncv --outer 5 --inner 4
+```
+
+```
+  fold 1/5: inner-selected=char   inner_nDCG=0.563  ->  held-out nDCG=0.646  (n=8)
+  fold 2/5: inner-selected=char   inner_nDCG=0.569  ->  held-out nDCG=0.622  (n=8)
+  fold 3/5: inner-selected=char   inner_nDCG=0.563  ->  held-out nDCG=0.663  (n=8)
+  fold 4/5: inner-selected=char   inner_nDCG=0.626  ->  held-out nDCG=0.422  (n=8)
+  fold 5/5: inner-selected=char   inner_nDCG=0.588  ->  held-out nDCG=0.537  (n=7)
+  winning family per fold: {'char': 5}
+  nested cross-validated nDCG@10 = 0.578  (95% CI 0.490–0.648 over folds)
+```
+
+**Identical result** — char n-gram wins all 5 folds, same 0.578 nDCG@10 — even with hyperparameters searched from scratch, per fold, with zero access to the full dataset. That's the number that's safe to publish.
+
+**The last honest step: is the gap even significant?** `python -m gth sig` runs a *paired* bootstrap on the per-query nDCG difference (paired because both configs are scored on the same 39 queries — separate confidence intervals on each would ignore that and overstate precision):
+
+```
+  mean(char-ngram)      = 0.5792
+  mean(hybrid+rm3+mmr)  = 0.5572
+  mean difference       = +0.0220
+  95% CI on the difference (paired bootstrap) = [-0.0312, +0.0760]
+  -> NOT statistically significant at alpha=0.05 (n=39 queries)
+```
+
+**So the honest conclusion is calibrated, not triumphant:** cross-validation *consistently and unanimously* selects char n-gram as the config to ship — 10/10 across both flat and nested CV folds — but at n=39 queries, its edge over the full hybrid isn't statistically significant. The real finding isn't "simple beats fancy"; it's "the fancy ensemble's apparent edge on any single fixed eval table was measurement noise, and the simpler system is *at least as good* with far less machinery" — which is itself a good enough reason to ship it. All three of these numbers — the eval table, the CV, and the significance test — are in [**`PAPER.md`**](PAPER.md), written up in proper related-work / methodology / results / limitations form.
+
 ## Quickstart
 
 ```bash
@@ -192,9 +222,10 @@ python -m gth ask "..." --hybrid                     # opt into the full ensembl
 python -m gth similar "Rahul Ranjan Sah"             # nearest honorees
 python -m gth eval                                   # IR metrics table + 95% CI
 python -m gth cv --folds 5                           # cross-validated config selection
+python -m gth ncv                                    # nested CV — publish-safe estimate
 python -m gth tune                                   # BM25 grid search
 python -m gth score --file me.json                   # score your own record
-python -m unittest discover -s tests                 # 20 tests, zero deps
+python -m unittest discover -s tests                 # 23 tests, zero deps
 ```
 
 Optional dense backend:
@@ -284,6 +315,8 @@ tests/             # 20 unittest cases (stdlib)
 - [x] RM3 relevance-model expansion + MMR diversity re-ranking + optional cross-encoder
 - [x] Evaluation harness: Recall/Prec/MRR/nDCG/MAP, bootstrap CI, per-query, grid-search tuner
 - [x] Expand the gold set to 39 queries; add 5-fold cross-validation and let it pick the default
+- [x] Nested cross-validation (hyperparameters tuned per-fold) — confirms the same 0.578 nDCG@10, no leakage
+- [x] Write up the methodology as a proper paper (`PAPER.md`) with related work and citations
 - [ ] Expand the gold set further (~60–80 queries) and re-run CV to see if the char-ngram win holds
 - [ ] Learned fusion weights (logistic / LambdaMART) instead of grid-searched constants
 - [ ] `gth serve-api` (FastAPI) exposing `/score`, `/similar`, `/ask`, `/eval`, `/cv`

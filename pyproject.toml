@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gth-benchmark"
-version = "1.3.0"
+version = "1.4.0"
 description = "Open, reproducible at-selection benchmark of every Glocal Teen Hero (Nepal) honoree, with a RAG retrieval layer over the corpus."
 readme = "README.md"
 requires-python = ">=3.9"

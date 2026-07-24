@@ -22,7 +22,7 @@ from .retrieval import (
 from .rag import build_index, similar, ask
 from . import eval as evaluation
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 __all__ = [
     "Corpus", "Hero", "load", "WEIGHTS", "LABELS", "DIMENSIONS", "weighted_total",
     "rank_all", "cohort_stats", "percentile_vs", "rank_of", "verdict",

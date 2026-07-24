@@ -1,4 +1,4 @@
-.PHONY: help test eval tune cv rank stats ask similar build serve
+.PHONY: help test eval tune cv ncv rank stats ask similar build serve
 help:            ## show targets
 	@grep -E '^[a-z].*:.*##' Makefile | sed 's/:.*##/ —/'
 test:            ## run the unit tests (stdlib, zero deps)
@@ -9,6 +9,8 @@ tune:            ## grid-search BM25 params on the gold set
 	python3 -m gth tune
 cv:              ## k-fold cross-validated config selection (proves generalization)
 	python3 -m gth cv
+ncv:             ## nested CV (hyperparams tuned in-fold, publish-safe estimate)
+	python3 -m gth ncv
 rank:            ## print the at-selection ranking
 	python3 -m gth rank --top 20
 stats:           ## cohort statistics by tier

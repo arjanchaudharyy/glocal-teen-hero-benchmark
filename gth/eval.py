@@ -212,6 +212,46 @@ def bootstrap_ci(values, n=2000, seed=0, alpha=0.05):
     return (means[int(alpha / 2 * n)], means[int((1 - alpha / 2) * n)])
 
 
+def paired_bootstrap_diff(a_values, b_values, n=5000, seed=0, alpha=0.05):
+    """95% CI on mean(a) - mean(b), resampling QUERY INDICES jointly (not each
+    list independently) since both configs are scored on the same queries.
+    The correct test for 'does config A beat config B', as opposed to two
+    separate bootstrap_ci calls that would ignore the pairing."""
+    assert len(a_values) == len(b_values)
+    m = len(a_values)
+    diffs = [a - b for a, b in zip(a_values, b_values)]
+    mean_diff = sum(diffs) / m if m else 0.0
+    rnd = random.Random(seed)
+    boot = []
+    for _ in range(n):
+        idxs = [rnd.randrange(m) for _ in range(m)]
+        boot.append(sum(diffs[i] for i in idxs) / m)
+    boot.sort()
+    lo, hi = boot[int(alpha / 2 * n)], boot[int((1 - alpha / 2) * n)]
+    return {"mean_diff": mean_diff, "ci": (lo, hi), "significant": lo > 0 or hi < 0}
+
+
+def significance(corpus=None, k=10, name_a="char-ngram", name_b="hybrid+rm3+mmr"):
+    """Paired bootstrap significance test between two named CONFIGS rows."""
+    corpus = corpus or load()
+    cfg_a = dict(next(c for n, c in CONFIGS if n == name_a))
+    cfg_b = dict(next(c for n, c in CONFIGS if n == name_b))
+    idx = HybridRetriever(corpus)
+    a = evaluate(idx, corpus, cfg_a, k)["_ndcg_list"]
+    b = evaluate(idx, corpus, cfg_b, k)["_ndcg_list"]
+    result = paired_bootstrap_diff(a, b)
+    print(f"\nPAIRED SIGNIFICANCE TEST  ·  {name_a}  vs.  {name_b}  ·  nDCG@{k}  ·  n={len(a)}")
+    print("=" * 68)
+    print(f"  mean({name_a}) = {sum(a)/len(a):.4f}")
+    print(f"  mean({name_b}) = {sum(b)/len(b):.4f}")
+    print(f"  mean difference = {result['mean_diff']:+.4f}")
+    lo, hi = result["ci"]
+    print(f"  95% CI on the difference (paired bootstrap, n=5000) = [{lo:+.4f}, {hi:+.4f}]")
+    verdict = "statistically significant" if result["significant"] else "NOT statistically significant"
+    print(f"  -> {verdict} at alpha=0.05 (n={len(a)} queries)")
+    return result
+
+
 def run(corpus=None, k=10, per_query=False):
     corpus = corpus or load()
     index = HybridRetriever(corpus)
@@ -279,6 +319,81 @@ def _folds(n_folds: int, gold=None):
     """Deterministic, non-contiguous k-fold split by index striping (no randomness)."""
     gold = GOLD if gold is None else gold
     return [[q for i, q in enumerate(gold) if i % n_folds == f] for f in range(n_folds)]
+
+
+# Grids searched INSIDE nested_cross_validate — never fit on the full 39-query
+# set, so the reported held-out score carries no tuning leakage at all. (The
+# CV_CANDIDATES weights above, e.g. char=0.3, WERE originally picked from a
+# manual sweep on the full gold set — fine for `cross_validate`'s apples-to-
+# apples comparison of named strategies, but not a clean generalization bound
+# on hyperparameter selection. Nested CV re-derives them from scratch per fold.)
+_BM25_GRID = [(k1, b) for k1 in (1.0, 1.5, 2.0) for b in (0.4, 0.6, 0.75)]
+_CHAR_WEIGHT_GRID = (0.0, 0.3, 0.5, 0.7, 1.0)
+
+
+def _inner_select(corpus, train_gold, k, n_inner):
+    """Grid-search BM25 (k1,b) x char-fusion-weight, plus every plain single
+    retriever, using ONLY an inner k-fold split of train_gold. Returns the
+    winning (name, cfg, weights, k1, b) by mean inner-fold nDCG@k."""
+    inner_folds = _folds(n_inner, train_gold)
+
+    def inner_ndcg(cfg, weights, k1, b):
+        idx = HybridRetriever(corpus, bm25_k1=k1, bm25_b=b)
+        idx.weights.update(weights)
+        scores = []
+        for i in range(n_inner):
+            val = inner_folds[i]
+            if not val:
+                continue
+            scores.append(evaluate(idx, corpus, cfg, k, gold=val)["ndcg"])
+        return sum(scores) / len(scores) if scores else 0.0
+
+    best = None
+    for name, methods in (("tfidf", ["tfidf"]), ("bm25", ["bm25"]), ("qlm", ["qlm"]), ("char", ["char"])):
+        cfg = dict(methods=methods, expand=None, rerank=None)
+        score = inner_ndcg(cfg, {}, 1.5, 0.4)  # bm25/b only matter for the "bm25" row
+        if best is None or score > best[0]:
+            best = (score, name, cfg, {}, 1.5, 0.4)
+    cfg = dict(methods=_HYBRID, fusion="rrf", expand="rm3", rerank="mmr")
+    for k1, b in _BM25_GRID:
+        for w in _CHAR_WEIGHT_GRID:
+            score = inner_ndcg(cfg, {"char": w}, k1, b)
+            if score > best[0]:
+                best = (score, f"hybrid+rm3+mmr(k1={k1},b={b},w={w})", cfg, {"char": w}, k1, b)
+    return best
+
+
+def nested_cross_validate(corpus=None, k=10, n_outer=5, n_inner=4):
+    """Nested k-fold CV: hyperparameters (BM25 k1/b, char fusion weight) are
+    grid-searched INSIDE each outer training fold via an inner CV split, never
+    touching the outer test fold and never fit on the full gold set. This is
+    the unbiased generalization estimate — the number safe to publish, since
+    `cross_validate`'s weight grid was itself picked by eyeballing the full set.
+    """
+    corpus = corpus or load()
+    folds = _folds(n_outer, GOLD)
+    print(f"\nNESTED {n_outer}x{n_inner}-FOLD CROSS-VALIDATION  ·  {len(GOLD)} queries  ·  k={k}")
+    print("=" * 68)
+    winners, held_out = [], []
+    for f in range(n_outer):
+        test_gold = folds[f]
+        train_gold = [q for i, fold in enumerate(folds) if i != f for q in fold]
+        inner_score, name, cfg, weights, k1, b = _inner_select(corpus, train_gold, k, n_inner)
+        idx = HybridRetriever(corpus, bm25_k1=k1, bm25_b=b)
+        idx.weights.update(weights)
+        test_m = evaluate(idx, corpus, cfg, k, gold=test_gold)
+        winners.append(name)
+        held_out.append(test_m["ndcg"])
+        print(f"  fold {f+1}/{n_outer}: inner-selected={name:<30} inner_nDCG={inner_score:.3f}"
+              f"  ->  held-out nDCG={test_m['ndcg']:.3f}  (n={len(test_gold)})")
+    avg = sum(held_out) / len(held_out)
+    lo, hi = bootstrap_ci(held_out)
+    print("-" * 68)
+    from collections import Counter as _C
+    families = _C(w.split("(")[0] for w in winners)
+    print(f"  winning family per fold: {dict(families)}")
+    print(f"  nested cross-validated nDCG@{k} = {avg:.3f}  (95% CI {lo:.3f}–{hi:.3f} over folds)")
+    return {"folds": winners, "held_out_ndcg": held_out, "mean": avg, "ci": (lo, hi)}
 
 
 def cross_validate(corpus=None, k=10, n_folds=5):
