@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gth-corpus"
-version = "1.7.1"
+version = "1.8.0"
 description = "Open, reproducible corpus of every Glocal Teen Hero (Nepal) honoree, with a documented at-selection scoring rubric and an included IR retrieval benchmark over the corpus."
 readme = "README.md"
 requires-python = ">=3.9"

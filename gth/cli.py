@@ -3,7 +3,7 @@ Command-line interface.
 
     python -m gth rank [--tier winner|finalist|20under20] [--top N]
     python -m gth stats
-    python -m gth similar "Aarjan Chaudhary" [--k 5] [--hybrid]
+    python -m gth similar "Aarjan Chaudhary" [--year 2026] [--k 5] [--hybrid]
     python -m gth ask "who worked on menstrual health?" [--k 5] [--hybrid]
     python -m gth eval [--per-query]             # Recall/Prec/MRR/nDCG/MAP + bootstrap CI
     python -m gth cv [--folds 5]                 # k-fold cross-validated config selection
@@ -51,7 +51,7 @@ def _cmd_stats(a: argparse.Namespace) -> None:
 
 
 def _cmd_similar(a: argparse.Namespace) -> None:
-    for r in similar(a.name, k=a.k, hybrid=a.hybrid):
+    for r in similar(a.name, year=a.year, k=a.k, hybrid=a.hybrid):
         prov = ",".join(f"{m}#{rk}" for m, rk in sorted(r.sources.items()))
         print(f"{r.score:>8}  {r.hero.name} ({r.hero.year}, {r.hero.award}) [{prov}] - {r.hero.then[:80]}")
 
@@ -123,6 +123,7 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     s = sub.add_parser("similar")
     s.add_argument("name")
+    s.add_argument("--year", type=int, default=None, help="disambiguate if `name` matches multiple honorees")
     s.add_argument("--k", type=int, default=5)
     s.add_argument("--hybrid", action="store_true", help=_HYBRID_HELP)
     s.set_defaults(fn=_cmd_similar)

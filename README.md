@@ -4,7 +4,7 @@
 
 **An open dataset of every Glocal Teen Hero (Nepal) honoree, 2015-2025, scored on the record they held at selection via a documented rubric, with a small retrieval benchmark over the same corpus.**
 
-[![CI](https://github.com/arjanchaudharyy/glocal-teen-hero-corpus/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml) [![tests](https://img.shields.io/badge/tests-43%20passing-2f7d54)](tests/) [![python](https://img.shields.io/badge/python-3.9%2B-16233e)](pyproject.toml) [![core deps](https://img.shields.io/badge/core%20deps-0-16233e)](pyproject.toml) [![types](https://img.shields.io/badge/mypy%20--strict-clean-16233e)](pyproject.toml) [![license](https://img.shields.io/badge/license-MIT-b3906a)](LICENSE)
+[![CI](https://github.com/arjanchaudharyy/glocal-teen-hero-corpus/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml) [![tests](https://img.shields.io/badge/tests-48%20passing-2f7d54)](tests/) [![python](https://img.shields.io/badge/python-3.9%2B-16233e)](pyproject.toml) [![core deps](https://img.shields.io/badge/core%20deps-0-16233e)](pyproject.toml) [![types](https://img.shields.io/badge/mypy%20--strict-clean-16233e)](pyproject.toml) [![license](https://img.shields.io/badge/license-MIT-b3906a)](LICENSE)
 
 [Live tool](https://arjanchaudharyy.github.io/glocal-teen-hero-corpus/) · [Paper](PAPER.md) · [Dataset card](DATA_CARD.md) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
 
@@ -49,7 +49,7 @@ Seven weighted dimensions (`gth/rubric.py`): social impact (.20), leadership (.2
 
 ## Code quality
 
-CI (`.github/workflows/ci.yml`) runs on Python 3.9, 3.11, and 3.12 for every push: `ruff` (lint), `mypy` (type-check, zero suppressions), the 43-test suite, and a full `build.py` regeneration. All four run clean, and are what a PR is expected to pass (see [CONTRIBUTING.md](CONTRIBUTING.md)). None of this existed for most of this project's life; the gaps it caught along the way (a wrong median formula for even-length cohorts, a cache keyed by `id()` that could return stale results after garbage collection, a query path that silently padded results with irrelevant zero-score documents, a `mmr()` implementation that was the dominant cost, over 80% of wall time, in every cross-validation run) are in [CHANGELOG.md](CHANGELOG.md).
+CI (`.github/workflows/ci.yml`) runs on Python 3.9, 3.11, and 3.12 for every push: `ruff` (lint), `mypy` (type-check, zero suppressions), the 48-test suite, and a full `build.py` regeneration. All four run clean, and are what a PR is expected to pass (see [CONTRIBUTING.md](CONTRIBUTING.md)). None of this existed for most of this project's life; the gaps it caught along the way (a wrong median formula for even-length cohorts, a cache keyed by `id()` that could return stale results after garbage collection, a query path that silently padded results with irrelevant zero-score documents, a `mmr()` implementation that was the dominant cost, over 80% of wall time, in every cross-validation run, a name lookup that could silently resolve to the wrong honoree on a name collision) are in [CHANGELOG.md](CHANGELOG.md).
 
 ## Layout
 
@@ -65,7 +65,7 @@ gth/
 build.py            # regenerates data/heroes.json + corpus.js from the scored roster
 data/heroes.json     # the corpus
 index.html           # the web app (loads corpus.js, no hardcoded duplicates)
-tests/               # 43 unittest cases
+tests/               # 48 unittest cases
 .github/workflows/   # CI: lint, type-check, build, test
 ```
 

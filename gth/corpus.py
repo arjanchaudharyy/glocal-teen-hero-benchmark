@@ -18,6 +18,10 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 _DATA = os.path.join(os.path.dirname(_HERE), "data", "heroes.json")
 
 
+class AmbiguousHeroError(LookupError):
+    """Raised by Corpus.get() when a name with no year matches more than one hero."""
+
+
 @dataclass(frozen=True)
 class Hero:
     name: str
@@ -80,10 +84,21 @@ class Corpus:
         return next((h for h in self.heroes if h.me), None)
 
     def get(self, name: str, year: int | None = None) -> Hero | None:
+        """Look up a hero by name. With `year`, this is an unambiguous O(1)
+        lookup. Without it, a name matching more than one hero (distinct
+        people who share a name, or the same person across multiple years)
+        raises AmbiguousHeroError rather than silently returning an arbitrary
+        match - callers that hit this must pass `year` to disambiguate."""
         if year is not None:
             return self._by_name_year.get((name.lower(), year))
         lname = name.lower()
-        return next((h for h in self.heroes if h.name.lower() == lname), None)
+        matches = [h for h in self.heroes if h.name.lower() == lname]
+        if len(matches) > 1:
+            years = sorted(h.year for h in matches)
+            raise AmbiguousHeroError(
+                f"{name!r} matches {len(matches)} honorees (years {years}); pass year= to disambiguate"
+            )
+        return matches[0] if matches else None
 
 
 @lru_cache(maxsize=1)

@@ -2,6 +2,45 @@
 
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 1.8.0
+
+A third audit pass, this one focused on the corpus itself rather than the
+retrieval code. It confirmed a real correctness gap and a real data-quality
+gap, and separated a third candidate finding that turned out not to be one:
+
+- **Real bug**: `Corpus.get(name)` with no `year` resolved a name matching
+  more than one honoree to an arbitrary first match, with no signal a
+  collision had occurred. No two current honorees happen to share a name, so
+  this was latent, not yet triggered. Fixed: `get()` now raises
+  `AmbiguousHeroError` (a `LookupError`) when a bare name is ambiguous;
+  callers must pass `year`. `similar()` and `python -m gth similar` now
+  accept `--year` to disambiguate.
+- **Real data-quality gap, not previously checked for**: `build.py` had no
+  way to detect honorees sharing identical `then` bio text. Added
+  `find_duplicate_bios()`, run on every build; it currently reports 14
+  honorees across 5 exact-duplicate clusters ("Social activist honoree" x5
+  and others). This does not fail the build (a generic descriptor is
+  sometimes the genuine limit of what's on record for a low-footprint
+  honoree), but it's now impossible for a new duplicate to be introduced
+  silently. Documented in `DATA_CARD.md`, along with the fact that
+  per-dimension scores differ across honorees who share identical bio text
+  with no recorded basis for the difference, and that none of the 14
+  currently appear in any `gth/eval.py` gold query.
+- **Considered and rejected**: adding a minimum-confidence floor to
+  `HybridRetriever.query()` so it can refuse to answer instead of always
+  returning a ranked top-k. Not implemented, because no held-out metric
+  (Recall@k/Precision@k/MRR/nDCG/MAP) was shown to improve from it, and
+  classical IR systems returning ranked results for every query is normal,
+  not a defect on its own. If this gets revisited, it needs a cross-validated
+  improvement on a real metric first, per `CONTRIBUTING.md`'s existing rule
+  for anything added to `gth/retrieval.py`.
+- **Considered and rejected**: "fixing" the 2015-2016 `20under20` tier gap
+  (6 and 5 honorees vs. 21/year from 2017 on). This reflects the award's own
+  history; fabricating honorees to normalize it would be a worse defect than
+  the imbalance itself. Documented in `DATA_CARD.md` as a known, permanent
+  asymmetry instead.
+- Test suite: 43 → 48 tests.
+
 ## 1.7.1
 
 A second audit pass over 1.7.0, specifically looking for anything the first

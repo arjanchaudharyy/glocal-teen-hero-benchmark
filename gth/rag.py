@@ -41,11 +41,13 @@ def _hybrid_kwargs(index: HybridRetriever) -> dict[str, Any]:
     return dict(methods=index.full_hybrid_methods, fusion="rrf", expand="rm3", rerank="mmr")
 
 
-def similar(name: str, k: int = 5, corpus: Corpus | None = None,
+def similar(name: str, year: int | None = None, k: int = 5, corpus: Corpus | None = None,
             index: HybridRetriever | None = None, hybrid: bool = False, **kw: Any) -> list[Retrieval]:
+    """Nearest honorees to `name`. Pass `year` if `name` matches more than one
+    honoree (Corpus.get raises AmbiguousHeroError otherwise)."""
     corpus = corpus or load()
     index = index or build_index(corpus)
-    hero = corpus.get(name)
+    hero = corpus.get(name, year)
     if hero is None:
         raise KeyError(f"no honoree matching {name!r}")
     if hybrid:

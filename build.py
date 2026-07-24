@@ -271,6 +271,25 @@ for line in DATA.strip().splitlines():
         "me": tier == "Applicant", "est": conf == "low",
     })
 
+def find_duplicate_bios(heroes: list[dict[str, Any]]) -> dict[str, list[str]]:
+    """Group honorees whose `then` (at-selection bio) text is byte-identical.
+    A shared generic descriptor ("Social activist honoree") means the
+    retrieval corpus cannot distinguish those honorees from each other; this
+    doesn't fail the build (some low-footprint honorees genuinely have
+    nothing more specific on record), but it must not go unnoticed."""
+    by_text: dict[str, list[str]] = {}
+    for h in heroes:
+        by_text.setdefault(h["then"], []).append(f"{h['name']} ({h['year']})")
+    return {text: names for text, names in by_text.items() if len(names) > 1}
+
+
+dupe_bios = find_duplicate_bios(heroes)
+if dupe_bios:
+    total = sum(len(names) for names in dupe_bios.values())
+    print(f"WARNING: {total} honorees share a non-unique bio ({len(dupe_bios)} clusters):")
+    for text, names in dupe_bios.items():
+        print(f"  {text!r}: {', '.join(names)}")
+
 out = {
     "rubric": RUBRIC,
     "note": ("AT-SELECTION rubric: each person scored on the record they held when they "

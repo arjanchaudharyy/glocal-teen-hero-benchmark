@@ -20,7 +20,7 @@ available (`hybrid=True`); it just does not win the honest comparison, so
 it is not the default.
 """
 from . import eval as evaluation
-from .corpus import Corpus, Hero, load
+from .corpus import AmbiguousHeroError, Corpus, Hero, load
 from .eval import Metrics
 from .rag import ask, build_index, similar
 from .retrieval import (
@@ -38,9 +38,9 @@ from .retrieval import (
 from .rubric import DIMENSIONS, LABELS, WEIGHTS, weighted_total
 from .scoring import cohort_stats, percentile_vs, rank_all, rank_of, verdict
 
-__version__ = "1.7.1"
+__version__ = "1.8.0"
 __all__ = [
-    "Corpus", "Hero", "load", "WEIGHTS", "LABELS", "DIMENSIONS", "weighted_total",
+    "Corpus", "Hero", "load", "AmbiguousHeroError", "WEIGHTS", "LABELS", "DIMENSIONS", "weighted_total",
     "rank_all", "cohort_stats", "percentile_vs", "rank_of", "verdict",
     "HybridRetriever", "TfidfIndex", "BM25Index", "CharNGramIndex", "Retrieval",
     "reciprocal_rank_fusion", "mmr", "rm3", "tokenize", "char_ngrams",

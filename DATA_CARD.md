@@ -35,6 +35,30 @@ honorees receive conservative estimates flagged `est=true`.
 - `now` notes are provided for context and are **excluded** from all scoring.
 - All labels are from a single annotator (this project's author). No
   independent inter-rater check has been performed.
+- The `20under20` tier has no honorees at all for 2015-2016 (21 honorees/year
+  from 2017 on; 6 and 5 respectively for 2015/2016). This reflects the
+  award's own history, not a data-quality gap, and is **not** a normalization
+  target: filling it in would fabricate honorees that did not exist. Any
+  year-over-year comparison should account for this asymmetry rather than
+  treat 2015-2016 as directly comparable cohorts.
+- 14 honorees (7.3% of the corpus) share one of 5 exact-duplicate one-line
+  `then` bios ("Social activist honoree" x5, "Innovator honoree" x3, "Coder
+  honoree" x2, "Technology honoree" x2, "Child-rights (Nepalgunj)" x2) -
+  `build.py` now prints a warning listing every such cluster on each rebuild
+  (`find_duplicate_bios`), though it does not fail the build, since a generic
+  descriptor is sometimes the genuine limit of what's on record for a
+  low-footprint honoree. These honorees are textually indistinguishable to
+  every retriever in `gth/retrieval.py`.
+- Within those clusters, per-dimension rubric scores differ across honorees
+  who share identical bio text, and nothing in the schema (no per-dimension
+  notes or citation field) records a reason. This should be read as
+  unverifiable, not as evidence of additional research: there is no
+  recorded basis in this repository for treating those differences as
+  meaningful rather than noise in a coarse 0-5 heuristic estimate.
+- None of those 14 honorees appear as a relevant result for any of the 39
+  `gth/eval.py` gold queries, so the retrieval benchmark's reported metrics
+  never exercise the one scenario where lexical retrieval would most
+  obviously fail (disambiguating honorees with identical text).
 
 ## Retrieval evaluation labels (`gth/eval.py`)
 A separate hand-labeled set of **39 topical queries**, each mapped to the

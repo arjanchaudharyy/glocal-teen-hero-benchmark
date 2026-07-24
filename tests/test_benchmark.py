@@ -1,3 +1,4 @@
+import json
 import math
 import subprocess
 import sys
@@ -5,6 +6,7 @@ import unittest
 from pathlib import Path
 
 from gth import (
+    AmbiguousHeroError,
     BM25Index,
     Corpus,
     Hero,
@@ -79,6 +81,33 @@ class TestCorpus(unittest.TestCase):
     def test_no_duplicate_name_year_keys(self):
         keys = [(h.name.lower(), h.year) for h in self.c]
         self.assertEqual(len(keys), len(set(keys)))
+
+    def test_get_ambiguous_name_without_year_raises(self):
+        # Corpus.get() used to silently return the first list match on a
+        # name collision with no year, with no signal that a collision even
+        # occurred. No two current honorees share a name, so this is
+        # exercised against an ad hoc corpus rather than the real one.
+        c = Corpus(heroes=[
+            Hero(name="Same Name", year=2018, award="Winner",
+                 scores={d: 3 for d in DIMENSIONS}, conf="high", then="a", now=""),
+            Hero(name="Same Name", year=2021, award="Finalist",
+                 scores={d: 3 for d in DIMENSIONS}, conf="high", then="b", now=""),
+        ], rubric={})
+        with self.assertRaises(AmbiguousHeroError):
+            c.get("Same Name")
+        self.assertIsNotNone(c.get("Same Name", 2018))
+
+    def test_get_ambiguous_name_error_lists_years(self):
+        c = Corpus(heroes=[
+            Hero(name="Same Name", year=2018, award="Winner",
+                 scores={d: 3 for d in DIMENSIONS}, conf="high", then="a", now=""),
+            Hero(name="Same Name", year=2021, award="Finalist",
+                 scores={d: 3 for d in DIMENSIONS}, conf="high", then="b", now=""),
+        ], rubric={})
+        with self.assertRaises(AmbiguousHeroError) as ctx:
+            c.get("Same Name")
+        self.assertIn("2018", str(ctx.exception))
+        self.assertIn("2021", str(ctx.exception))
 
 
 class TestScoring(unittest.TestCase):
@@ -296,6 +325,30 @@ class TestBuildScript(unittest.TestCase):
     def test_parser_skips_malformed_rows(self):
         d = self.build.parse_socials("li=https://a;bad;x=https://b")
         self.assertEqual(d, {"li": "https://a", "x": "https://b"})
+
+    def test_find_duplicate_bios_groups_identical_then_text(self):
+        heroes = [
+            {"name": "A", "year": 2020, "then": "Social activist honoree"},
+            {"name": "B", "year": 2021, "then": "Social activist honoree"},
+            {"name": "C", "year": 2022, "then": "Built a specific, unique thing"},
+        ]
+        dupes = self.build.find_duplicate_bios(heroes)
+        self.assertEqual(dupes, {"Social activist honoree": ["A (2020)", "B (2021)"]})
+
+    def test_find_duplicate_bios_empty_when_all_unique(self):
+        heroes = [{"name": "A", "year": 2020, "then": "one thing"},
+                  {"name": "B", "year": 2021, "then": "another thing"}]
+        self.assertEqual(self.build.find_duplicate_bios(heroes), {})
+
+    def test_shipped_corpus_duplicate_bio_clusters_are_known(self):
+        # Documents the current, audited state (see DATA_CARD.md) rather than
+        # asserting it should be zero: some low-footprint honorees genuinely
+        # have nothing more specific on record. This test exists so that if
+        # a *new* duplicate cluster is introduced, it fails loudly instead of
+        # silently growing the count.
+        heroes = json.loads((REPO_ROOT / "data" / "heroes.json").read_text())["heroes"]
+        dupes = self.build.find_duplicate_bios(heroes)
+        self.assertEqual(sum(len(v) for v in dupes.values()), 14)
 
     def test_regenerated_corpus_matches_shipped_data(self):
         result = subprocess.run(
