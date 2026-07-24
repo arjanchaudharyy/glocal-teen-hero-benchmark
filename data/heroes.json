@@ -32,7 +32,7 @@
    }
   }
  },
- "generated_note": "Winners + Arjan + Nishant Raj Sarraf hand-scored from public records (est=false). All other honorees scored by the documented tier+field heuristic in build.py (est=true) \u2014 modeled estimates, not per-person research.",
+ "generated_note": "Only the 11 winners + the applicant are hand-scored from public records (est=false). Every other honoree (finalists + 20under20) is scored by the documented, deliberately-conservative tier+field heuristic in build.py (est=true) \u2014 modeled estimates, not per-person research, and intentionally kept below the verified winners.",
  "heroes": [
   {
    "name": "Bipana Sharma",
@@ -269,28 +269,6 @@
    "me": false
   },
   {
-   "name": "Nishant Raj Sarraf",
-   "year": 2025,
-   "ed": "Nepal",
-   "award": "20under20",
-   "field": "",
-   "sum": "AI researcher; founder of RedPaper (youth legal-tech); Stanford iGEM remote research fellow building AI for early autism detection via speech.",
-   "s": {
-    "social_impact": 4,
-    "leadership": 4,
-    "innovation": 5,
-    "entrepreneurship": 4,
-    "recognition": 4,
-    "glocal_fit": 4,
-    "character": 4
-   },
-   "est": false,
-   "links": {
-    "web": "https://polygence.org/scholars/nishant-raj-sarraf"
-   },
-   "me": false
-  },
-  {
    "name": "Aarjan Chaudhary",
    "year": 2026,
    "ed": "Nepal",
@@ -322,13 +300,13 @@
    "home": "",
    "sum": "Documentary",
    "s": {
-    "social_impact": 3.6,
-    "leadership": 3.3,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 4.1,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.0,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 3.4,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -342,13 +320,13 @@
    "home": "",
    "sum": "Entrepreneur",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 3.9,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.0,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 3.3,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -362,13 +340,13 @@
    "home": "",
    "sum": "App developer",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.3,
-    "innovation": 3.8,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.0,
+    "leadership": 3.0,
+    "innovation": 3.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -382,13 +360,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -402,13 +380,13 @@
    "home": "",
    "sum": "Writer",
    "s": {
-    "social_impact": 3.6,
-    "leadership": 3.3,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 4.1,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.0,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 3.4,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -422,13 +400,13 @@
    "home": "",
    "sum": "Social",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -442,13 +420,13 @@
    "home": "",
    "sum": "Child rights",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -462,13 +440,13 @@
    "home": "",
    "sum": "Journalism",
    "s": {
-    "social_impact": 3.6,
-    "leadership": 3.3,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 4.1,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.0,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 3.4,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -482,13 +460,13 @@
    "home": "",
    "sum": "Poetry",
    "s": {
-    "social_impact": 3.6,
-    "leadership": 3.3,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 4.1,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.0,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 3.4,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -502,13 +480,13 @@
    "home": "Inaruwa",
    "sum": "Social activist \u00b7 Inaruwa",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -522,13 +500,13 @@
    "home": "",
    "sum": "Coder",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -542,13 +520,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -562,13 +540,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -582,13 +560,13 @@
    "home": "",
    "sum": "Technology",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -602,13 +580,13 @@
    "home": "",
    "sum": "Child activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -622,13 +600,13 @@
    "home": "",
    "sum": "Innovator",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -642,13 +620,13 @@
    "home": "",
    "sum": "Sports",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -662,13 +640,13 @@
    "home": "",
    "sum": "Coder",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -682,13 +660,13 @@
    "home": "",
    "sum": "Environmentalist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -702,13 +680,13 @@
    "home": "",
    "sum": "App developer",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -722,13 +700,13 @@
    "home": "",
    "sum": "Entrepreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -742,13 +720,13 @@
    "home": "",
    "sum": "Innovator",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -762,13 +740,13 @@
    "home": "",
    "sum": "Technology",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -782,13 +760,13 @@
    "home": "",
    "sum": "Child activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -802,13 +780,13 @@
    "home": "",
    "sum": "Journalist",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 3.8,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 3.2,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -822,13 +800,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -842,13 +820,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -862,13 +840,13 @@
    "home": "",
    "sum": "Innovator",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -882,13 +860,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -902,13 +880,13 @@
    "home": "",
    "sum": "Technology",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -922,13 +900,13 @@
    "home": "",
    "sum": "Entrepreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -942,13 +920,13 @@
    "home": "",
    "sum": "Technology",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -962,13 +940,13 @@
    "home": "",
    "sum": "Technology",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -982,13 +960,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1002,13 +980,13 @@
    "home": "",
    "sum": "Innovator",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1022,13 +1000,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1042,13 +1020,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1062,13 +1040,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1082,13 +1060,13 @@
    "home": "",
    "sum": "Coder",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1102,13 +1080,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1122,13 +1100,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1142,13 +1120,13 @@
    "home": "",
    "sum": "Coder",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1162,13 +1140,13 @@
    "home": "",
    "sum": "Technology",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1182,13 +1160,13 @@
    "home": "",
    "sum": "Entrepreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1202,13 +1180,13 @@
    "home": "",
    "sum": "Ecopreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1222,13 +1200,13 @@
    "home": "",
    "sum": "Entrepreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1242,13 +1220,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1262,13 +1240,13 @@
    "home": "",
    "sum": "Child rights",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1282,13 +1260,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1302,13 +1280,13 @@
    "home": "",
    "sum": "Child rights",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1322,13 +1300,13 @@
    "home": "",
    "sum": "Entrepreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1342,13 +1320,13 @@
    "home": "",
    "sum": "Tech educator",
    "s": {
-    "social_impact": 3.4,
-    "leadership": 3.6,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1362,13 +1340,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1382,13 +1360,13 @@
    "home": "",
    "sum": "Wildlife conservation",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1402,13 +1380,13 @@
    "home": "",
    "sum": "Programmer",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1422,13 +1400,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1442,13 +1420,13 @@
    "home": "",
    "sum": "Innovator",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1462,13 +1440,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1482,13 +1460,13 @@
    "home": "",
    "sum": "Technopreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 3.5,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 3.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1502,13 +1480,13 @@
    "home": "",
    "sum": "Innovator",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1522,13 +1500,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1542,13 +1520,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1562,13 +1540,13 @@
    "home": "",
    "sum": "Journalist",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 3.8,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 3.2,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1582,13 +1560,13 @@
    "home": "",
    "sum": "Cyber security",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1602,13 +1580,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1622,13 +1600,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1642,13 +1620,13 @@
    "home": "Mahottari",
    "sum": "Technopreneur \u00b7 Mahottari",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 3.5,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 3.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1662,13 +1640,13 @@
    "home": "Rupandehi",
    "sum": "Technopreneur \u00b7 Rupandehi",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 3.5,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 3.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1682,13 +1660,13 @@
    "home": "Banke",
    "sum": "Child rights \u00b7 Banke",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1702,13 +1680,13 @@
    "home": "Kathmandu",
    "sum": "Child rights \u00b7 Kathmandu",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1722,13 +1700,13 @@
    "home": "Palpa",
    "sum": "Environmentalist \u00b7 Palpa",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1742,13 +1720,13 @@
    "home": "Lalitpur",
    "sum": "Entrepreneur \u00b7 Lalitpur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1762,13 +1740,13 @@
    "home": "Rupandehi",
    "sum": "Innovator \u00b7 Rupandehi",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1782,13 +1760,13 @@
    "home": "Jhapa",
    "sum": "Child rights \u00b7 Jhapa",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1802,13 +1780,13 @@
    "home": "Kailali",
    "sum": "Social activist \u00b7 Kailali",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1822,13 +1800,13 @@
    "home": "Morang",
    "sum": "Educator \u00b7 Morang",
    "s": {
-    "social_impact": 3.4,
-    "leadership": 3.6,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1842,13 +1820,13 @@
    "home": "Rupandehi",
    "sum": "Youth activist \u00b7 Rupandehi",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1862,13 +1840,13 @@
    "home": "Kathmandu",
    "sum": "Social activist \u00b7 Kathmandu",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1882,13 +1860,13 @@
    "home": "Jhapa",
    "sum": "Social activist \u00b7 Jhapa",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1902,13 +1880,13 @@
    "home": "Janakpur",
    "sum": "Coder \u00b7 Janakpur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1922,13 +1900,13 @@
    "home": "Ilam",
    "sum": "Innovator \u00b7 Ilam",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1942,13 +1920,13 @@
    "home": "Surkhet",
    "sum": "Environmentalist \u00b7 Surkhet",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1962,13 +1940,13 @@
    "home": "Lalitpur",
    "sum": "Programmer \u00b7 Lalitpur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -1982,13 +1960,13 @@
    "home": "Morang",
    "sum": "Entrepreneur \u00b7 Morang",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2002,13 +1980,13 @@
    "home": "Kathmandu",
    "sum": "Photographer \u00b7 Kathmandu",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 3.8,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 3.2,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2022,13 +2000,13 @@
    "home": "Pyuthan",
    "sum": "Engineering \u00b7 Pyuthan",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2042,13 +2020,13 @@
    "home": "Banke",
    "sum": "Child rights \u00b7 Banke",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2062,13 +2040,13 @@
    "home": "Sunsari",
    "sum": "Child rights \u00b7 Sunsari",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2082,13 +2060,13 @@
    "home": "Lalitpur",
    "sum": "Entrepreneur \u00b7 Lalitpur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2102,13 +2080,13 @@
    "home": "Nawalparasi",
    "sum": "Content creator \u00b7 Nawalparasi",
    "s": {
-    "social_impact": 3.6,
-    "leadership": 3.3,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 4.1,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.0,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 3.4,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2122,13 +2100,13 @@
    "home": "Saptari",
    "sum": "Social entrepreneur \u00b7 Saptari",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.9,
-    "innovation": 2.5,
-    "entrepreneurship": 3.9,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.6,
+    "innovation": 2.2,
+    "entrepreneurship": 3.3,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2142,13 +2120,13 @@
    "home": "Siraha",
    "sum": "Entrepreneur \u00b7 Siraha",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2162,13 +2140,13 @@
    "home": "Parbat",
    "sum": "Technopreneur \u00b7 Parbat",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 3.5,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 3.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2182,13 +2160,13 @@
    "home": "Jhapa",
    "sum": "Writer \u00b7 Jhapa",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 3.8,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 3.2,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2202,13 +2180,13 @@
    "home": "Chitwan",
    "sum": "Wildlife conservation \u00b7 Chitwan",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2222,13 +2200,13 @@
    "home": "Humla",
    "sum": "Social activist \u00b7 Humla",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2242,13 +2220,13 @@
    "home": "Kathmandu",
    "sum": "Social activist \u00b7 Kathmandu",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2262,13 +2240,13 @@
    "home": "Kailali",
    "sum": "Social activist \u00b7 Kailali",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2282,13 +2260,13 @@
    "home": "Bhaktapur",
    "sum": "Social entrepreneur \u00b7 Bhaktapur",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.6,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.3,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2302,13 +2280,13 @@
    "home": "Ilam",
    "sum": "Education activist \u00b7 Ilam",
    "s": {
-    "social_impact": 4.7,
-    "leadership": 4.2,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 4.2,
+    "leadership": 3.8,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2322,13 +2300,13 @@
    "home": "Lalitpur",
    "sum": "Environmentalist \u00b7 Lalitpur",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2342,13 +2320,13 @@
    "home": "Mahottari",
    "sum": "Filmmaker \u00b7 Mahottari",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 3.8,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 3.2,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2362,13 +2340,13 @@
    "home": "Nawalparasi",
    "sum": "Social activist \u00b7 Nawalparasi",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2382,13 +2360,13 @@
    "home": "Kaski",
    "sum": "Innovator \u00b7 Kaski",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2402,13 +2380,13 @@
    "home": "Rupandehi",
    "sum": "Tech activist \u00b7 Rupandehi",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2422,13 +2400,13 @@
    "home": "Dhanusha",
    "sum": "Edu-technologist \u00b7 Dhanusha",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.3,
-    "innovation": 3.8,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.0,
+    "leadership": 3.0,
+    "innovation": 3.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2442,13 +2420,13 @@
    "home": "Nuwakot",
    "sum": "Activist \u00b7 Nuwakot",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2462,13 +2440,13 @@
    "home": "Chitwan",
    "sum": "Filmmaker \u00b7 Chitwan",
    "s": {
-    "social_impact": 3.6,
-    "leadership": 3.3,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 4.1,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.0,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 3.4,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2482,13 +2460,13 @@
    "home": "Gorkha",
    "sum": "Social entrepreneur \u00b7 Gorkha",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.6,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.3,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2502,13 +2480,13 @@
    "home": "Dhanusha",
    "sum": "Education activist \u00b7 Dhanusha",
    "s": {
-    "social_impact": 4.4,
-    "leadership": 3.9,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.9,
+    "leadership": 3.5,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2522,13 +2500,13 @@
    "home": "Morang",
    "sum": "Women rights \u00b7 Morang",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2542,13 +2520,13 @@
    "home": "Mahottari",
    "sum": "Female education \u00b7 Mahottari",
    "s": {
-    "social_impact": 4.4,
-    "leadership": 3.9,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.9,
+    "leadership": 3.5,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2562,13 +2540,13 @@
    "home": "Morang",
    "sum": "Tech-intrapreneur \u00b7 Morang",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 3.5,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 3.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2582,13 +2560,13 @@
    "home": "Mahottari",
    "sum": "Technology \u00b7 Mahottari",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2602,13 +2580,13 @@
    "home": "Achham",
    "sum": "Ecopreneur \u00b7 Achham",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 3.9,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.0,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 3.3,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2622,13 +2600,13 @@
    "home": "Chitwan",
    "sum": "Social activist \u00b7 Chitwan",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2642,13 +2620,13 @@
    "home": "Dhanusha",
    "sum": "Tech educator \u00b7 Dhanusha",
    "s": {
-    "social_impact": 3.4,
-    "leadership": 3.6,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2662,13 +2640,13 @@
    "home": "Terhathum",
    "sum": "Stem education \u00b7 Terhathum",
    "s": {
-    "social_impact": 3.4,
-    "leadership": 3.6,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2682,13 +2660,13 @@
    "home": "Kathmandu",
    "sum": "Education \u00b7 Kathmandu",
    "s": {
-    "social_impact": 3.4,
-    "leadership": 3.6,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2702,13 +2680,13 @@
    "home": "Hetauda",
    "sum": "Artist \u00b7 Hetauda",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 3.8,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 3.2,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2722,13 +2700,13 @@
    "home": "Kathmandu",
    "sum": "Gender activist \u00b7 Kathmandu",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2742,13 +2720,13 @@
    "home": "Kathmandu",
    "sum": "Health activist \u00b7 Kathmandu",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2762,13 +2740,13 @@
    "home": "Morang",
    "sum": "Social activist \u00b7 Morang",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2782,13 +2760,13 @@
    "home": "",
    "sum": "Educator",
    "s": {
-    "social_impact": 3.7,
-    "leadership": 3.9,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.5,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2802,13 +2780,13 @@
    "home": "",
    "sum": "Social entrepreneur",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.9,
-    "innovation": 2.5,
-    "entrepreneurship": 3.9,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.6,
+    "innovation": 2.2,
+    "entrepreneurship": 3.3,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2822,13 +2800,13 @@
    "home": "",
    "sum": "Musician",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 3.8,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 3.2,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2842,13 +2820,13 @@
    "home": "",
    "sum": "Health activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2862,13 +2840,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2882,13 +2860,13 @@
    "home": "",
    "sum": "Writer",
    "s": {
-    "social_impact": 3.6,
-    "leadership": 3.3,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 4.1,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.0,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 3.4,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2902,13 +2880,13 @@
    "home": "",
    "sum": "Science",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.3,
-    "innovation": 3.8,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.0,
+    "leadership": 3.0,
+    "innovation": 3.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2922,13 +2900,13 @@
    "home": "",
    "sum": "Child rights",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2942,13 +2920,13 @@
    "home": "",
    "sum": "Mathematician",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -2962,13 +2940,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -2982,13 +2960,13 @@
    "home": "",
    "sum": "Technology",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3002,13 +2980,13 @@
    "home": "",
    "sum": "Environmentalist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3022,13 +3000,13 @@
    "home": "",
    "sum": "Health activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3042,13 +3020,13 @@
    "home": "",
    "sum": "Environmentalist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3062,13 +3040,13 @@
    "home": "",
    "sum": "Ai researcher",
    "s": {
-    "social_impact": 3.4,
-    "leadership": 3.6,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3082,13 +3060,13 @@
    "home": "",
    "sum": "Technology",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3102,13 +3080,13 @@
    "home": "",
    "sum": "Artist",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 3.8,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 3.2,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3122,13 +3100,13 @@
    "home": "",
    "sum": "Activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3142,13 +3120,13 @@
    "home": "",
    "sum": "Activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3162,13 +3140,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3182,13 +3160,13 @@
    "home": "Kapilvastu",
    "sum": "Tech education \u00b7 Kapilvastu",
    "s": {
-    "social_impact": 3.7,
-    "leadership": 3.9,
-    "innovation": 3.8,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.5,
+    "innovation": 3.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3202,13 +3180,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3222,13 +3200,13 @@
    "home": "",
    "sum": "It",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3242,13 +3220,13 @@
    "home": "",
    "sum": "Social activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3262,13 +3240,13 @@
    "home": "",
    "sum": "Entrepreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3282,13 +3260,13 @@
    "home": "",
    "sum": "Environment",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3302,13 +3280,13 @@
    "home": "",
    "sum": "Climate",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3322,13 +3300,13 @@
    "home": "",
    "sum": "Technology",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3342,13 +3320,13 @@
    "home": "Syangja",
    "sum": "Education \u00b7 Syangja",
    "s": {
-    "social_impact": 3.7,
-    "leadership": 3.9,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.3,
+    "leadership": 3.5,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3362,13 +3340,13 @@
    "home": "",
    "sum": "Technopreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 3.5,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 3.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3382,13 +3360,13 @@
    "home": "Jhapa",
    "sum": "Child rights \u00b7 Jhapa",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3402,13 +3380,13 @@
    "home": "Kaski",
    "sum": "Social activism \u00b7 Kaski",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3422,13 +3400,13 @@
    "home": "",
    "sum": "Stem activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3442,13 +3420,13 @@
    "home": "",
    "sum": "Ai",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3462,13 +3440,13 @@
    "home": "Parsa",
    "sum": "Tech \u00b7 Parsa",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.3,
-    "innovation": 3.8,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.0,
+    "leadership": 3.0,
+    "innovation": 3.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3482,13 +3460,13 @@
    "home": "",
    "sum": "Health activist",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3502,13 +3480,13 @@
    "home": "",
    "sum": "Entrepreneur",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3522,13 +3500,13 @@
    "home": "",
    "sum": "Innovator",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.0,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 2.7,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3542,13 +3520,13 @@
    "home": "Butwal",
    "sum": "Entrepreneur \u00b7 Butwal",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3562,13 +3540,13 @@
    "home": "Bajura",
    "sum": "Campaigner \u00b7 Bajura",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3582,13 +3560,33 @@
    "home": "Baglung",
    "sum": "Researcher \u00b7 Baglung",
    "s": {
-    "social_impact": 3.4,
-    "leadership": 3.6,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
+   },
+   "est": true,
+   "links": {}
+  },
+  {
+   "name": "Nishant Raj Sarraf",
+   "year": 2025,
+   "ed": "Nepal",
+   "award": "20under20",
+   "field": "AI researcher",
+   "home": "Birgunj",
+   "sum": "Ai researcher \u00b7 Birgunj",
+   "s": {
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
     "glocal_fit": 3.0,
-    "character": 3.4
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3602,13 +3600,13 @@
    "home": "Syangja",
    "sum": "Srhr advocate \u00b7 Syangja",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3622,13 +3620,13 @@
    "home": "Birgunj",
    "sum": "Entrepreneur \u00b7 Birgunj",
    "s": {
-    "social_impact": 3.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 2.7,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3642,13 +3640,13 @@
    "home": "Kapilvastu",
    "sum": "Climate justice \u00b7 Kapilvastu",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3662,13 +3660,13 @@
    "home": "Sunsari",
    "sum": "Child rights \u00b7 Sunsari",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3682,13 +3680,13 @@
    "home": "Jumla",
    "sum": "Policy advocate \u00b7 Jumla",
    "s": {
-    "social_impact": 4.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.3,
-    "character": 3.7
+    "social_impact": 3.9,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.0,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3702,13 +3700,13 @@
    "home": "Dolpo",
    "sum": "Documentary \u00b7 Dolpo",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.0,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 3.8,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 2.7,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 3.2,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3722,13 +3720,13 @@
    "home": "Jhapa",
    "sum": "Teen leadership \u00b7 Jhapa",
    "s": {
-    "social_impact": 3.4,
-    "leadership": 3.6,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3742,13 +3740,13 @@
    "home": "Butwal",
    "sum": "Stem educator \u00b7 Butwal",
    "s": {
-    "social_impact": 3.4,
-    "leadership": 3.6,
-    "innovation": 3.5,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.0,
+    "leadership": 3.2,
+    "innovation": 3.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3762,13 +3760,13 @@
    "home": "Sarlahi",
    "sum": "Agropreneur \u00b7 Sarlahi",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.6,
-    "innovation": 2.5,
-    "entrepreneurship": 3.9,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.0,
+    "leadership": 3.3,
+    "innovation": 2.2,
+    "entrepreneurship": 3.3,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3782,13 +3780,13 @@
    "home": "Nawalpur",
    "sum": "Peer educator \u00b7 Nawalpur",
    "s": {
-    "social_impact": 4.4,
-    "leadership": 3.9,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.9,
+    "leadership": 3.5,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3802,13 +3800,13 @@
    "home": "Kathmandu",
    "sum": "Menstrual health \u00b7 Kathmandu",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3822,13 +3820,13 @@
    "home": "Rupandehi",
    "sum": "Ai developer \u00b7 Rupandehi",
    "s": {
-    "social_impact": 3.3,
-    "leadership": 3.3,
-    "innovation": 3.8,
-    "entrepreneurship": 2.5,
-    "recognition": 3.0,
-    "glocal_fit": 3.7,
-    "character": 3.7
+    "social_impact": 3.0,
+    "leadership": 3.0,
+    "innovation": 3.2,
+    "entrepreneurship": 2.2,
+    "recognition": 2.5,
+    "glocal_fit": 3.3,
+    "character": 3.3
    },
    "est": true,
    "links": {}
@@ -3842,13 +3840,13 @@
    "home": "Chitwan",
    "sum": "Sdg activist \u00b7 Chitwan",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3862,13 +3860,13 @@
    "home": "Rupandehi",
    "sum": "Policy advocate \u00b7 Rupandehi",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.3,
-    "innovation": 2.2,
-    "entrepreneurship": 2.2,
-    "recognition": 2.7,
-    "glocal_fit": 3.0,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.0,
+    "innovation": 2.0,
+    "entrepreneurship": 2.0,
+    "recognition": 2.3,
+    "glocal_fit": 2.7,
+    "character": 3.0
    },
    "est": true,
    "links": {}
@@ -3882,13 +3880,13 @@
    "home": "Kapilvastu",
    "sum": "Social entrepreneur \u00b7 Kapilvastu",
    "s": {
-    "social_impact": 4.0,
-    "leadership": 3.6,
-    "innovation": 2.2,
-    "entrepreneurship": 3.6,
-    "recognition": 2.7,
-    "glocal_fit": 3.4,
-    "character": 3.4
+    "social_impact": 3.6,
+    "leadership": 3.3,
+    "innovation": 2.0,
+    "entrepreneurship": 3.1,
+    "recognition": 2.3,
+    "glocal_fit": 3.0,
+    "character": 3.0
    },
    "est": true,
    "links": {}

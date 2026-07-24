@@ -57,15 +57,12 @@ HAND = {
  ("Krish Yadav",2025):          (dict(social_impact=3,leadership=4,innovation=3,entrepreneurship=4,recognition=5,glocal_fit=3,character=4),
    "Content creator; Associate Creative Head at The Nepali Comment (405k+ subs); hosts TNC Debates (15.5k+); leads the Himalayan Linguistics Olympiad and youth-ed projects.",
    {"web":"https://youtube.com/@TheNepaliComment"}),
- ("Nishant Raj Sarraf",2025):   (dict(social_impact=4,leadership=4,innovation=5,entrepreneurship=4,recognition=4,glocal_fit=4,character=4),
-   "AI researcher; founder of RedPaper (youth legal-tech); Stanford iGEM remote research fellow building AI for early autism detection via speech.",
-   {"web":"https://polygence.org/scholars/nishant-raj-sarraf"}),
  ("Aarjan Chaudhary",2026):     (dict(social_impact=4,leadership=5,innovation=5,entrepreneurship=5,recognition=5,glocal_fit=5,character=5),
    "'Youngest Hacker of Nepal'; CVE-2025-51588; credited by Google, Twitch, EA, Stanford. Security engineer at Dench (YC S24); founder of kroda.ai ($20k+ LOIs) and Arniko Hack Club (400+ members, top-10 teen non-profit in Asia); ran Daydream (250+) and Campfire (150+); 1x exit.",
    {"web":"https://arjanchaudharyy.lol","x":"https://x.com/arjanchaudharyy"}),
 }
 
-WINNER_KEYS = set(HAND) - {("Nishant Raj Sarraf",2025),("Aarjan Chaudhary",2026)}
+WINNER_KEYS = set(HAND) - {("Aarjan Chaudhary",2026)}
 
 # ---- roster of the wider cohort: "name | year | edition | tier | field | home" ----
 # tier: finalist (top-6, non-winner) or 20under20. Winners live in HAND above.
@@ -90,7 +87,7 @@ Aryan Sigdel|2023|Nepal|finalist|educator|;Atith Adhikari|2023|Nepal|finalist|so
 # 2024 20under20 (+finalists)
 Aadesh Regmi|2024|Nepal|20under20|social activist|;Aashish Panthi|2024|Nepal|finalist|tech education|Kapilvastu;Aayushman Puri|2024|Nepal|20under20|social activist|;Aryan Basnet|2024|Nepal|20under20|IT|;Ashish Banjara|2024|Nepal|20under20|social activist|;Hangsam Nembang|2024|Nepal|20under20|entrepreneur|;Kaushal Niraula|2024|Nepal|20under20|environment|;Kishor Shahi|2024|Nepal|20under20|climate|;Krishtina Khanal|2024|Nepal|20under20|technology|;Nischal Bhattarai|2024|Nepal|finalist|education|Syangja;Prashim Timsina|2024|Nepal|20under20|technopreneur|;Purnima Timsina|2024|Nepal|finalist|child rights|Jhapa;Sajani Sharma|2024|Nepal|finalist|social activism|Kaski;Saurab Banstola|2024|Nepal|20under20|STEM activist|;Shakti K.C.|2024|Nepal|20under20|AI|;Shreejay Subedi|2024|Nepal|finalist|tech|Parsa;Sinshiya K.C.|2024|Nepal|20under20|health activist|;Sugam Parajuli|2024|Nepal|20under20|entrepreneur|;Tushar Shah|2024|Nepal|20under20|innovator|
 # 2025 20under20 (+finalists)
-Aawish Khanal|2025|Nepal|20under20|entrepreneur|Butwal;Dhurbesh Dhami|2025|Nepal|20under20|campaigner|Bajura;Gokul Shrestha|2025|Nepal|20under20|researcher|Baglung;Manushi Neupane|2025|Nepal|finalist|SRHR advocate|Syangja;Mohammad Aftab Sheikh|2025|Nepal|20under20|entrepreneur|Birgunj;Nischal Dhungana|2025|Nepal|finalist|climate justice|Kapilvastu;Osish Niraula|2025|Nepal|20under20|child rights|Sunsari;Oxford Acharya|2025|Nepal|finalist|policy advocate|Jumla;Phurwa Tsering Gurung|2025|Nepal|20under20|documentary|Dolpo;Pooja Mainali|2025|Nepal|20under20|teen leadership|Jhapa;Rakshit Poudel|2025|Nepal|20under20|STEM educator|Butwal;Renuka Singh|2025|Nepal|finalist|agropreneur|Sarlahi;Ritu Gharti|2025|Nepal|20under20|peer educator|Nawalpur;Ruchi Ojha|2025|Nepal|20under20|menstrual health|Kathmandu;Safal Poudel|2025|Nepal|finalist|AI developer|Rupandehi;Sajan Adhikari|2025|Nepal|20under20|SDG activist|Chitwan;Saksham Ghimire|2025|Nepal|20under20|policy advocate|Rupandehi;Saksham Rupakheti|2025|Nepal|20under20|social entrepreneur|Kapilvastu
+Aawish Khanal|2025|Nepal|20under20|entrepreneur|Butwal;Dhurbesh Dhami|2025|Nepal|20under20|campaigner|Bajura;Gokul Shrestha|2025|Nepal|20under20|researcher|Baglung;Nishant Raj Sarraf|2025|Nepal|20under20|AI researcher|Birgunj;Manushi Neupane|2025|Nepal|finalist|SRHR advocate|Syangja;Mohammad Aftab Sheikh|2025|Nepal|20under20|entrepreneur|Birgunj;Nischal Dhungana|2025|Nepal|finalist|climate justice|Kapilvastu;Osish Niraula|2025|Nepal|20under20|child rights|Sunsari;Oxford Acharya|2025|Nepal|finalist|policy advocate|Jumla;Phurwa Tsering Gurung|2025|Nepal|20under20|documentary|Dolpo;Pooja Mainali|2025|Nepal|20under20|teen leadership|Jhapa;Rakshit Poudel|2025|Nepal|20under20|STEM educator|Butwal;Renuka Singh|2025|Nepal|finalist|agropreneur|Sarlahi;Ritu Gharti|2025|Nepal|20under20|peer educator|Nawalpur;Ruchi Ojha|2025|Nepal|20under20|menstrual health|Kathmandu;Safal Poudel|2025|Nepal|finalist|AI developer|Rupandehi;Sajan Adhikari|2025|Nepal|20under20|SDG activist|Chitwan;Saksham Ghimire|2025|Nepal|20under20|policy advocate|Rupandehi;Saksham Rupakheti|2025|Nepal|20under20|social entrepreneur|Kapilvastu
 """
 
 def field_tags(f):
@@ -104,17 +101,19 @@ def field_tags(f):
     return t
 
 def heuristic(tier,f):
+    # Deliberately conservative: these are modeled estimates from only name/field/tier,
+    # so the cohort should sit BELOW the hand-verified winners rather than leapfrog them.
     tags=field_tags(f)
-    base = 3.3 if tier=="finalist" else 3.0
-    lo   = 2.5 if tier=="finalist" else 2.2
+    base = 3.0 if tier=="finalist" else 2.7
+    lo   = 2.2 if tier=="finalist" else 2.0
     s={"social_impact":base,"leadership":base,"innovation":lo,"entrepreneurship":lo,
-       "recognition":lo+0.5,"glocal_fit":base,"character":base+0.4}
-    if "tech" in tags: s["innovation"]+=1.3
-    if "biz" in tags:  s["entrepreneurship"]+=1.4; s["leadership"]+=0.3
-    if "social" in tags: s["social_impact"]+=1.0; s["leadership"]+=0.3
-    if "media" in tags: s["recognition"]+=1.1; s["social_impact"]+=0.3
-    if "edu" in tags: s["leadership"]+=0.6; s["social_impact"]+=0.4
-    if tags & {"tech","biz"}: s["glocal_fit"]+=0.4
+       "recognition":lo+0.3,"glocal_fit":base,"character":base+0.3}
+    if "tech" in tags: s["innovation"]+=1.0
+    if "biz" in tags:  s["entrepreneurship"]+=1.1; s["leadership"]+=0.3
+    if "social" in tags: s["social_impact"]+=0.9; s["leadership"]+=0.3
+    if "media" in tags: s["recognition"]+=0.9; s["social_impact"]+=0.3
+    if "edu" in tags: s["leadership"]+=0.5; s["social_impact"]+=0.3
+    if tags & {"tech","biz"}: s["glocal_fit"]+=0.3
     return {k:round(min(5.0,max(0.0,v)),1) for k,v in s.items()}
 
 # ---- assemble ----
@@ -141,7 +140,7 @@ for line in ROSTER.strip().splitlines():
                        "field":field,"home":home,"sum":(field.capitalize()+(" · "+home if home else "")),
                        "s":heuristic(tier,field),"est":True,"links":{}})
 
-out={"rubric":RUBRIC,"generated_note":"Winners + Arjan + Nishant Raj Sarraf hand-scored from public records (est=false). All other honorees scored by the documented tier+field heuristic in build.py (est=true) — modeled estimates, not per-person research.","heroes":heroes}
+out={"rubric":RUBRIC,"generated_note":"Only the 11 winners + the applicant are hand-scored from public records (est=false). Every other honoree (finalists + 20under20) is scored by the documented, deliberately-conservative tier+field heuristic in build.py (est=true) — modeled estimates, not per-person research, and intentionally kept below the verified winners.","heroes":heroes}
 with open(os.path.join(HERE,"data","heroes.json"),"w") as f: json.dump(out,f,indent=1)
 
 # emit corpus.js for the web app (inline, no fetch needed)
