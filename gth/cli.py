@@ -46,12 +46,18 @@ def _cmd_stats(a):
 
 
 def _cmd_similar(a):
-    for r in similar(a.name, k=a.k):
-        print(f"{r.score:>6}  {r.hero.name} ({r.hero.year}, {r.hero.award}) — {r.hero.then[:90]}")
+    for r in similar(a.name, k=a.k, rerank=not a.no_rerank):
+        prov = ",".join(f"{m}#{rk}" for m, rk in sorted(r.sources.items()))
+        print(f"{r.score:>8}  {r.hero.name} ({r.hero.year}, {r.hero.award}) [{prov}] — {r.hero.then[:80]}")
 
 
 def _cmd_ask(a):
-    print(ask(a.query, k=a.k))
+    print(ask(a.query, k=a.k, expand=not a.no_expand, rerank=not a.no_rerank))
+
+
+def _cmd_eval(a):
+    from .eval import run
+    run(k=a.k)
 
 
 def _cmd_score(a):
@@ -74,8 +80,9 @@ def main(argv=None):
 
     r = sub.add_parser("rank"); r.add_argument("--tier", choices=list(_TIER)); r.add_argument("--top", type=int, default=15); r.set_defaults(fn=_cmd_rank)
     sub.add_parser("stats").set_defaults(fn=_cmd_stats)
-    s = sub.add_parser("similar"); s.add_argument("name"); s.add_argument("--k", type=int, default=5); s.set_defaults(fn=_cmd_similar)
-    q = sub.add_parser("ask"); q.add_argument("query"); q.add_argument("--k", type=int, default=5); q.set_defaults(fn=_cmd_ask)
+    s = sub.add_parser("similar"); s.add_argument("name"); s.add_argument("--k", type=int, default=5); s.add_argument("--no-rerank", action="store_true"); s.set_defaults(fn=_cmd_similar)
+    q = sub.add_parser("ask"); q.add_argument("query"); q.add_argument("--k", type=int, default=5); q.add_argument("--no-expand", action="store_true"); q.add_argument("--no-rerank", action="store_true"); q.set_defaults(fn=_cmd_ask)
+    e = sub.add_parser("eval"); e.add_argument("--k", type=int, default=10); e.set_defaults(fn=_cmd_eval)
     sc = sub.add_parser("score"); sc.add_argument("--file"); sc.set_defaults(fn=_cmd_score)
 
     args = p.parse_args(argv)

@@ -1,7 +1,11 @@
 import unittest
 
-from gth import load, rank_all, cohort_stats, weighted_total, build_index, similar, ask
+from gth import (
+    load, rank_all, cohort_stats, weighted_total, build_index, similar, ask,
+    BM25Index, TfidfIndex, reciprocal_rank_fusion,
+)
 from gth.rubric import WEIGHTS, DIMENSIONS
+from gth import eval as ev
 
 
 class TestRubric(unittest.TestCase):
@@ -47,6 +51,30 @@ class TestScoring(unittest.TestCase):
         self.assertLessEqual(s["mean"], s["max"])
 
 
+class TestRetrievers(unittest.TestCase):
+    def setUp(self):
+        self.c = load()
+        self.docs = [h.doc for h in self.c.heroes]
+
+    def test_bm25_topical(self):
+        bm = BM25Index(self.docs)
+        top = bm.search("menstrual health hygiene")[0][0]
+        self.assertIn("menstru", self.c.heroes[top].then.lower())
+
+    def test_tfidf_vectors_normalized(self):
+        tf = TfidfIndex(self.docs)
+        import math
+        for v in tf.vecs:
+            if v:
+                self.assertAlmostEqual(math.sqrt(sum(x * x for x in v.values())), 1.0, places=6)
+
+    def test_rrf_fuses_ranks(self):
+        fused = reciprocal_rank_fusion([[3, 1, 2], [1, 3, 4]])
+        # doc 1 & 3 appear high in both -> should top the fusion
+        top2 = {i for i, _ in fused[:2]}
+        self.assertEqual(top2, {1, 3})
+
+
 class TestRAG(unittest.TestCase):
     def setUp(self):
         self.c = load()
@@ -55,21 +83,32 @@ class TestRAG(unittest.TestCase):
     def test_query_returns_k(self):
         hits = self.idx.query("astronomy space rocket", k=5)
         self.assertEqual(len(hits), 5)
-        self.assertGreaterEqual(hits[0].score, hits[-1].score)
 
     def test_similar_excludes_self(self):
         res = similar("Rahul Ranjan Sah", k=5, corpus=self.c, index=self.idx)
         self.assertTrue(all(r.hero.name != "Rahul Ranjan Sah" for r in res))
 
     def test_topical_retrieval(self):
-        # a menstrual-health query should surface a menstrual-health honoree in top-k
-        hits = self.idx.query("menstrual health hygiene periods", k=8)
+        hits = self.idx.query("menstrual health hygiene periods", k=8, rerank=False)
         names = " ".join(r.hero.then.lower() for r in hits)
         self.assertIn("menstru", names)
 
-    def test_ask_grounded(self):
+    def test_ask_reports_backend_and_provenance(self):
         out = ask("robotics and hardware", k=3, corpus=self.c, index=self.idx)
-        self.assertIn("backend: tfidf", out)
+        self.assertIn("hybrid(", out)
+        self.assertIn("retrieved by", out)
+
+
+class TestEval(unittest.TestCase):
+    def test_metrics_in_range_and_hybrid_competitive(self):
+        c = load()
+        rows = dict((name, m) for name, m in ev.run(c))
+        for m in rows.values():
+            for v in m.values():
+                self.assertGreaterEqual(v, 0.0)
+                self.assertLessEqual(v, 1.0)
+        # the fused/re-ranked config should be at least as good as raw tf-idf on nDCG
+        self.assertGreaterEqual(rows["hybrid+mmr"]["ndcg"], rows["tfidf"]["ndcg"] - 1e-9)
 
 
 if __name__ == "__main__":
