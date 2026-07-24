@@ -1,0 +1,479 @@
+<title>Glocal Teen Hero Benchmark — are you hero material?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#ffffff; --ink:#15161c; --muted:#5c5f6c; --line:#e5e3db;
+    --crimson:#d8322c; --crimson-ink:#b3241f; --gold:#e0a022; --indigo:#1b1e34;
+    --good:#1f9d57; --warn:#d98a12; --soft:#f0eee8;
+    --shadow:0 1px 2px rgba(20,20,30,.06),0 8px 24px rgba(20,20,30,.06);
+    --radius:16px;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --bg:#0e0f16; --panel:#161824; --ink:#eceef5; --muted:#9aa0b2; --line:#252838;
+      --crimson:#f0574f; --crimson-ink:#f0574f; --gold:#f2b134; --indigo:#c8cee6; --soft:#1c1f2e;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);}
+  }
+  :root[data-theme="light"]{ --bg:#f6f5f1; --panel:#fff; --ink:#15161c; --muted:#5c5f6c; --line:#e5e3db; --crimson:#d8322c; --crimson-ink:#b3241f; --gold:#e0a022; --indigo:#1b1e34; --soft:#f0eee8; --shadow:0 1px 2px rgba(20,20,30,.06),0 8px 24px rgba(20,20,30,.06);}
+  :root[data-theme="dark"]{ --bg:#0e0f16; --panel:#161824; --ink:#eceef5; --muted:#9aa0b2; --line:#252838; --crimson:#f0574f; --crimson-ink:#f0574f; --gold:#f2b134; --indigo:#c8cee6; --soft:#1c1f2e; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);}
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+  h1,h2,h3{letter-spacing:-.02em;line-height:1.1;margin:0}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--crimson)}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  a{color:inherit}
+  button{font-family:inherit;cursor:pointer}
+
+  /* hero */
+  header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);
+    background:radial-gradient(1200px 400px at 80% -10%, color-mix(in srgb,var(--crimson) 18%, transparent), transparent 60%),
+               radial-gradient(900px 380px at 0% 0%, color-mix(in srgb,var(--gold) 14%, transparent), transparent 55%);}
+  .hero .wrap{padding:26px 20px 40px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 30px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.01em}
+  .peak{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--indigo);color:var(--bg);font-size:16px}
+  .themebtn{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:10px;padding:7px 11px;font-size:13px;font-weight:600}
+  .hero h1{font-size:clamp(30px,5.4vw,56px);font-weight:850;text-wrap:balance;max-width:16ch}
+  .hero h1 em{font-style:normal;color:var(--crimson)}
+  .hero p.sub{margin-top:14px;max-width:60ch;color:var(--muted);font-size:clamp(15px,1.8vw,18px)}
+  .stats{display:flex;flex-wrap:wrap;gap:26px;margin-top:26px}
+  .stat b{display:block;font-size:26px;font-weight:850}
+  .stat span{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+
+  section{padding:54px 0}
+  .sec-head{max-width:64ch;margin-bottom:26px}
+  .sec-head h2{font-size:clamp(22px,3vw,32px);font-weight:820}
+  .sec-head p{color:var(--muted);margin-top:10px}
+
+  /* scorer */
+  .scorer{display:grid;grid-template-columns:1fr;gap:20px}
+  @media(min-width:900px){.scorer{grid-template-columns:1.05fr .95fr;align-items:start}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .card.pad{padding:22px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13.5px;font-weight:700;margin-bottom:7px}
+  .field .hint{font-weight:500;color:var(--muted);font-size:12.5px}
+  input[type=text],input[type=number],textarea,select{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);
+    border-radius:11px;padding:10px 12px;font:inherit;font-size:14px}
+  textarea{min-height:120px;resize:vertical;line-height:1.5}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:color-mix(in srgb,var(--crimson) 55%,var(--line));box-shadow:0 0 0 3px color-mix(in srgb,var(--crimson) 18%,transparent)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .toggles{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--muted);user-select:none;transition:all .12s}
+  .chip[aria-pressed="true"]{background:color-mix(in srgb,var(--crimson) 12%,var(--panel));border-color:color-mix(in srgb,var(--crimson) 45%,var(--line));color:var(--crimson-ink)}
+  .detected{margin-top:8px;font-size:12.5px;color:var(--muted);min-height:18px}
+  .detected b{color:var(--good)}
+
+  /* result panel */
+  .result{position:sticky;top:16px}
+  .score-top{display:flex;align-items:center;gap:18px;padding:22px;border-bottom:1px solid var(--line)}
+  .bigscore{font-family:var(--mono);font-weight:800;font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+  .verdict{font-weight:820;font-size:19px;letter-spacing:-.01em}
+  .verdict small{display:block;font-weight:600;font-size:13px;color:var(--muted);letter-spacing:0;margin-top:3px}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.02em}
+  canvas{display:block;width:100%;height:auto}
+  .dims{padding:14px 22px 22px}
+  .dimrow{display:grid;grid-template-columns:120px 1fr 40px;align-items:center;gap:10px;margin:9px 0}
+  .dimrow .nm{font-size:12.5px;font-weight:700}
+  .bar{height:8px;border-radius:999px;background:var(--soft);overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--crimson));transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .bar.win i{background:color-mix(in srgb,var(--muted) 45%,transparent);opacity:.5}
+  .dimrow .vv{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--muted)}
+  .cmp{padding:0 22px 22px;font-size:13px;color:var(--muted)}
+  .cmp b{color:var(--ink)}
+
+  /* corpus */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .hcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+  .hcard .hh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .hcard .nm{font-weight:800;letter-spacing:-.01em}
+  .hcard .yr{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .hcard .tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--crimson)}
+  .hcard .sm{font-size:13px;color:var(--muted);line-height:1.5}
+  .hcard .foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+  .hcard .sc{font-family:var(--mono);font-weight:800}
+  .hcard .lk{display:flex;gap:8px}
+  .hcard .lk a{font-size:12px;color:var(--muted);text-decoration:none;font-weight:600}
+  .hcard .lk a:hover{color:var(--crimson)}
+  .hcard.me{border-color:color-mix(in srgb,var(--crimson) 55%,var(--line));box-shadow:0 0 0 2px color-mix(in srgb,var(--crimson) 18%,transparent),var(--shadow)}
+
+  .method{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .method h3{font-size:17px;margin-bottom:8px}
+  .method p,.method li{color:var(--muted);font-size:14px}
+  .method ul{margin:8px 0 0;padding-left:18px}
+  .method code{font-family:var(--mono);font-size:12.5px;background:var(--soft);padding:1px 6px;border-radius:6px}
+  footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:13px}
+  .disc{font-size:12.5px;color:var(--muted);margin-top:12px;padding:12px 14px;background:var(--soft);border-radius:10px}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand"><span class="peak">▲</span> Glocal Teen Hero <span style="color:var(--muted);font-weight:600">· Benchmark</span></div>
+      <button class="themebtn" id="themebtn">◐ Theme</button>
+    </div>
+    <p class="eyebrow">Open, reproducible, honest</p>
+    <h1>Are you <em>Glocal Teen Hero</em> material?</h1>
+    <p class="sub">Paste your application. This scores it against every past Glocal Teen Hero on the seven dimensions the award actually rewards, then tells you where you'd land. Built from public data. No accounts, no tracking, runs entirely in your browser.</p>
+    <div class="stats" id="heroStats"></div>
+  </div>
+</header>
+
+<section class="wrap">
+  <div class="sec-head">
+    <p class="eyebrow">The check</p>
+    <h2>Score your application</h2>
+    <p>Fill what's true. The paste box auto-detects signals (CVE, YC, "founded", media, numbers) and nudges the sliders; tune anything by hand. Everything updates live.</p>
+  </div>
+
+  <div class="scorer">
+    <!-- INPUT -->
+    <div class="card pad">
+      <div class="field">
+        <label>Paste your application / bio / achievements <span class="hint">— we scan it for signals</span></label>
+        <textarea id="appText" placeholder="e.g. 15, self-taught security engineer. CVE-2025-51588. Research credited by Google & Twitch. Founder of a 400+ member non-profit. Building an AI startup with $20k in LOIs. Ran two hackathons..."></textarea>
+        <div class="detected" id="detected"></div>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>Organizations founded / led</label><input type="number" id="orgs" min="0" value="0"></div>
+        <div class="field"><label>People in your community / org</label><input type="number" id="members" min="0" value="0"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>People directly helped / reached <span class="hint">(campaigns, events, users)</span></label><input type="number" id="reached" min="0" value="0"></div>
+        <div class="field"><label>Years actively working on it</label><input type="number" id="years" min="0" value="0"></div>
+      </div>
+
+      <div class="field">
+        <label>What have you built / done? <span class="hint">tap all that apply</span></label>
+        <div class="toggles" id="toggles"></div>
+      </div>
+
+      <div class="field">
+        <label>Recognition <span class="hint">tap all that apply</span></label>
+        <div class="toggles" id="recToggles"></div>
+      </div>
+
+      <div class="field">
+        <label>Is the work world-class AND rooted in local impact? <span class="hint">the "glocal" test</span></label>
+        <div class="toggles" id="glocalToggles"></div>
+      </div>
+      <button class="themebtn" id="loadArjan" style="margin-top:4px">Load a sample profile</button>
+    </div>
+
+    <!-- RESULT -->
+    <div class="card result">
+      <div class="score-top">
+        <div class="bigscore" id="bigScore">0.0</div>
+        <div>
+          <div class="verdict" id="verdict">Start typing…<small id="verdictSub">out of 5.0 weighted</small></div>
+          <div style="margin-top:8px"><span class="badge" id="verdictBadge" style="background:var(--soft);color:var(--muted)">—</span></div>
+        </div>
+      </div>
+      <div style="padding:14px 22px 0"><canvas id="radar" width="640" height="440" aria-label="Radar chart of your dimensions vs winners"></canvas></div>
+      <div class="dims" id="dims"></div>
+      <div class="cmp" id="cmp"></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sec-head">
+    <p class="eyebrow">The bar</p>
+    <h2>Every Glocal Teen Hero, ranked</h2>
+    <p>All 11 Nepal titleholders (2015-2025) by weighted score, with the applicant placed for reference.</p>
+  </div>
+  <div class="card" id="winBoard"></div>
+</section>
+
+<section class="wrap">
+  <div class="sec-head">
+    <p class="eyebrow">The corpus</p>
+    <h2>Every Glocal Teen Hero, scored</h2>
+    <p>The people you're being measured against. Winners and honorees across editions, each scored 0–5 per dimension from public information. Filter, sort, and check the sources yourself.</p>
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="corpusGrid"></div>
+</section>
+
+<section class="wrap">
+  <div class="sec-head"><p class="eyebrow">How it works</p><h2>Methodology</h2></div>
+  <div class="method">
+    <h3>The seven dimensions</h3>
+    <p>Drawn straight from the program's stated values (leadership, innovation &amp; technology, social impact, creativity, community contribution, "beyond academics") and the organizer's own write-ups of why past winners won. Weighted, summing to 1.0:</p>
+    <ul id="methodDims"></ul>
+    <h3 style="margin-top:16px">Scoring</h3>
+    <p>Your inputs map to a 0–5 score per dimension; the weighted total is compared to the winners' distribution to place you. The corpus scores are one careful reading of public information, not objective truth. Reproducible Python version and the full dataset live in the <a id="repoLink" href="#">GitHub repo</a>.</p>
+    <div class="disc" id="disc"></div>
+  </div>
+</section>
+
+<script>window.__CORPUS__=[{"name":"Bipana Sharma","year":2015,"ed":"Nepal","award":"Winner","field":"","sum":"Founded Ekta Child Club at 11; campaigned against child marriage/trafficking. Asian Girls Human Rights Award; her story became the UNICEF/Govt film 'JYOTI'; TED speaker.","s":{"social_impact":5,"leadership":4,"innovation":2,"entrepreneurship":2,"recognition":5,"glocal_fit":4,"character":5},"est":false,"links":{"web":"https://www.ted.com/talks/bipana_sharma_children_breaking_barriers"},"me":false},{"name":"Santosh Lamichhane","year":2016,"ed":"Nepal","award":"Winner","field":"","sum":"Self-taught mechanical inventor: corn-thresher machine, car-to-walking-robot builds; won the National Mechanical Exhibition; science advisor on a feature film.","s":{"social_impact":2,"leadership":3,"innovation":5,"entrepreneurship":3,"recognition":3,"glocal_fit":4,"character":5},"est":false,"links":{"web":"https://instagram.com/lamichhane_santosh"},"me":false},{"name":"Sachin Dangi","year":2017,"ed":"Nepal","award":"Winner","field":"","sum":"President of the Teenage Society of Nepal (~5,000 members); co-founded Bizonomics and Skillathon; NY Academy of Sciences ambassador.","s":{"social_impact":4,"leadership":5,"innovation":2,"entrepreneurship":4,"recognition":3,"glocal_fit":3,"character":4},"est":false,"links":{},"me":false},{"name":"Prashansha KC","year":2018,"ed":"Nepal","award":"Winner","field":"","sum":"Ran the 21-day 'Eradication of Kidnap Marriage' project in Rukum (~2,400 reached); Zonta Young Women in Public Affairs Award; UNICEF Nepal youth advocate; TED speaker.","s":{"social_impact":5,"leadership":4,"innovation":2,"entrepreneurship":2,"recognition":5,"glocal_fit":4,"character":5},"est":false,"links":{"x":"https://x.com/prashanshakc23"},"me":false},{"name":"Samir Phuyal","year":2019,"ed":"Nepal","award":"Winner","field":"","sum":"Built NayaKinmel.com and student apps; taught 10,000+ people Django; runs the 'Hamro Tech' YouTube channel teaching web dev in Nepali.","s":{"social_impact":4,"leadership":3,"innovation":4,"entrepreneurship":4,"recognition":3,"glocal_fit":4,"character":4},"est":false,"links":{},"me":false},{"name":"Mandira Shrestha","year":2020,"ed":"Nepal","award":"Winner","field":"","sum":"Health/SRHR activist and RN; led the child-led UPR 2020 report; founder of 'Triple H'; Asia-Pacific Youth of the Year 2024.","s":{"social_impact":5,"leadership":4,"innovation":2,"entrepreneurship":2,"recognition":4,"glocal_fit":3,"character":5},"est":false,"links":{},"me":false},{"name":"Pranjal Chalise","year":2021,"ed":"Nepal","award":"Winner","field":"","sum":"Built Drishti Nepal (open-source app for the visually impaired); founded e-educators Nepal and Students Research Council Nepal.","s":{"social_impact":4,"leadership":3,"innovation":4,"entrepreneurship":3,"recognition":3,"glocal_fit":4,"character":4},"est":false,"links":{"li":"https://linkedin.com/in/pranjalchalise/","web":"https://github.com/pranjalchalise"},"me":false},{"name":"Rahul Ranjan Sah","year":2022,"ed":"Nepal","award":"Winner","field":"","sum":"Astropreneur behind 'Arohan' (toward Nepal's first private space mission); astronomy outreach to 7,000+ rural students; IAAC ambassador; now at Furman University.","s":{"social_impact":3,"leadership":4,"innovation":5,"entrepreneurship":4,"recognition":4,"glocal_fit":4,"character":5},"est":false,"links":{"li":"https://linkedin.com/in/rahulranjansah/","web":"https://rahulranjansah.com.np"},"me":false},{"name":"Shruti Tiwari","year":2023,"ed":"Nepal","award":"Winner","field":"","sum":"Plasticman Campaign + Chure tree-planting (WWF/Save the Children); helped stop 12 child marriages; mentored ~20 Dalit/Janjati girls; interviewed by BBC UK.","s":{"social_impact":5,"leadership":4,"innovation":2,"entrepreneurship":2,"recognition":5,"glocal_fit":4,"character":5},"est":false,"links":{},"me":false},{"name":"Ghanashyam Bishwakarma","year":2024,"ed":"Nepal","award":"Winner","field":"","sum":"8+ yrs activism; President of the National Adolescent Boys Network Nepal; radio host on child rights; represented Nepal at World Social Forum 2024.","s":{"social_impact":5,"leadership":5,"innovation":2,"entrepreneurship":2,"recognition":4,"glocal_fit":3,"character":5},"est":false,"links":{},"me":false},{"name":"Krish Yadav","year":2025,"ed":"Nepal","award":"Winner","field":"","sum":"Content creator; Associate Creative Head at The Nepali Comment (405k+ subs); hosts TNC Debates (15.5k+); leads the Himalayan Linguistics Olympiad and youth-ed projects.","s":{"social_impact":3,"leadership":4,"innovation":3,"entrepreneurship":4,"recognition":5,"glocal_fit":3,"character":4},"est":false,"links":{"web":"https://youtube.com/@TheNepaliComment"},"me":false},{"name":"Nishant Raj Sarraf","year":2025,"ed":"Nepal","award":"20under20","field":"","sum":"AI researcher; founder of RedPaper (youth legal-tech); Stanford iGEM remote research fellow building AI for early autism detection via speech.","s":{"social_impact":4,"leadership":4,"innovation":5,"entrepreneurship":4,"recognition":4,"glocal_fit":4,"character":4},"est":false,"links":{"web":"https://polygence.org/scholars/nishant-raj-sarraf"},"me":false},{"name":"Aarjan Chaudhary","year":2026,"ed":"Nepal","award":"Applicant","field":"","sum":"'Youngest Hacker of Nepal'; CVE-2025-51588; credited by Google, Twitch, EA, Stanford. Security engineer at Dench (YC S24); founder of kroda.ai ($20k+ LOIs) and Arniko Hack Club (400+ members, top-10 teen non-profit in Asia); ran Daydream (250+) and Campfire (150+); 1x exit.","s":{"social_impact":4,"leadership":5,"innovation":5,"entrepreneurship":5,"recognition":5,"glocal_fit":5,"character":5},"est":false,"links":{"web":"https://arjanchaudharyy.lol","x":"https://x.com/arjanchaudharyy"},"me":true},{"name":"Aditya Khadka","year":2015,"ed":"Nepal","award":"Finalist","field":"documentary","home":"","sum":"Documentary","s":{"social_impact":3.6,"leadership":3.3,"innovation":2.5,"entrepreneurship":2.5,"recognition":4.1,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Avaneesh Yadav","year":2015,"ed":"Nepal","award":"Finalist","field":"entrepreneur","home":"","sum":"Entrepreneur","s":{"social_impact":3.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":3.9,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Ravi Mandal","year":2015,"ed":"Nepal","award":"Finalist","field":"app developer","home":"","sum":"App developer","s":{"social_impact":3.3,"leadership":3.3,"innovation":3.8,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Samprada Chapagain","year":2015,"ed":"Nepal","award":"Finalist","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Swastik Ghimire","year":2015,"ed":"Nepal","award":"Finalist","field":"writer","home":"","sum":"Writer","s":{"social_impact":3.6,"leadership":3.3,"innovation":2.5,"entrepreneurship":2.5,"recognition":4.1,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Anil Kharel","year":2016,"ed":"Nepal","award":"Finalist","field":"social","home":"","sum":"Social","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Deepak B.K","year":2016,"ed":"Nepal","award":"Finalist","field":"child rights","home":"","sum":"Child rights","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Gaurav Pokhrel","year":2016,"ed":"Nepal","award":"Finalist","field":"journalism","home":"","sum":"Journalism","s":{"social_impact":3.6,"leadership":3.3,"innovation":2.5,"entrepreneurship":2.5,"recognition":4.1,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Samata Shrestha","year":2016,"ed":"Nepal","award":"Finalist","field":"poetry","home":"","sum":"Poetry","s":{"social_impact":3.6,"leadership":3.3,"innovation":2.5,"entrepreneurship":2.5,"recognition":4.1,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Albina Prawin","year":2017,"ed":"Nepal","award":"20under20","field":"social activist","home":"Inaruwa","sum":"Social activist \u00b7 Inaruwa","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Aayush Pandey","year":2017,"ed":"Nepal","award":"20under20","field":"coder","home":"","sum":"Coder","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Ashna Poudel","year":2017,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Bhabish Shrestha","year":2017,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Pramish Paudel","year":2017,"ed":"Nepal","award":"20under20","field":"technology","home":"","sum":"Technology","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Rajaram Basnet","year":2017,"ed":"Nepal","award":"20under20","field":"child activist","home":"","sum":"Child activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Rizma Joshi","year":2017,"ed":"Nepal","award":"20under20","field":"innovator","home":"","sum":"Innovator","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Ruby Tamang","year":2017,"ed":"Nepal","award":"20under20","field":"sports","home":"","sum":"Sports","s":{"social_impact":3.0,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Pradip Adhikari","year":2017,"ed":"Nepal","award":"20under20","field":"coder","home":"","sum":"Coder","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Prajesh Khanal","year":2017,"ed":"Nepal","award":"20under20","field":"environmentalist","home":"","sum":"Environmentalist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Prashant Kandel","year":2017,"ed":"Nepal","award":"20under20","field":"app developer","home":"","sum":"App developer","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Prithu Singh Thakuri","year":2017,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"","sum":"Entrepreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Bijay Acharya","year":2017,"ed":"Nepal","award":"20under20","field":"innovator","home":"","sum":"Innovator","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Biplov Jha","year":2017,"ed":"Nepal","award":"20under20","field":"technology","home":"","sum":"Technology","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Narayan Gautam","year":2017,"ed":"Nepal","award":"20under20","field":"child activist","home":"","sum":"Child activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Nivesh Kumar","year":2017,"ed":"Nepal","award":"20under20","field":"journalist","home":"","sum":"Journalist","s":{"social_impact":3.3,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":3.8,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sagar Parajuli","year":2017,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sanjay Kumar Yadav","year":2017,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Tanmay Chaudhary","year":2017,"ed":"Nepal","award":"20under20","field":"innovator","home":"","sum":"Innovator","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Aanchal Adhikari","year":2018,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Aashutosh Sapkota","year":2018,"ed":"Nepal","award":"20under20","field":"technology","home":"","sum":"Technology","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Abhishek Adhikari","year":2018,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"","sum":"Entrepreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Amit Khanal","year":2018,"ed":"Nepal","award":"20under20","field":"technology","home":"","sum":"Technology","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Anil Pradhan","year":2018,"ed":"Nepal","award":"20under20","field":"technology","home":"","sum":"Technology","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Anisha Ruchal","year":2018,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Bikalpa Dhungana","year":2018,"ed":"Nepal","award":"20under20","field":"innovator","home":"","sum":"Innovator","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Deepa Adhikari","year":2018,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Deepshikha Ghimire","year":2018,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Dipisha Bhujel","year":2018,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Kovid Raj Panthy","year":2018,"ed":"Nepal","award":"20under20","field":"coder","home":"","sum":"Coder","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Nibesh Baral","year":2018,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Palisha Shakya","year":2018,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Rhythm Sah","year":2018,"ed":"Nepal","award":"20under20","field":"coder","home":"","sum":"Coder","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Sahil K Gupta","year":2018,"ed":"Nepal","award":"20under20","field":"technology","home":"","sum":"Technology","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Saugat Tiwari","year":2018,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"","sum":"Entrepreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Sudarshan Subedi","year":2018,"ed":"Nepal","award":"20under20","field":"ecopreneur","home":"","sum":"Ecopreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Swornim Shrestha","year":2018,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"","sum":"Entrepreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Yatish Ojha","year":2018,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Aanand Kumar Sahani","year":2019,"ed":"Nepal","award":"20under20","field":"child rights","home":"","sum":"Child rights","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Arjun Acharya","year":2019,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Babita Pariyar","year":2019,"ed":"Nepal","award":"20under20","field":"child rights","home":"","sum":"Child rights","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Bidhi Mandal","year":2019,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"","sum":"Entrepreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Bikram Parajuli","year":2019,"ed":"Nepal","award":"20under20","field":"tech educator","home":"","sum":"Tech educator","s":{"social_impact":3.4,"leadership":3.6,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Bishnu Mijar","year":2019,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Ganesh Sah Sudi","year":2019,"ed":"Nepal","award":"20under20","field":"wildlife conservation","home":"","sum":"Wildlife conservation","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Jyoti Singh","year":2019,"ed":"Nepal","award":"20under20","field":"programmer","home":"","sum":"Programmer","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Kovid Bhusan Pathak","year":2019,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Lov Panthi","year":2019,"ed":"Nepal","award":"20under20","field":"innovator","home":"","sum":"Innovator","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Nischal Bhandari","year":2019,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Rachin Kalakheti","year":2019,"ed":"Nepal","award":"20under20","field":"technopreneur","home":"","sum":"Technopreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":3.5,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Rishi Kumar Gupta","year":2019,"ed":"Nepal","award":"20under20","field":"innovator","home":"","sum":"Innovator","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Rohan Bagale","year":2019,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Samarth Jha","year":2019,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sameer Chapagain","year":2019,"ed":"Nepal","award":"20under20","field":"journalist","home":"","sum":"Journalist","s":{"social_impact":3.3,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":3.8,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Shivu Pandey","year":2019,"ed":"Nepal","award":"20under20","field":"cyber security","home":"","sum":"Cyber security","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Supriya Maharjan Sapkota","year":2019,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Thalama Malla","year":2019,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Abhishek Karna","year":2020,"ed":"Nepal","award":"20under20","field":"technopreneur","home":"Mahottari","sum":"Technopreneur \u00b7 Mahottari","s":{"social_impact":3.0,"leadership":3.3,"innovation":3.5,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Amit Timalsina","year":2020,"ed":"Nepal","award":"20under20","field":"technopreneur","home":"Rupandehi","sum":"Technopreneur \u00b7 Rupandehi","s":{"social_impact":3.0,"leadership":3.3,"innovation":3.5,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Ankit Mishra","year":2020,"ed":"Nepal","award":"20under20","field":"child rights","home":"Banke","sum":"Child rights \u00b7 Banke","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Dikshya Gautam","year":2020,"ed":"Nepal","award":"20under20","field":"child rights","home":"Kathmandu","sum":"Child rights \u00b7 Kathmandu","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Ekraj Ghimire","year":2020,"ed":"Nepal","award":"20under20","field":"environmentalist","home":"Palpa","sum":"Environmentalist \u00b7 Palpa","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Grace Thapa","year":2020,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"Lalitpur","sum":"Entrepreneur \u00b7 Lalitpur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Laxman Poudel","year":2020,"ed":"Nepal","award":"20under20","field":"innovator","home":"Rupandehi","sum":"Innovator \u00b7 Rupandehi","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Namrata Dahal","year":2020,"ed":"Nepal","award":"20under20","field":"child rights","home":"Jhapa","sum":"Child rights \u00b7 Jhapa","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Preksha Dhami","year":2020,"ed":"Nepal","award":"20under20","field":"social activist","home":"Kailali","sum":"Social activist \u00b7 Kailali","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Reet Kafle","year":2020,"ed":"Nepal","award":"20under20","field":"educator","home":"Morang","sum":"Educator \u00b7 Morang","s":{"social_impact":3.4,"leadership":3.6,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sanif Kandel","year":2020,"ed":"Nepal","award":"20under20","field":"youth activist","home":"Rupandehi","sum":"Youth activist \u00b7 Rupandehi","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sanskriti Phuyal","year":2020,"ed":"Nepal","award":"20under20","field":"social activist","home":"Kathmandu","sum":"Social activist \u00b7 Kathmandu","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Seliya Shrestha","year":2020,"ed":"Nepal","award":"20under20","field":"social activist","home":"Jhapa","sum":"Social activist \u00b7 Jhapa","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Subhash Sharma","year":2020,"ed":"Nepal","award":"20under20","field":"coder","home":"Janakpur","sum":"Coder \u00b7 Janakpur","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Sulav Subedi","year":2020,"ed":"Nepal","award":"20under20","field":"innovator","home":"Ilam","sum":"Innovator \u00b7 Ilam","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Sushant Sapkota","year":2020,"ed":"Nepal","award":"20under20","field":"environmentalist","home":"Surkhet","sum":"Environmentalist \u00b7 Surkhet","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Swaraj Sagar Pradhan","year":2020,"ed":"Nepal","award":"20under20","field":"programmer","home":"Lalitpur","sum":"Programmer \u00b7 Lalitpur","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Vaibhav Nahata","year":2020,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"Morang","sum":"Entrepreneur \u00b7 Morang","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Youbesh Dhaubhadel","year":2020,"ed":"Nepal","award":"20under20","field":"photographer","home":"Kathmandu","sum":"Photographer \u00b7 Kathmandu","s":{"social_impact":3.3,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":3.8,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Aabiskar Thapa Kshetri","year":2021,"ed":"Nepal","award":"20under20","field":"engineering","home":"Pyuthan","sum":"Engineering \u00b7 Pyuthan","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Aaditya Singh Thapa","year":2021,"ed":"Nepal","award":"20under20","field":"child rights","home":"Banke","sum":"Child rights \u00b7 Banke","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Amrit Rijal","year":2021,"ed":"Nepal","award":"20under20","field":"child rights","home":"Sunsari","sum":"Child rights \u00b7 Sunsari","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Anugraha Ghale","year":2021,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"Lalitpur","sum":"Entrepreneur \u00b7 Lalitpur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Anurag Chapagain","year":2021,"ed":"Nepal","award":"Finalist","field":"content creator","home":"Nawalparasi","sum":"Content creator \u00b7 Nawalparasi","s":{"social_impact":3.6,"leadership":3.3,"innovation":2.5,"entrepreneurship":2.5,"recognition":4.1,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Deepak Sutihar","year":2021,"ed":"Nepal","award":"Finalist","field":"social entrepreneur","home":"Saptari","sum":"Social entrepreneur \u00b7 Saptari","s":{"social_impact":4.3,"leadership":3.9,"innovation":2.5,"entrepreneurship":3.9,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Gobind Pajiyar","year":2021,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"Siraha","sum":"Entrepreneur \u00b7 Siraha","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Johnson Subedi","year":2021,"ed":"Nepal","award":"20under20","field":"technopreneur","home":"Parbat","sum":"Technopreneur \u00b7 Parbat","s":{"social_impact":3.0,"leadership":3.3,"innovation":3.5,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Jwala Dhakal","year":2021,"ed":"Nepal","award":"20under20","field":"writer","home":"Jhapa","sum":"Writer \u00b7 Jhapa","s":{"social_impact":3.3,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":3.8,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Khusbu Bhandari","year":2021,"ed":"Nepal","award":"Finalist","field":"wildlife conservation","home":"Chitwan","sum":"Wildlife conservation \u00b7 Chitwan","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Mohan Budha","year":2021,"ed":"Nepal","award":"20under20","field":"social activist","home":"Humla","sum":"Social activist \u00b7 Humla","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Neha Gurung","year":2021,"ed":"Nepal","award":"Finalist","field":"social activist","home":"Kathmandu","sum":"Social activist \u00b7 Kathmandu","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Om Prakash Wasti","year":2021,"ed":"Nepal","award":"20under20","field":"social activist","home":"Kailali","sum":"Social activist \u00b7 Kailali","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Reyan Kumar Sapkota","year":2021,"ed":"Nepal","award":"20under20","field":"social entrepreneur","home":"Bhaktapur","sum":"Social entrepreneur \u00b7 Bhaktapur","s":{"social_impact":4.0,"leadership":3.6,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Sabhya Rai","year":2021,"ed":"Nepal","award":"Finalist","field":"education activist","home":"Ilam","sum":"Education activist \u00b7 Ilam","s":{"social_impact":4.7,"leadership":4.2,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Sabina Shakya","year":2021,"ed":"Nepal","award":"20under20","field":"environmentalist","home":"Lalitpur","sum":"Environmentalist \u00b7 Lalitpur","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Shubham Jha","year":2021,"ed":"Nepal","award":"20under20","field":"filmmaker","home":"Mahottari","sum":"Filmmaker \u00b7 Mahottari","s":{"social_impact":3.3,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":3.8,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Suraj Sapkota","year":2021,"ed":"Nepal","award":"20under20","field":"social activist","home":"Nawalparasi","sum":"Social activist \u00b7 Nawalparasi","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Suyog Vardan Acharya","year":2021,"ed":"Nepal","award":"20under20","field":"innovator","home":"Kaski","sum":"Innovator \u00b7 Kaski","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Aamod Paudel","year":2022,"ed":"Nepal","award":"20under20","field":"tech activist","home":"Rupandehi","sum":"Tech activist \u00b7 Rupandehi","s":{"social_impact":4.0,"leadership":3.3,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Aashish Shah","year":2022,"ed":"Nepal","award":"Finalist","field":"edu-technologist","home":"Dhanusha","sum":"Edu-technologist \u00b7 Dhanusha","s":{"social_impact":3.3,"leadership":3.3,"innovation":3.8,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Bidhata Pathak","year":2022,"ed":"Nepal","award":"20under20","field":"activist","home":"Nuwakot","sum":"Activist \u00b7 Nuwakot","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Bimarsha Poudel","year":2022,"ed":"Nepal","award":"Finalist","field":"filmmaker","home":"Chitwan","sum":"Filmmaker \u00b7 Chitwan","s":{"social_impact":3.6,"leadership":3.3,"innovation":2.5,"entrepreneurship":2.5,"recognition":4.1,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Binita Dhakal","year":2022,"ed":"Nepal","award":"20under20","field":"social entrepreneur","home":"Gorkha","sum":"Social entrepreneur \u00b7 Gorkha","s":{"social_impact":4.0,"leadership":3.6,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Bishnu Shah","year":2022,"ed":"Nepal","award":"20under20","field":"education activist","home":"Dhanusha","sum":"Education activist \u00b7 Dhanusha","s":{"social_impact":4.4,"leadership":3.9,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Darshana Rijal","year":2022,"ed":"Nepal","award":"Finalist","field":"women rights","home":"Morang","sum":"Women rights \u00b7 Morang","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Ganga Sah","year":2022,"ed":"Nepal","award":"20under20","field":"female education","home":"Mahottari","sum":"Female education \u00b7 Mahottari","s":{"social_impact":4.4,"leadership":3.9,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Kunal Sah","year":2022,"ed":"Nepal","award":"20under20","field":"tech-intrapreneur","home":"Morang","sum":"Tech-intrapreneur \u00b7 Morang","s":{"social_impact":3.0,"leadership":3.3,"innovation":3.5,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Lucky Sah","year":2022,"ed":"Nepal","award":"20under20","field":"technology","home":"Mahottari","sum":"Technology \u00b7 Mahottari","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Nischal Singh Bista","year":2022,"ed":"Nepal","award":"Finalist","field":"ecopreneur","home":"Achham","sum":"Ecopreneur \u00b7 Achham","s":{"social_impact":3.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":3.9,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Prithak Shrestha","year":2022,"ed":"Nepal","award":"20under20","field":"social activist","home":"Chitwan","sum":"Social activist \u00b7 Chitwan","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Rahul Mandal","year":2022,"ed":"Nepal","award":"20under20","field":"tech educator","home":"Dhanusha","sum":"Tech educator \u00b7 Dhanusha","s":{"social_impact":3.4,"leadership":3.6,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Ranjan Shankar","year":2022,"ed":"Nepal","award":"20under20","field":"STEM education","home":"Terhathum","sum":"Stem education \u00b7 Terhathum","s":{"social_impact":3.4,"leadership":3.6,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Sampanna Jyoti Tuladhar","year":2022,"ed":"Nepal","award":"20under20","field":"education","home":"Kathmandu","sum":"Education \u00b7 Kathmandu","s":{"social_impact":3.4,"leadership":3.6,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sambridhi Deo","year":2022,"ed":"Nepal","award":"20under20","field":"artist","home":"Hetauda","sum":"Artist \u00b7 Hetauda","s":{"social_impact":3.3,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":3.8,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sanskriti Duwadi","year":2022,"ed":"Nepal","award":"20under20","field":"gender activist","home":"Kathmandu","sum":"Gender activist \u00b7 Kathmandu","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sarwagya Bhattarai","year":2022,"ed":"Nepal","award":"20under20","field":"health activist","home":"Kathmandu","sum":"Health activist \u00b7 Kathmandu","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Shrijana Gautam","year":2022,"ed":"Nepal","award":"Finalist","field":"social activist","home":"Morang","sum":"Social activist \u00b7 Morang","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Aryan Sigdel","year":2023,"ed":"Nepal","award":"Finalist","field":"educator","home":"","sum":"Educator","s":{"social_impact":3.7,"leadership":3.9,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Atith Adhikari","year":2023,"ed":"Nepal","award":"Finalist","field":"social entrepreneur","home":"","sum":"Social entrepreneur","s":{"social_impact":4.3,"leadership":3.9,"innovation":2.5,"entrepreneurship":3.9,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Avinash Kumar Paswan","year":2023,"ed":"Nepal","award":"20under20","field":"musician","home":"","sum":"Musician","s":{"social_impact":3.3,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":3.8,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Dikshya Bharati","year":2023,"ed":"Nepal","award":"20under20","field":"health activist","home":"","sum":"Health activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Diwash Sarraf","year":2023,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Madhav Khanal","year":2023,"ed":"Nepal","award":"Finalist","field":"writer","home":"","sum":"Writer","s":{"social_impact":3.6,"leadership":3.3,"innovation":2.5,"entrepreneurship":2.5,"recognition":4.1,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Nirajan Rimal","year":2023,"ed":"Nepal","award":"Finalist","field":"science","home":"","sum":"Science","s":{"social_impact":3.3,"leadership":3.3,"innovation":3.8,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Prakash Badu","year":2023,"ed":"Nepal","award":"20under20","field":"child rights","home":"","sum":"Child rights","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Prakash Pant","year":2023,"ed":"Nepal","award":"20under20","field":"mathematician","home":"","sum":"Mathematician","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Preeti Pantha","year":2023,"ed":"Nepal","award":"Finalist","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Raushan Pandit","year":2023,"ed":"Nepal","award":"20under20","field":"technology","home":"","sum":"Technology","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Risham Kumar Sah","year":2023,"ed":"Nepal","award":"20under20","field":"environmentalist","home":"","sum":"Environmentalist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sadiksha Ghimire","year":2023,"ed":"Nepal","award":"20under20","field":"health activist","home":"","sum":"Health activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sagar Budha","year":2023,"ed":"Nepal","award":"20under20","field":"environmentalist","home":"","sum":"Environmentalist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sagar Gupta","year":2023,"ed":"Nepal","award":"20under20","field":"AI researcher","home":"","sum":"Ai researcher","s":{"social_impact":3.4,"leadership":3.6,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Samip Paudel","year":2023,"ed":"Nepal","award":"20under20","field":"technology","home":"","sum":"Technology","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Shubham Upreti","year":2023,"ed":"Nepal","award":"20under20","field":"artist","home":"","sum":"Artist","s":{"social_impact":3.3,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":3.8,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sumitra Acharya","year":2023,"ed":"Nepal","award":"20under20","field":"activist","home":"","sum":"Activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sushan Shrestha","year":2023,"ed":"Nepal","award":"20under20","field":"activist","home":"","sum":"Activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Aadesh Regmi","year":2024,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Aashish Panthi","year":2024,"ed":"Nepal","award":"Finalist","field":"tech education","home":"Kapilvastu","sum":"Tech education \u00b7 Kapilvastu","s":{"social_impact":3.7,"leadership":3.9,"innovation":3.8,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Aayushman Puri","year":2024,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Aryan Basnet","year":2024,"ed":"Nepal","award":"20under20","field":"IT","home":"","sum":"It","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Ashish Banjara","year":2024,"ed":"Nepal","award":"20under20","field":"social activist","home":"","sum":"Social activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Hangsam Nembang","year":2024,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"","sum":"Entrepreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Kaushal Niraula","year":2024,"ed":"Nepal","award":"20under20","field":"environment","home":"","sum":"Environment","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Kishor Shahi","year":2024,"ed":"Nepal","award":"20under20","field":"climate","home":"","sum":"Climate","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Krishtina Khanal","year":2024,"ed":"Nepal","award":"20under20","field":"technology","home":"","sum":"Technology","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Nischal Bhattarai","year":2024,"ed":"Nepal","award":"Finalist","field":"education","home":"Syangja","sum":"Education \u00b7 Syangja","s":{"social_impact":3.7,"leadership":3.9,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Prashim Timsina","year":2024,"ed":"Nepal","award":"20under20","field":"technopreneur","home":"","sum":"Technopreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":3.5,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Purnima Timsina","year":2024,"ed":"Nepal","award":"Finalist","field":"child rights","home":"Jhapa","sum":"Child rights \u00b7 Jhapa","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Sajani Sharma","year":2024,"ed":"Nepal","award":"Finalist","field":"social activism","home":"Kaski","sum":"Social activism \u00b7 Kaski","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Saurab Banstola","year":2024,"ed":"Nepal","award":"20under20","field":"STEM activist","home":"","sum":"Stem activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Shakti K.C.","year":2024,"ed":"Nepal","award":"20under20","field":"AI","home":"","sum":"Ai","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Shreejay Subedi","year":2024,"ed":"Nepal","award":"Finalist","field":"tech","home":"Parsa","sum":"Tech \u00b7 Parsa","s":{"social_impact":3.3,"leadership":3.3,"innovation":3.8,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Sinshiya K.C.","year":2024,"ed":"Nepal","award":"20under20","field":"health activist","home":"","sum":"Health activist","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Sugam Parajuli","year":2024,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"","sum":"Entrepreneur","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Tushar Shah","year":2024,"ed":"Nepal","award":"20under20","field":"innovator","home":"","sum":"Innovator","s":{"social_impact":3.0,"leadership":3.0,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Aawish Khanal","year":2025,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"Butwal","sum":"Entrepreneur \u00b7 Butwal","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Dhurbesh Dhami","year":2025,"ed":"Nepal","award":"20under20","field":"campaigner","home":"Bajura","sum":"Campaigner \u00b7 Bajura","s":{"social_impact":4.0,"leadership":3.3,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Gokul Shrestha","year":2025,"ed":"Nepal","award":"20under20","field":"researcher","home":"Baglung","sum":"Researcher \u00b7 Baglung","s":{"social_impact":3.4,"leadership":3.6,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Manushi Neupane","year":2025,"ed":"Nepal","award":"Finalist","field":"SRHR advocate","home":"Syangja","sum":"Srhr advocate \u00b7 Syangja","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Mohammad Aftab Sheikh","year":2025,"ed":"Nepal","award":"20under20","field":"entrepreneur","home":"Birgunj","sum":"Entrepreneur \u00b7 Birgunj","s":{"social_impact":3.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Nischal Dhungana","year":2025,"ed":"Nepal","award":"Finalist","field":"climate justice","home":"Kapilvastu","sum":"Climate justice \u00b7 Kapilvastu","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Osish Niraula","year":2025,"ed":"Nepal","award":"20under20","field":"child rights","home":"Sunsari","sum":"Child rights \u00b7 Sunsari","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Oxford Acharya","year":2025,"ed":"Nepal","award":"Finalist","field":"policy advocate","home":"Jumla","sum":"Policy advocate \u00b7 Jumla","s":{"social_impact":4.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.3,"character":3.7},"est":true,"links":{}},{"name":"Phurwa Tsering Gurung","year":2025,"ed":"Nepal","award":"20under20","field":"documentary","home":"Dolpo","sum":"Documentary \u00b7 Dolpo","s":{"social_impact":3.3,"leadership":3.0,"innovation":2.2,"entrepreneurship":2.2,"recognition":3.8,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Pooja Mainali","year":2025,"ed":"Nepal","award":"20under20","field":"teen leadership","home":"Jhapa","sum":"Teen leadership \u00b7 Jhapa","s":{"social_impact":3.4,"leadership":3.6,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Rakshit Poudel","year":2025,"ed":"Nepal","award":"20under20","field":"STEM educator","home":"Butwal","sum":"Stem educator \u00b7 Butwal","s":{"social_impact":3.4,"leadership":3.6,"innovation":3.5,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}},{"name":"Renuka Singh","year":2025,"ed":"Nepal","award":"Finalist","field":"agropreneur","home":"Sarlahi","sum":"Agropreneur \u00b7 Sarlahi","s":{"social_impact":3.3,"leadership":3.6,"innovation":2.5,"entrepreneurship":3.9,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Ritu Gharti","year":2025,"ed":"Nepal","award":"20under20","field":"peer educator","home":"Nawalpur","sum":"Peer educator \u00b7 Nawalpur","s":{"social_impact":4.4,"leadership":3.9,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Ruchi Ojha","year":2025,"ed":"Nepal","award":"20under20","field":"menstrual health","home":"Kathmandu","sum":"Menstrual health \u00b7 Kathmandu","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Safal Poudel","year":2025,"ed":"Nepal","award":"Finalist","field":"AI developer","home":"Rupandehi","sum":"Ai developer \u00b7 Rupandehi","s":{"social_impact":3.3,"leadership":3.3,"innovation":3.8,"entrepreneurship":2.5,"recognition":3.0,"glocal_fit":3.7,"character":3.7},"est":true,"links":{}},{"name":"Sajan Adhikari","year":2025,"ed":"Nepal","award":"20under20","field":"SDG activist","home":"Chitwan","sum":"Sdg activist \u00b7 Chitwan","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Saksham Ghimire","year":2025,"ed":"Nepal","award":"20under20","field":"policy advocate","home":"Rupandehi","sum":"Policy advocate \u00b7 Rupandehi","s":{"social_impact":4.0,"leadership":3.3,"innovation":2.2,"entrepreneurship":2.2,"recognition":2.7,"glocal_fit":3.0,"character":3.4},"est":true,"links":{}},{"name":"Saksham Rupakheti","year":2025,"ed":"Nepal","award":"20under20","field":"social entrepreneur","home":"Kapilvastu","sum":"Social entrepreneur \u00b7 Kapilvastu","s":{"social_impact":4.0,"leadership":3.6,"innovation":2.2,"entrepreneurship":3.6,"recognition":2.7,"glocal_fit":3.4,"character":3.4},"est":true,"links":{}}];</script>
+<footer><div class="wrap">Built by a 2026 applicant as an open self-assessment tool. Corpus facts belong to their sources. MIT licensed. Not affiliated with Glocal Pvt. Ltd.</div></footer>
+
+<script>
+/* ---------- RUBRIC ---------- */
+const DIMS = [
+  ["social_impact","Social impact",0.20],
+  ["leadership","Leadership",0.20],
+  ["innovation","Innovation",0.15],
+  ["entrepreneurship","Entrepreneurship",0.15],
+  ["recognition","Recognition",0.10],
+  ["glocal_fit","Glocal fit",0.10],
+  ["character","Character",0.10],
+];
+const W = Object.fromEntries(DIMS.map(d=>[d[0],d[2]]));
+const REPO = "https://github.com/arjanchaudharyy/glocal-teen-hero-benchmark";
+
+/* ---------- helpers ---------- */
+const CORPUS = window.__CORPUS__ || [];
+const wtotal = s => DIMS.reduce((a,[k])=>a+s[k]*W[k],0);
+const winners = ()=>CORPUS.filter(h=>h.award==="Winner");
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const $=id=>document.getElementById(id);
+
+/* ---------- signal toggles ---------- */
+const BUILD=[["startup","Founded a startup/company"],["product","Built a product/app"],["opensource","Open-sourced it"],["research","Did original research"],["revenue","Real revenue / paying users"],["loi","LOIs / raised funding"],["exit","Had an exit / acquisition"],["events","Organized events/hackathons"],["mentor","Mentored / taught others"],["campaign","Ran a social campaign"]];
+const REC=[["media","National/int'l media"],["award","Won awards"],["bigco","Credited by a major company"],["cve","CVE / patent / publication"],["global","Global stage (UN/COP/etc.)"]];
+const GLOC=[["worldclass","Work is world-class / global-grade"],["local","Solves a real local problem"],["fromhome","Built from home region, not abroad"]];
+const state={build:new Set(),rec:new Set(),gloc:new Set()};
+
+function mkToggles(host,arr,set){
+  arr.forEach(([k,label])=>{
+    const b=document.createElement("button");
+    b.className="chip";b.textContent=label;b.setAttribute("aria-pressed","false");
+    b.onclick=()=>{const on=b.getAttribute("aria-pressed")==="true";b.setAttribute("aria-pressed",String(!on));on?set.delete(k):set.add(k);render();};
+    host.appendChild(b);
+  });
+}
+mkToggles($("toggles"),BUILD,state.build);
+mkToggles($("recToggles"),REC,state.rec);
+mkToggles($("glocalToggles"),GLOC,state.gloc);
+
+/* ---------- free-text signal detection ---------- */
+const DETECT=[
+  [/\bcve[- ]?\d{4}-\d+|\bcve\b/i,"cve","rec"],[/\bpatent|published paper|peer[- ]review/i,"cve","rec"],
+  [/\byc\b|y ?combinator|techstars/i,"loi","build"],[/\bfound(ed|er)\b|\bco-?found/i,"startup","build"],
+  [/open[- ]?source/i,"opensource","build"],[/\brevenue|paying (users|customers)|arr\b/i,"revenue","build"],
+  [/\bLOI|letters? of intent|raised \$|pre-?seed|seed round/i,"loi","build"],
+  [/\bacqui(red|sition)|\bexit\b|\bsold\b/i,"exit","build"],
+  [/hackathon|game ?jam|meetup|conference/i,"events","build"],
+  [/\bmentor|taught|trained|workshop/i,"mentor","build"],
+  [/campaign|awareness drive|planted .* trees|petition/i,"campaign","build"],
+  [/\bBBC|Forbes|CNN|New York Times|national (tv|television)|featured (in|by)/i,"media","rec"],
+  [/\baward|winner|medal|fellow(ship)?|prize/i,"award","rec"],
+  [/google|microsoft|apple|meta|stripe|netflix|paypal|nasa|twitch\b/i,"bigco","rec"],
+  [/\bUN\b|united nations|COP\d|davos|white house/i,"global","rec"],
+  [/research|built (a|an)|developed|engineered|shipped/i,"research","build"],
+];
+function detectFromText(t){
+  const found=[];
+  DETECT.forEach(([re,key,grp])=>{ if(re.test(t)){ const set=grp==="rec"?state.rec:state.build; if(!set.has(key)){/*auto-add*/} found.push(key);} });
+  return [...new Set(found)];
+}
+
+/* ---------- scoring ---------- */
+function computeScores(){
+  const b=state.build,r=state.rec,g=state.gloc;
+  const members=+$("members").value||0, reached=+$("reached").value||0,
+        orgs=+$("orgs").value||0, years=+$("years").value||0;
+  const has=(set,...k)=>k.some(x=>set.has(x));
+
+  // social impact: reach + campaign + community scale
+  let si=0;
+  si += reached>=100000?2.6:reached>=10000?2.1:reached>=1000?1.5:reached>=100?0.9:reached>0?0.4:0;
+  si += has(b,"campaign")?1.0:0;
+  si += members>=1000?1.0:members>=300?0.8:members>=50?0.5:members>0?0.2:0;
+  si += has(b,"mentor")?0.5:0;
+  const social_impact=clamp(Math.round(si),0,5);
+
+  // leadership: orgs founded + members + events + mentoring
+  let ld=0;
+  ld += orgs>=3?1.6:orgs===2?1.2:orgs===1?0.8:0;
+  ld += members>=1000?1.8:members>=300?1.4:members>=100?1.0:members>=25?0.6:members>0?0.3:0;
+  ld += has(b,"events")?0.9:0;
+  ld += has(b,"mentor")?0.6:0;
+  const leadership=clamp(Math.round(ld),0,5);
+
+  // innovation: product/research/opensource/cve
+  let inv=0;
+  inv += has(b,"product")?1.4:0;
+  inv += has(b,"research")?1.4:0;
+  inv += has(b,"opensource")?0.9:0;
+  inv += has(r,"cve")?1.3:0;
+  inv += has(b,"startup")?0.6:0;
+  const innovation=clamp(Math.round(inv),0,5);
+
+  // entrepreneurship: startup + revenue + loi + exit
+  let en=0;
+  en += has(b,"startup")?1.5:0;
+  en += has(b,"revenue")?1.3:0;
+  en += has(b,"loi")?1.2:0;
+  en += has(b,"exit")?1.6:0;
+  const entrepreneurship=clamp(Math.round(en),0,5);
+
+  // recognition: media/award/bigco/cve/global
+  let rc=0;
+  rc += has(r,"media")?1.4:0;
+  rc += has(r,"award")?1.1:0;
+  rc += has(r,"bigco")?1.3:0;
+  rc += has(r,"cve")?0.8:0;
+  rc += has(r,"global")?1.3:0;
+  const recognition=clamp(Math.round(rc),0,5);
+
+  // glocal fit
+  let gf=0;
+  gf += g.has("worldclass")?2.0:0;
+  gf += g.has("local")?1.6:0;
+  gf += g.has("fromhome")?1.4:0;
+  const glocal_fit=clamp(Math.round(gf),0,5);
+
+  // character: years + breadth of activity
+  let ch=0;
+  ch += years>=5?2.0:years>=3?1.5:years>=1?1.0:years>0?0.5:0;
+  const breadth=b.size;
+  ch += breadth>=6?2.4:breadth>=4?1.8:breadth>=2?1.2:breadth>=1?0.6:0;
+  const character=clamp(Math.round(ch),0,5);
+
+  return {social_impact,leadership,innovation,entrepreneurship,recognition,glocal_fit,character};
+}
+
+/* ---------- render ---------- */
+let radarAnim=0;
+function render(){
+  // text detection
+  const txt=$("appText").value;
+  if(txt.trim()){
+    const keys=detectFromText(txt);
+    keys.forEach(k=>{ if(["media","award","bigco","cve","global"].includes(k))state.rec.add(k); else state.build.add(k); });
+    // reflect auto-added chips
+    syncChips($("toggles"),BUILD,state.build); syncChips($("recToggles"),REC,state.rec);
+    $("detected").innerHTML = keys.length?("Detected: <b>"+keys.length+" signal"+(keys.length>1?"s":"")+"</b> ("+keys.join(", ")+")"):"";
+    // auto-fill numbers from text
+    const bignum=txt.match(/(\d[\d,]{2,})\s*\+?\s*(members|users|people|students|attendees|participants|reached)/i);
+    if(bignum){ const n=+bignum[1].replace(/,/g,""); if(/member/i.test(bignum[2])&&!+$("members").value)$("members").value=n; else if(!+$("reached").value)$("reached").value=n; }
+  } else $("detected").innerHTML="";
+
+  const s=computeScores();
+  const total=wtotal(s);
+  $("bigScore").textContent=total.toFixed(1);
+
+  const W_=winners().map(wtotal).sort((a,b)=>a-b);
+  const mean=W_.reduce((a,b)=>a+b,0)/W_.length, max=Math.max(...W_), min=Math.min(...W_);
+  const pct=Math.round(100*W_.filter(x=>x<=total).length/W_.length);
+
+  let v,vs,bg,ink;
+  if(total>max){v="Above every past winner";vs="you'd top the cohort";bg="var(--gold)";ink="#3a2c00";}
+  else if(total>=mean){v="Winner-level";vs="in the winners' range";bg="color-mix(in srgb,var(--good) 20%,var(--panel))";ink="var(--good)";}
+  else if(total>=min){v="Finalist-level";vs="competitive, not yet top";bg="color-mix(in srgb,var(--warn) 22%,var(--panel))";ink="var(--warn)";}
+  else {v="Keep building";vs="below the winner floor";bg="var(--soft)";ink="var(--muted)";}
+  $("verdict").innerHTML=v+'<small>'+vs+'</small>';
+  const badge=$("verdictBadge");badge.textContent=(total>max?"TOP ":"")+pct+"th percentile vs winners";badge.style.background=bg;badge.style.color=ink;
+
+  // dims
+  const winAvg={};DIMS.forEach(([k])=>winAvg[k]=winners().reduce((a,h)=>a+h.s[k],0)/winners().length);
+  $("dims").innerHTML=DIMS.map(([k,label])=>`
+    <div class="dimrow"><div class="nm">${label}</div>
+      <div style="display:grid;gap:3px">
+        <div class="bar"><i style="width:${s[k]/5*100}%"></i></div>
+      </div>
+      <div class="vv">${s[k]}<span style="opacity:.5">/${winAvg[k].toFixed(1)}</span></div>
+    </div>`).join("");
+  $("cmp").innerHTML=`Winners average <b>${mean.toFixed(2)}</b> (range ${min.toFixed(2)}–${max.toFixed(2)}). You: <b>${total.toFixed(2)}</b>. The right number under each bar is the winners' average for that dimension.`;
+
+  drawRadar(s,winAvg);
+}
+function syncChips(host,arr,set){[...host.children].forEach((b,i)=>b.setAttribute("aria-pressed",String(set.has(arr[i][0]))));}
+
+/* ---------- radar ---------- */
+function drawRadar(s,winAvg){
+  const c=$("radar"),dpr=window.devicePixelRatio||1;
+  const w=c.clientWidth||600,h=440;c.width=w*dpr;c.height=h*dpr;
+  const x=c.getContext("2d");x.scale(dpr,dpr);x.clearRect(0,0,w,h);
+  const cx=w/2,cy=h/2+6,R=Math.min(w,h)/2-58,N=DIMS.length;
+  const css=getComputedStyle(document.documentElement);
+  const line=css.getPropertyValue('--line'),muted=css.getPropertyValue('--muted'),crimson=css.getPropertyValue('--crimson'),gold=css.getPropertyValue('--gold');
+  const pt=(i,r)=>[cx+Math.cos(-Math.PI/2+i*2*Math.PI/N)*r,cy+Math.sin(-Math.PI/2+i*2*Math.PI/N)*r];
+  // grid
+  for(let g=1;g<=5;g++){x.beginPath();for(let i=0;i<=N;i++){const[a,b]=pt(i%N,R*g/5);i?x.lineTo(a,b):x.moveTo(a,b);}x.strokeStyle=line;x.globalAlpha=g===5?1:.55;x.stroke();}
+  x.globalAlpha=1;
+  for(let i=0;i<N;i++){const[a,b]=pt(i,R);x.beginPath();x.moveTo(cx,cy);x.lineTo(a,b);x.strokeStyle=line;x.stroke();
+    const[lx,ly]=pt(i,R+22);x.fillStyle=muted;x.font="600 11px "+css.getPropertyValue('--sans');x.textAlign="center";x.textBaseline="middle";x.fillText(DIMS[i][1],lx,ly);}
+  // winners avg polygon
+  const poly=(vals,stroke,fill)=>{x.beginPath();DIMS.forEach(([k],i)=>{const[a,b]=pt(i,R*vals[k]/5);i?x.lineTo(a,b):x.moveTo(a,b);});x.closePath();x.fillStyle=fill;x.fill();x.strokeStyle=stroke;x.lineWidth=2;x.stroke();};
+  poly(winAvg,muted,"color-mix(in srgb,"+muted+" 12%,transparent)");
+  poly(s,crimson,"color-mix(in srgb,"+crimson+" 22%,transparent)");
+  DIMS.forEach(([k],i)=>{const[a,b]=pt(i,R*s[k]/5);x.beginPath();x.arc(a,b,3.2,0,7);x.fillStyle=crimson;x.fill();});
+  // legend
+  x.textAlign="left";x.font="600 11px "+css.getPropertyValue('--sans');
+  x.fillStyle=crimson;x.fillRect(12,12,10,10);x.fillStyle=muted;x.fillText("you",28,17);
+  x.fillStyle=muted;x.globalAlpha=.5;x.fillRect(64,12,10,10);x.globalAlpha=1;x.fillText("winners avg",80,17);
+}
+
+/* ---------- corpus grid + filters ---------- */
+let filt="All";
+function renderCorpus(){
+  const tiers=["All","Winner","Finalist","20under20"];
+  const cnt=e=>e==="All"?CORPUS.length:CORPUS.filter(h=>h.award===e).length;
+  $("filters").innerHTML=tiers.map(e=>`<button class="chip" data-ed="${e}" aria-pressed="${e===filt}">${e} (${cnt(e)})</button>`).join("");
+  [...$("filters").children].forEach(b=>b.onclick=()=>{filt=b.dataset.ed;renderCorpus();});
+  const list=CORPUS.filter(h=>filt==="All"||h.award===filt).sort((a,b)=>wtotal(b.s)-wtotal(a.s));
+  $("corpusGrid").innerHTML=list.map(h=>{
+    const lk=h.links||{};const L=[lk.li&&`<a href="${lk.li}" target="_blank" rel="noreferrer">in</a>`,lk.x&&`<a href="${lk.x}" target="_blank" rel="noreferrer">x</a>`,lk.web&&`<a href="${lk.web}" target="_blank" rel="noreferrer">web</a>`].filter(Boolean).join("");
+    return `<div class="hcard${h.me?' me':''}">
+      <div class="hh"><div><div class="nm">${h.name}</div><div class="tag">${h.award}${h.est?' · est':''}</div></div><div class="yr">${h.year}</div></div>
+      <div class="sm">${h.sum}</div>
+      <div class="foot"><div class="sc">${wtotal(h.s).toFixed(2)}<span style="color:var(--muted);font-weight:500;font-size:11px"> /5</span></div><div class="lk">${L||'<span style="color:var(--muted);font-size:11px">public data</span>'}</div></div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- static bits ---------- */
+function renderWinners(){
+  const me=CORPUS.find(h=>h.me);
+  const list=[...winners()].concat(me?[me]:[]).sort((a,b)=>wtotal(b.s)-wtotal(a.s));
+  $("winBoard").innerHTML=list.map((h,i)=>{
+    const t=wtotal(h.s).toFixed(2);
+    const bg=h.me?"background:color-mix(in srgb,var(--crimson) 9%,transparent)":"";
+    return `<div style="display:grid;grid-template-columns:40px 1fr 60px;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--line);${bg}">
+      <div class="mono" style="font-weight:800;color:${h.me?'var(--crimson)':'var(--muted)'}">${i+1}</div>
+      <div><div style="font-weight:750;letter-spacing:-.01em">${h.name}${h.me?' <span style=\'color:var(--crimson)\'>— you</span>':''}</div>
+        <div style="font-size:12px;color:var(--muted)">${h.me?'Applicant · 2026':'Winner · '+h.year}</div></div>
+      <div class="mono" style="text-align:right;font-weight:800">${t}</div>
+    </div>`;
+  }).join("");
+}
+function boot(){
+  const wl=winners().map(wtotal);
+  $("heroStats").innerHTML=[
+    ["stat",winners().length,"winners in the corpus"],
+    ["stat",(wl.reduce((a,b)=>a+b,0)/wl.length).toFixed(2),"winners' avg score"],
+    ["stat",Math.max(...wl).toFixed(2),"top winner score"],
+    ["stat","7","scored dimensions"],
+  ].map(([_,b,s])=>`<div class="stat"><b class="mono">${b}</b><span>${s}</span></div>`).join("");
+  $("methodDims").innerHTML=DIMS.map(([k,l,wt])=>`<li><b style="color:var(--ink)">${l}</b> — weight ${wt.toFixed(2)}</li>`).join("");
+  $("repoLink").href=REPO;
+  $("disc").innerHTML="This is a self-assessment tool made by a 2026 applicant. Scores reflect public information and a documented rubric, not the actual jury's decision. Change the weights in the repo and the picture can shift.";
+  renderWinners();renderCorpus();render();
+}
+
+/* events */
+["appText","orgs","members","reached","years"].forEach(id=>$(id).addEventListener("input",render));
+$("loadArjan").onclick=()=>{
+  $("appText").value="15, self-taught security engineer, Youngest Hacker of Nepal. CVE-2025-51588. Research credited by Google, Twitch, EA and Stanford. Security engineer at Dench (YC S24). Founder of kroda.ai, an AI pentester with $20,000+ in binding LOIs. Founder of Arniko Hack Club, Nepal's largest teen tech community with 400+ members. Organized Daydream (250+) and Campfire (150+) hackathons and a hacker house. 1x exit.";
+  $("orgs").value=3;$("members").value=400;$("reached").value=400;$("years").value=2;
+  ["startup","product","opensource","research","loi","exit","events","mentor"].forEach(k=>state.build.add(k));
+  ["media","award","bigco","cve"].forEach(k=>state.rec.add(k));
+  ["worldclass","local","fromhome"].forEach(k=>state.gloc.add(k));
+  syncChips($("toggles"),BUILD,state.build);syncChips($("recToggles"),REC,state.rec);syncChips($("glocalToggles"),GLOC,state.gloc);
+  render();
+};
+/* theme */
+$("themebtn").onclick=()=>{const r=document.documentElement;const cur=r.getAttribute("data-theme")|| (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");r.setAttribute("data-theme",cur==="dark"?"light":"dark");render();};
+addEventListener("resize",render);
+boot();
+</script>

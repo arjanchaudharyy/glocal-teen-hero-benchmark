@@ -1,65 +1,58 @@
 #!/usr/bin/env python3
 """
-Glocal Teen Hero benchmark scorer.
+Glocal Teen Hero benchmark scorer (Nepal edition).
 
-Loads data/heroes.json, applies the weighted rubric, and prints a ranking of
-past single-winner Glocal Teen Heroes (2021-2024) plus the 2026 applicant.
+Loads data/heroes.json (built by build.py), applies the weighted rubric, and
+ranks the applicant against:
+  * the WINNERS (the real bar), and
+  * the full honoree pool (winners + finalists + 20under20).
 
-The "benchmark" is the past winners' cohort: their mean and max weighted score.
-Reproducible, dependency-free:  python3 score.py
+Winners + a few honorees are hand-scored from public records; the rest use the
+documented tier+field heuristic in build.py (flagged est=true). Dependency-free:
+    python3 score.py
 """
-import json
-import os
+import json, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+data = json.load(open(os.path.join(HERE, "data", "heroes.json")))
+W = {k: v["weight"] for k, v in data["rubric"]["dimensions"].items()}
+total = lambda s: round(sum(s[k] * W[k] for k in W), 3)
 
-with open(os.path.join(HERE, "data", "heroes.json")) as f:
-    data = json.load(f)
+rows = [{"name": h["name"], "year": h["year"], "award": h["award"],
+         "est": h.get("est", False), "t": total(h["s"]), "me": h.get("me", False)} for h in data["heroes"]]
 
-DIMS = data["rubric"]["dimensions"]
-WEIGHTS = {k: v["weight"] for k, v in DIMS.items()}
-assert abs(sum(WEIGHTS.values()) - 1.0) < 1e-9, "weights must sum to 1.0"
+winners = [r for r in rows if r["award"] == "Winner"]
+applicant = next((r for r in rows if r["me"]), None)
+wl = sorted(r["t"] for r in winners)
+mean = sum(wl) / len(wl); mx = max(wl); mn = min(wl)
 
-def weighted(scores):
-    return sum(scores[d] * WEIGHTS[d] for d in WEIGHTS)
+rows.sort(key=lambda r: r["t"], reverse=True)
 
-rows = []
-for h in data["heroes"]:
-    rows.append({
-        "name": h["name"],
-        "year": h["year"],
-        "applicant": h["year"] == 2026,
-        "total": round(weighted(h["scores"]), 3),
-        "scores": h["scores"],
-    })
+print("\nGLOCAL TEEN HERO — NEPAL — BENCHMARK  (weighted rubric, 0-5)\n" + "=" * 70)
+print(f"corpus: {len(rows)} honorees  |  {len(winners)} winners  |  "
+      f"{sum(1 for r in rows if r['award']=='Finalist')} finalists  |  "
+      f"{sum(1 for r in rows if r['award']=='20under20')} 20under20\n")
 
-winners = [r for r in rows if not r["applicant"]]
-applicant = next(r for r in rows if r["applicant"])
+print("TOP 15 OF ALL HONOREES")
+print(f"{'#':<4}{'Name':<26}{'Year':<6}{'Tier':<11}{'Score':>6}")
+print("-" * 70)
+for i, r in enumerate(rows[:15], 1):
+    tag = " *" if r["est"] else ""
+    me = "  <- applicant" if r["me"] else ""
+    print(f"{i:<4}{r['name']:<26}{r['year']:<6}{r['award']:<11}{r['t']:>6.2f}{tag}{me}")
+print("  (* = heuristic estimate, not hand-scored)")
 
-bench_mean = round(sum(r["total"] for r in winners) / len(winners), 3)
-bench_max = max(r["total"] for r in winners)
-
-rows.sort(key=lambda r: r["total"], reverse=True)
-
-print("\nGLOCAL TEEN HERO BENCHMARK  (weighted rubric, 0-5 scale)\n" + "=" * 64)
-hdr = f"{'Rank':<5}{'Name':<24}{'Year':<6}{'Score':>7}"
-print(hdr + "\n" + "-" * 64)
-for i, r in enumerate(rows, 1):
-    tag = "  <- applicant" if r["applicant"] else ""
-    print(f"{i:<5}{r['name']:<24}{r['year']:<6}{r['total']:>7.2f}{tag}")
-
-print("\nBENCHMARK (past winners 2021-2024)\n" + "-" * 64)
-print(f"  winners' mean score : {bench_mean:.2f}")
-print(f"  winners' best score : {bench_max:.2f}  ({[w['name'] for w in winners if w['total']==bench_max][0]})")
-print(f"  applicant score     : {applicant['total']:.2f}  ({applicant['name']})")
-print(f"  delta vs mean       : {applicant['total']-bench_mean:+.2f}")
-print(f"  delta vs best winner: {applicant['total']-bench_max:+.2f}")
-beat = sum(1 for w in winners if applicant["total"] > w["total"])
-print(f"  beats {beat}/{len(winners)} past winners")
-
-print("\nPER-DIMENSION (applicant vs winners' average)\n" + "-" * 64)
-print(f"{'Dimension':<20}{'Weight':>8}{'Applicant':>11}{'Win.avg':>9}")
-for d in WEIGHTS:
-    wa = sum(w2["scores"][d] for w2 in winners) / len(winners)
-    print(f"{d:<20}{WEIGHTS[d]:>8.2f}{applicant['scores'][d]:>11.1f}{wa:>9.1f}")
+if applicant:
+    all_sorted = [r["t"] for r in rows]
+    rank_all = sorted(all_sorted, reverse=True).index(applicant["t"]) + 1
+    pctW = round(100 * sum(1 for x in wl if x <= applicant["t"]) / len(wl))
+    print("\nAPPLICANT vs BENCHMARK (winners 2015-2025)\n" + "-" * 70)
+    print(f"  applicant           : {applicant['t']:.2f}  ({applicant['name']})")
+    print(f"  winners' mean       : {mean:.2f}")
+    print(f"  winners' best       : {mx:.2f}")
+    print(f"  delta vs mean       : {applicant['t']-mean:+.2f}")
+    print(f"  delta vs best winner: {applicant['t']-mx:+.2f}")
+    print(f"  beats {sum(1 for w in winners if applicant['t']>w['t'])}/{len(winners)} winners "
+          f"| {pctW}th percentile vs winners")
+    print(f"  rank among ALL {len(rows)} honorees: #{rank_all}")
 print()
