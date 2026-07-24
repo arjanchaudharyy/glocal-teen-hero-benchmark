@@ -24,17 +24,35 @@
 | `links` | obj | source/social links |
 
 ## Labeling protocol
-Scores are assigned from public information (press, the program's pages,
-LinkedIn/GitHub/portfolios) on the **record held at selection**, not later
-careers. Higher-footprint honorees are individually researched; low-footprint
-honorees receive conservative estimates flagged `est=true`.
+Scores were assigned by an AI research process: Claude (via Claude Code,
+using web search and page-fetch tools, dispatched as batches of research
+agents per year/cohort) was directed to find each honoree's public record
+(press, the program's pages, LinkedIn/GitHub/portfolios) **as it stood at
+selection**, not their later career, and to score it 0-5 per dimension
+against a fixed rubric and calibration guide, explicitly instructed not to
+guess or inflate. Higher-footprint honorees were individually researched
+this way; low-footprint honorees received conservative estimates flagged
+`est=true` per that same instruction. This project's author (Aarjan
+Chaudhary) set the research scope, reviewed the output, and made final
+edits, but did not personally research or hand-score each record.
 
 ## Known limitations
 - Judgment-based labels, not ground truth. The rubric encodes a documented prior.
 - Common-name honorees with thin footprints are conservative estimates.
 - `now` notes are provided for context and are **excluded** from all scoring.
-- All labels are from a single annotator (this project's author). No
-  independent inter-rater check has been performed.
+- Labels were produced by a single AI research process (Claude), directed
+  and reviewed by this project's author, not by independent human
+  annotators. This carries AI-specific risk on top of the single-annotator
+  risk: research quality is bounded by what is indexed and findable online,
+  which likely compounds the existing skew toward honorees with an
+  English-language digital footprint, and no individual claim was
+  independently fact-checked beyond what its source page stated. No
+  inter-rater check of any kind, human or AI, has been performed.
+- The applicant's own record was researched and scored by this same AI
+  process, which knew throughout that it was scoring the record being
+  benchmarked against the rest of the corpus. This was not a blind or
+  independent evaluation, and is the single most important limitation of
+  this methodology overall.
 - The `20under20` tier has no honorees at all for 2015-2016 (21 honorees/year
   from 2017 on; 6 and 5 respectively for 2015/2016). This reflects the
   award's own history, not a data-quality gap, and is **not** a normalization

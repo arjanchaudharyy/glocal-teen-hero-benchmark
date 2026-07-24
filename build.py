@@ -9,7 +9,10 @@ career they built in the years since. This is the only fair basis for the questi
 "would I be selected as a Glocal Teen Hero". A separate "now" note captures each
 alum's later trajectory for a where-are-they-now view.
 
-Scores 0-5 per dimension, hand-derived from deep public research per person.
+Scores 0-5 per dimension. Researched and scored by Claude (via Claude Code,
+using web search/fetch agents directed at each honoree's public record),
+under this project's author's direction and review -- not hand-derived by
+the author from their own independent research. See DATA_CARD.md.
 Run:  python3 build.py
 """
 import json

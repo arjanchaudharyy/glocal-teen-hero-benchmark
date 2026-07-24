@@ -14,7 +14,7 @@
 
 ## What this is
 
-192 honorees, scored on a documented 7-dimension rubric, on the record they held **at selection**, not the career they built afterward. That's the whole rubric side: a dataset plus a scoring methodology, applied by one person to a fixed cohort. It isn't a standardized task other people are measured against, so it isn't called a benchmark.
+192 honorees, scored on a documented 7-dimension rubric, on the record they held **at selection**, not the career they built afterward. That's the whole rubric side: a dataset plus a scoring methodology, applied by an AI research process (Claude, directed and reviewed by this project's author) to a fixed cohort. It isn't a standardized task other people are measured against, so it isn't called a benchmark.
 
 The one part that is a benchmark: `gth/eval.py`, a real IR test collection (39 gold queries, several retrieval methods compared, cross-validated). That distinction matters enough that it's the reason this repo has this name instead of the one it used to have.
 
@@ -71,7 +71,7 @@ tests/               # 48 unittest cases
 
 ## Honesty and limitations
 
-Rubric scores reflect public information plus a documented methodology applied by this project's author, not an independent jury. This is a self-assessment tool, and says so. Retrieval labels are one annotator's judgment. `now` career notes are shown for context and excluded from scoring. Not affiliated with Glocal Pvt. Ltd.
+Rubric scores reflect public information gathered and scored by an AI research process (Claude), directed and reviewed by this project's author, not an independent jury - and not a blind process, since the same process also researched and scored the author's own record knowing whose it was. This is a self-assessment tool, and says so. Retrieval labels are one annotator's judgment. `now` career notes are shown for context and excluded from scoring. Not affiliated with Glocal Pvt. Ltd.
 
 ## License
 
