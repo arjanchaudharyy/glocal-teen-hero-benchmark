@@ -1,10 +1,15 @@
 """
-gth — Glocal Teen Hero at-selection benchmark + retrieval engine.
+gth — Glocal Teen Hero corpus, at-selection rubric, and retrieval benchmark.
 
-An open, reproducible benchmark of every Nepal Glocal Teen Hero honoree
-(2015-2025), scored on the record they held at selection, with a full IR
-retrieval engine over the corpus: 5 retrievers (BM25, TF-IDF, QLM, char
-n-gram, optional MiniLM), 3 fusion strategies, RM3 expansion, MMR re-ranking.
+An open, reproducible corpus of every Nepal Glocal Teen Hero honoree
+(2015-2025), scored via a documented rubric on the record they held at
+selection, plus a full IR retrieval benchmark over the same corpus: 5
+retrievers (BM25, TF-IDF, QLM, char n-gram, optional MiniLM), 3 fusion
+strategies, RM3 expansion, MMR re-ranking. "Benchmark" here refers
+specifically to the retrieval evaluation harness (gth.eval) — a real test
+collection with gold queries and compared systems — not the rubric scoring,
+which is a documented methodology applied to a fixed cohort, not a
+standardized task multiple parties are measured against.
 
 The default config is not a guess — `gth.eval.cross_validate` k-fold
 cross-validates every candidate, and char-ngram alone generalizes best on
@@ -22,7 +27,7 @@ from .retrieval import (
 from .rag import build_index, similar, ask
 from . import eval as evaluation
 
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 __all__ = [
     "Corpus", "Hero", "load", "WEIGHTS", "LABELS", "DIMENSIONS", "weighted_total",
     "rank_all", "cohort_stats", "percentile_vs", "rank_of", "verdict",

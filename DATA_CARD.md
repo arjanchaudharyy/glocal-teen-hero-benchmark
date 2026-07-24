@@ -8,7 +8,7 @@
 | Winner (annual titleholder) | 11 |
 | Finalist (top-6, non-winner) | 54 |
 | 20under20 honoree | 126 |
-| Applicant (2026, benchmarked) | 1 |
+| Applicant (2026, rubric-scored) | 1 |
 
 ## Schema (per record)
 | field | type | meaning |
@@ -38,7 +38,7 @@ honorees receive conservative estimates flagged `est=true`.
 A separate hand-labeled set of **39 topical queries**, each mapped to the honorees
 a human judges clearly relevant, is used to evaluate the retrieval engine
 (Recall@k, Precision@k, MRR, nDCG@k, MAP). These labels measure *whether the
-engine finds on-topic honorees* — they are independent of the benchmark scores.
+engine finds on-topic honorees* — they are independent of the honorees' rubric scores.
 They are a **sparse pool**: for broad queries, relevant honorees outside the
 labeled set are counted as misses, so reported metrics are conservative lower
 bounds. The valid signal is the *relative* comparison across retrieval configs —

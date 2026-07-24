@@ -1,7 +1,7 @@
 # Simple Beats Sophisticated (Sometimes): A Cross-Validated Study of Lexical Retrieval Ensembles on a Small, Domain-Specific Corpus
 
 **Aarjan Chaudhary**
-*Independent research note · accompanying the [Glocal Teen Hero Benchmark](README.md) open-source repository*
+*Independent research note · accompanying the [Glocal Teen Hero Corpus](README.md) open-source repository*
 
 ---
 
@@ -35,7 +35,7 @@ This work does not propose a new retrieval or fusion method; its contribution is
 
 ## 3. Dataset
 
-The corpus consists of 192 short biographical records (11 "Winner"-tier, 54 "Finalist"-tier, 126 "20under20"-tier, plus 1 benchmarked applicant record), each an "at-selection" summary — the record as it stood at the time of selection, deliberately excluding later career developments to keep comparisons contemporaneous. Each record is treated as a retrieval document; no other text processing (deduplication, chunking) is required at this scale. See the accompanying [dataset card](DATA_CARD.md) for the full schema and labeling protocol.
+The corpus consists of 192 short biographical records (11 "Winner"-tier, 54 "Finalist"-tier, 126 "20under20"-tier, plus 1 rubric-scored applicant record), each an "at-selection" summary — the record as it stood at the time of selection, deliberately excluding later career developments to keep comparisons contemporaneous. Each record is treated as a retrieval document; no other text processing (deduplication, chunking) is required at this scale. See the accompanying [dataset card](DATA_CARD.md) for the full schema and labeling protocol.
 
 ## 4. System
 
@@ -124,8 +124,8 @@ On this corpus, five retrievers, three fusion strategies, RM3 expansion, and MMR
 Every table above is generated directly by the accompanying open-source repository, with no manual editing of numbers:
 
 ```bash
-git clone https://github.com/arjanchaudharyy/glocal-teen-hero-benchmark
-cd glocal-teen-hero-benchmark
+git clone https://github.com/arjanchaudharyy/glocal-teen-hero-corpus
+cd glocal-teen-hero-corpus
 python -m gth eval          # Table 1
 python -m gth cv --folds 5  # Table 2
 python -m gth ncv           # Table 3

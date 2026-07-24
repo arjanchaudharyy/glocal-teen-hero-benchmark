@@ -3,14 +3,14 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gth-benchmark"
-version = "1.4.0"
-description = "Open, reproducible at-selection benchmark of every Glocal Teen Hero (Nepal) honoree, with a RAG retrieval layer over the corpus."
+name = "gth-corpus"
+version = "1.5.0"
+description = "Open, reproducible corpus of every Glocal Teen Hero (Nepal) honoree, with a documented at-selection scoring rubric and an included IR retrieval benchmark over the corpus."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [{ name = "Aarjan Chaudhary" }]
-keywords = ["benchmark", "rag", "retrieval", "corpus", "nepal", "glocal-teen-hero"]
+keywords = ["corpus", "dataset", "rubric", "rag", "retrieval", "information-retrieval", "benchmark", "nepal", "glocal-teen-hero"]
 dependencies = []   # core is pure standard library
 
 [project.optional-dependencies]
@@ -21,8 +21,8 @@ dev = ["pytest>=7"]
 gth = "gth.cli:main"
 
 [project.urls]
-Homepage = "https://arjanchaudharyy.github.io/glocal-teen-hero-benchmark/"
-Repository = "https://github.com/arjanchaudharyy/glocal-teen-hero-benchmark"
+Homepage = "https://arjanchaudharyy.github.io/glocal-teen-hero-corpus/"
+Repository = "https://github.com/arjanchaudharyy/glocal-teen-hero-corpus"
 
 [tool.setuptools]
 packages = ["gth"]

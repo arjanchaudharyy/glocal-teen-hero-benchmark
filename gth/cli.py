@@ -98,7 +98,7 @@ def _cmd_score(a):
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(prog="gth", description="Glocal Teen Hero at-selection benchmark")
+    p = argparse.ArgumentParser(prog="gth", description="Glocal Teen Hero corpus, at-selection rubric, and retrieval benchmark")
     p.add_argument("--version", action="version", version=f"gth {__version__}")
     sub = p.add_subparsers(dest="cmd", required=True)
 

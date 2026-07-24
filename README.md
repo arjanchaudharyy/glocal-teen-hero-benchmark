@@ -1,12 +1,14 @@
 <div align="center">
 
-# ▲ Glocal Teen Hero — At-Selection Benchmark & Retrieval Engine
+# ▲ Glocal Teen Hero Corpus
 
-**An open, reproducible benchmark of every Glocal Teen Hero (Nepal) honoree, 2015–2025 — scored on the record they held _at selection_ — with a hybrid retrieval (RAG) engine and a real IR evaluation harness over the corpus.**
+**An open, reproducible corpus of every Glocal Teen Hero (Nepal) honoree, 2015–2025, scored on the record they held _at selection_ via a documented rubric — plus a real IR retrieval benchmark built on top of the same corpus.**
+
+*A note on the name: this project is a **corpus** (dataset) with a **rubric** (documented scoring methodology) applied to it, and a separate, genuine **retrieval benchmark** (`gth/eval.py` — gold queries, compared systems, cross-validation). "Benchmark" is reserved for the part that earns it; the honoree scoring is a self-designed rubric applied to a fixed cohort, not a standardized task independent parties are measured against, and it isn't described as one here.*
 
 [![tests](https://img.shields.io/badge/tests-23%20passing-2f7d54)](tests/) [![python](https://img.shields.io/badge/python-3.9%2B-16233e)](pyproject.toml) [![core deps](https://img.shields.io/badge/core%20deps-0-16233e)](pyproject.toml) [![retrieval](https://img.shields.io/badge/retrieval-BM25%20·%20TF--IDF%20·%20QLM%20·%20char%20·%20RRF%20·%20RM3%20·%20MMR-b3906a)](gth/retrieval.py) [![nDCG@10 (5-fold CV)](https://img.shields.io/badge/nDCG%4010%20(5--fold%20CV)-0.578-6aa9d8)](gth/eval.py) [![deterministic](https://img.shields.io/badge/deterministic-✓-2f7d54)](gth/eval.py) [![license](https://img.shields.io/badge/license-MIT-b3906a)](LICENSE)
 
-[**Live tool**](https://arjanchaudharyy.github.io/glocal-teen-hero-benchmark/) · [**Paper**](PAPER.md) · [Dataset card](DATA_CARD.md) · [Retrieval stack](#the-retrieval-stack) · [Evaluation](#evaluation) · [Cross-validation](#cross-validation--proving-the-default-instead-of-guessing-it) · [Methodology](#methodology)
+[**Live tool**](https://arjanchaudharyy.github.io/glocal-teen-hero-corpus/) · [**Paper**](PAPER.md) · [Dataset card](DATA_CARD.md) · [Retrieval stack](#the-retrieval-stack) · [Evaluation](#evaluation) · [Cross-validation](#cross-validation--proving-the-default-instead-of-guessing-it) · [Methodology](#methodology)
 
 </div>
 
@@ -212,8 +214,8 @@ python -m gth ncv --outer 5 --inner 4
 ## Quickstart
 
 ```bash
-git clone https://github.com/arjanchaudharyy/glocal-teen-hero-benchmark
-cd glocal-teen-hero-benchmark            # no install needed — stdlib only
+git clone https://github.com/arjanchaudharyy/glocal-teen-hero-corpus
+cd glocal-teen-hero-corpus               # no install needed — stdlib only
 
 python -m gth rank                                   # at-selection leaderboard
 python -m gth stats                                  # cohort statistics by tier
@@ -231,7 +233,7 @@ python -m unittest discover -s tests                 # 23 tests, zero deps
 Optional dense backend:
 
 ```bash
-pip install "gth-benchmark[embeddings]"   # sentence-transformers + numpy
+pip install "gth-corpus[embeddings]"   # sentence-transformers + numpy
 GTH_BACKEND=embeddings python -m gth ask "robotics and hardware"
 ```
 
@@ -305,7 +307,7 @@ tests/             # 20 unittest cases (stdlib)
 ## Honesty & limitations
 
 - Scores reflect **public information + a documented rubric**, not the jury's decision. This is a self-assessment tool built by a 2026 applicant, and says so.
-- Retrieval labels in `eval.py` are **judgment-based ground truth for this corpus** — they measure whether the engine finds on-topic honorees, not the benchmark scores.
+- Retrieval labels in `eval.py` are **judgment-based ground truth for this corpus** — they measure whether the engine finds on-topic honorees, not the honorees' rubric scores.
 - Low-footprint honorees receive conservative estimates flagged `est=true`; `now` trajectories are context only and **excluded** from scoring.
 - Not affiliated with Glocal Pvt. Ltd. Corpus facts belong to their linked sources.
 

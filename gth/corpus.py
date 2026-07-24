@@ -1,5 +1,5 @@
 """
-Corpus loader for the Glocal Teen Hero benchmark.
+Corpus loader for the Glocal Teen Hero dataset.
 
 The corpus is 192 Nepal honorees (2015-2025), each scored on the record they held
 AT SELECTION (the teen record the jury saw), with a separate `now` trajectory note

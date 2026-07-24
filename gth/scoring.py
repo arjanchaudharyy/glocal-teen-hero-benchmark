@@ -1,5 +1,5 @@
 """
-Ranking + cohort statistics over the at-selection benchmark.
+Ranking + cohort statistics over the at-selection rubric-scored corpus.
 """
 from __future__ import annotations
 

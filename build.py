@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Build data/heroes.json for the Glocal Teen Hero (Nepal) AT-SELECTION benchmark.
+Build data/heroes.json for the Glocal Teen Hero (Nepal) corpus, scored via an
+AT-SELECTION rubric.
 
 IMPORTANT METHODOLOGY: every person is scored on the record they had AT THE TIME
 they were a Glocal honoree (the teen record the jury actually saw) -- NOT the
@@ -242,7 +243,7 @@ for line in DATA.strip().splitlines():
                    "me":tier=="Applicant","est":conf=="low"})
 
 out={"rubric":RUBRIC,
- "note":"AT-SELECTION benchmark: each person scored on the record they held when they were a Glocal honoree, NOT their later career. 'now' field holds their subsequent trajectory for a separate view.",
+ "note":"AT-SELECTION rubric: each person scored on the record they held when they were a Glocal honoree, NOT their later career. 'now' field holds their subsequent trajectory for a separate view.",
  "heroes":heroes}
 json.dump(out,open(os.path.join(HERE,"data","heroes.json"),"w"),indent=1)
 open(os.path.join(HERE,"corpus.js"),"w").write("window.__CORPUS__="+json.dumps(heroes,separators=(',',':'))+";")

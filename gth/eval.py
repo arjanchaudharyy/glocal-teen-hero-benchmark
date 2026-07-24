@@ -1,17 +1,25 @@
 """
-Retrieval evaluation harness.
+The retrieval benchmark: a real IR test collection over the corpus (gold
+queries + relevance judgments + compared systems), which is the one part of
+this project that earns the word "benchmark" — the rubric scoring elsewhere
+in this package is a documented methodology applied to a fixed cohort, not a
+standardized task multiple systems are measured against.
 
 A hand-labeled query set (query -> honorees a human judges relevant) plus
 standard IR metrics — Recall@k, Precision@k, MRR, nDCG@k, MAP — computed for
 every retrieval configuration, with a bootstrap 95% CI on the winner and an
-optional per-query breakdown. A small grid-search (`tune`) is included too.
+optional per-query breakdown. Also: k-fold and nested cross-validation to
+select the shipped default, and a paired significance test.
 
     python -m gth eval                 # comparison table + CI
     python -m gth eval --per-query     # per-query nDCG breakdown
+    python -m gth cv                   # k-fold cross-validated config selection
+    python -m gth ncv                  # nested CV — publish-safe estimate
+    python -m gth sig                  # paired significance test
     python -m gth tune                 # BM25 (k1,b) grid search
 
 Labels are judgment-based ground truth for *this* corpus: they measure whether
-the engine finds the on-topic honorees, not the benchmark scores.
+the engine finds the on-topic honorees, not the honorees' rubric scores.
 """
 from __future__ import annotations
 

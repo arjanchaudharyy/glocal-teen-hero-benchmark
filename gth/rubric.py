@@ -1,5 +1,5 @@
 """
-Scoring rubric for the Glocal Teen Hero at-selection benchmark.
+Scoring rubric for the Glocal Teen Hero corpus, applied on an at-selection basis.
 
 Seven weighted dimensions derived from the program's own stated criteria
 (leadership, innovation & technology, social impact, creativity, community
