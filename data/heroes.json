@@ -1,0 +1,66 @@
+{
+  "rubric": {
+    "description": "Dimensions derived from Glocal Teen Hero's own stated criteria (leadership, innovation & technology, social impact, creativity, community contribution, 'beyond academics') plus the organizer's public write-ups of why past winners won. Each dimension is scored 0-5 from public information. Weights sum to 1.0.",
+    "dimensions": {
+      "social_impact":     {"weight": 0.20, "definition": "Scale and measurability of positive change for people/community."},
+      "leadership":        {"weight": 0.20, "definition": "Founding/leading organizations, teams, movements; mentoring others."},
+      "innovation":        {"weight": 0.15, "definition": "Technical depth and novelty of what was actually built."},
+      "entrepreneurship":  {"weight": 0.15, "definition": "Ventures, real traction, revenue/commitments, exits."},
+      "recognition":       {"weight": 0.10, "definition": "External, verifiable credibility: media, awards, credits, CVEs."},
+      "glocal_fit":        {"weight": 0.10, "definition": "Global-grade work that stays rooted in local (Nepal/South Asia) impact."},
+      "character":         {"weight": 0.10, "definition": "Self-drive, resilience, initiative, will to learn."}
+    }
+  },
+  "heroes": [
+    {
+      "name": "Pranjal Chalise",
+      "year": 2021,
+      "title": "Wai Wai Glocal Teen Hero Nepal 2021",
+      "region": "Kathmandu, Nepal",
+      "fields": ["technology", "research", "accessibility"],
+      "summary": "Technopreneur and independent researcher. Built Drishti Nepal, an open-source cross-platform app helping visually impaired people recognize currency and do daily cash transactions; also an agriculture-information app and a women-safety app.",
+      "scores": {"social_impact": 4, "leadership": 3, "innovation": 4, "entrepreneurship": 3, "recognition": 3, "glocal_fit": 4, "character": 4},
+      "sources": ["https://glocalteenhero.com/pranjal-chalise-awardee-of-wai-wai-glocal-teen-hero-nepal-2021/"]
+    },
+    {
+      "name": "Rahul Ranjan Sah",
+      "year": 2022,
+      "title": "Wai Wai Glocal Teen Hero Nepal 2022",
+      "region": "Janakpur, Nepal",
+      "fields": ["astronomy", "space", "research", "entrepreneurship"],
+      "summary": "Astropreneur, astronomer and researcher. Founding member of Student Development and Exploration in Space (SXC); works on 'Arohan', a venture aiming to commercialize and develop Nepal's first private space mission. Affiliated with Nepal Astronomical Society.",
+      "scores": {"social_impact": 3, "leadership": 4, "innovation": 5, "entrepreneurship": 4, "recognition": 4, "glocal_fit": 4, "character": 5},
+      "sources": ["https://glocalteenhero.com/rahul-ranjan-sah-a-dedicated-astronomy-enthusiast/", "https://www.b360nepal.com/detail/1490/sah-felicitated-as-wai-wai-glocal-teen-hero-nepal-2022"]
+    },
+    {
+      "name": "Shruti Tiwari",
+      "year": 2023,
+      "title": "Golchha Group presents Glocal Teen Hero Nepal 2023",
+      "region": "Dhanusha, Nepal",
+      "fields": ["environment", "child rights", "advocacy"],
+      "summary": "Environment and child-rights activist. Led the Plasticman Campaign against single-use plastic and tree-planting efforts exceeding 100,000 trees (with Save the Children, WWF Nepal); documented impact stopping 12 child marriages and 3 child-abuse cases; mentored ~20 Dalit/Janjati girls; featured by BBC UK.",
+      "scores": {"social_impact": 5, "leadership": 4, "innovation": 2, "entrepreneurship": 2, "recognition": 5, "glocal_fit": 4, "character": 5},
+      "sources": ["https://glocalteenhero.com/what-made-ms-shruti-tiwari-win-the-glocal-teen-hero-nepal-2023/", "https://www.b360nepal.com/detail/10159/environmental-activist-tiwari-wins-golchha-group-presents-glocal-teen-hero-nepal-2023-title"]
+    },
+    {
+      "name": "Ghanashyam Bishwakarma",
+      "year": 2024,
+      "title": "Golchha Group presents Glocal Teen Hero Nepal 2024",
+      "region": "Rukum, Nepal",
+      "fields": ["child rights", "mental health", "climate justice", "advocacy"],
+      "summary": "Activist with 8+ years advocating children's rights, mental health, climate justice and against child marriage. Leads the National Adolescents Boys Network Nepal, runs workshops on child sexual exploitation, and coordinates disaster relief.",
+      "scores": {"social_impact": 5, "leadership": 5, "innovation": 2, "entrepreneurship": 2, "recognition": 4, "glocal_fit": 3, "character": 5},
+      "sources": ["https://www.sharesansar.com/newsdetail/glocal-teen-hero-nepal-2024-awarded-to-rukums-ghanashyam-bishwakarma-2024-09-02"]
+    },
+    {
+      "name": "Aarjan Chaudhary",
+      "year": 2026,
+      "title": "Applicant, Glocal Teen Hero South Asia 2026",
+      "region": "Biratnagar, Nepal",
+      "fields": ["cybersecurity", "AI", "entrepreneurship", "community building"],
+      "summary": "Self-taught security engineer ('Youngest Hacker of Nepal'). Research credited by Google, Twitch, EA, Stanford, XCI; assigned CVE-2025-51588 (among the youngest to receive one). Security engineer at Dench (YC S24). Founder of kroda.ai (AI penetration-testing product with $20,000+ in binding LOIs from YC/IPO-listed startups). Founder of Arniko Hack Club, Nepal's largest teen tech community (400+ members, top-10 teen non-profit in Asia); organized Daydream (250+) and Campfire (150+) hackathons and the InventNovelty hacker house. One prior startup exit (ggamechamps, acquired).",
+      "scores": {"social_impact": 4, "leadership": 5, "innovation": 5, "entrepreneurship": 5, "recognition": 5, "glocal_fit": 5, "character": 5},
+      "sources": ["https://arnikohackclub.com/", "https://kroda.ai/", "https://www.arjanchaudharyy.lol/", "CVE-2025-51588"]
+    }
+  ]
+}
