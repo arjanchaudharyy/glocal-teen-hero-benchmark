@@ -19,9 +19,9 @@ import sys
 
 from . import __version__
 from .corpus import load
-from .rubric import DIMENSIONS, LABELS, WEIGHTS, weighted_total, validate_scores
-from .scoring import rank_all, cohort_stats, percentile_vs, rank_of, verdict
-from .rag import build_index, similar, ask
+from .rag import ask, similar
+from .rubric import DIMENSIONS, LABELS, WEIGHTS, validate_scores, weighted_total
+from .scoring import cohort_stats, percentile_vs, rank_all, rank_of, verdict
 
 _TIER = {"winner": "Winner", "finalist": "Finalist", "20under20": "20under20", "applicant": "Applicant"}
 
@@ -86,7 +86,11 @@ def _cmd_sig(a):
 
 def _cmd_score(a):
     corpus = load()
-    scores = json.load(open(a.file)) if a.file else json.loads(sys.stdin.read())
+    if a.file:
+        with open(a.file, encoding="utf-8") as f:
+            scores = json.load(f)
+    else:
+        scores = json.loads(sys.stdin.read())
     validate_scores(scores)
     t = weighted_total(scores)
     print(f"\nWeighted total: {t:.2f} / 5")
@@ -97,21 +101,66 @@ def _cmd_score(a):
     print(f"Winners percentile: {percentile_vs(corpus, t)}th")
 
 
+_HYBRID_HELP = ("use the full BM25+TF-IDF+char+RM3+MMR ensemble instead of "
+                "the cross-validated char-ngram default")
+
+
 def main(argv=None):
-    p = argparse.ArgumentParser(prog="gth", description="Glocal Teen Hero corpus, at-selection rubric, and retrieval benchmark")
+    p = argparse.ArgumentParser(
+        prog="gth",
+        description="Glocal Teen Hero corpus, at-selection rubric, and retrieval benchmark",
+    )
     p.add_argument("--version", action="version", version=f"gth {__version__}")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    r = sub.add_parser("rank"); r.add_argument("--tier", choices=list(_TIER)); r.add_argument("--top", type=int, default=15); r.set_defaults(fn=_cmd_rank)
+    r = sub.add_parser("rank")
+    r.add_argument("--tier", choices=list(_TIER))
+    r.add_argument("--top", type=int, default=15)
+    r.set_defaults(fn=_cmd_rank)
+
     sub.add_parser("stats").set_defaults(fn=_cmd_stats)
-    s = sub.add_parser("similar"); s.add_argument("name"); s.add_argument("--k", type=int, default=5); s.add_argument("--hybrid", action="store_true", help="use the full BM25+TF-IDF+char+RM3+MMR ensemble instead of the cross-validated char-ngram default"); s.set_defaults(fn=_cmd_similar)
-    q = sub.add_parser("ask"); q.add_argument("query"); q.add_argument("--k", type=int, default=5); q.add_argument("--hybrid", action="store_true", help="use the full BM25+TF-IDF+char+RM3+MMR ensemble instead of the cross-validated char-ngram default"); q.set_defaults(fn=_cmd_ask)
-    e = sub.add_parser("eval"); e.add_argument("--k", type=int, default=10); e.add_argument("--per-query", action="store_true"); e.set_defaults(fn=_cmd_eval)
-    t = sub.add_parser("tune"); t.add_argument("--k", type=int, default=10); t.set_defaults(fn=_cmd_tune)
-    cv = sub.add_parser("cv"); cv.add_argument("--k", type=int, default=10); cv.add_argument("--folds", type=int, default=5); cv.set_defaults(fn=_cmd_cv)
-    ncv = sub.add_parser("ncv"); ncv.add_argument("--k", type=int, default=10); ncv.add_argument("--outer", type=int, default=5); ncv.add_argument("--inner", type=int, default=4); ncv.set_defaults(fn=_cmd_ncv)
-    sg = sub.add_parser("sig"); sg.add_argument("--k", type=int, default=10); sg.add_argument("--a", default="char-ngram"); sg.add_argument("--b", default="hybrid+rm3+mmr"); sg.set_defaults(fn=_cmd_sig)
-    sc = sub.add_parser("score"); sc.add_argument("--file"); sc.set_defaults(fn=_cmd_score)
+
+    s = sub.add_parser("similar")
+    s.add_argument("name")
+    s.add_argument("--k", type=int, default=5)
+    s.add_argument("--hybrid", action="store_true", help=_HYBRID_HELP)
+    s.set_defaults(fn=_cmd_similar)
+
+    q = sub.add_parser("ask")
+    q.add_argument("query")
+    q.add_argument("--k", type=int, default=5)
+    q.add_argument("--hybrid", action="store_true", help=_HYBRID_HELP)
+    q.set_defaults(fn=_cmd_ask)
+
+    e = sub.add_parser("eval")
+    e.add_argument("--k", type=int, default=10)
+    e.add_argument("--per-query", action="store_true")
+    e.set_defaults(fn=_cmd_eval)
+
+    t = sub.add_parser("tune")
+    t.add_argument("--k", type=int, default=10)
+    t.set_defaults(fn=_cmd_tune)
+
+    cv = sub.add_parser("cv")
+    cv.add_argument("--k", type=int, default=10)
+    cv.add_argument("--folds", type=int, default=5)
+    cv.set_defaults(fn=_cmd_cv)
+
+    ncv = sub.add_parser("ncv")
+    ncv.add_argument("--k", type=int, default=10)
+    ncv.add_argument("--outer", type=int, default=5)
+    ncv.add_argument("--inner", type=int, default=4)
+    ncv.set_defaults(fn=_cmd_ncv)
+
+    sg = sub.add_parser("sig")
+    sg.add_argument("--k", type=int, default=10)
+    sg.add_argument("--a", default="char-ngram")
+    sg.add_argument("--b", default="hybrid+rm3+mmr")
+    sg.set_defaults(fn=_cmd_sig)
+
+    sc = sub.add_parser("score")
+    sc.add_argument("--file")
+    sc.set_defaults(fn=_cmd_score)
 
     args = p.parse_args(argv)
     args.fn(args)

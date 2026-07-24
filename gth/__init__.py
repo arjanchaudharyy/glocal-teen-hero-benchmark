@@ -19,21 +19,30 @@ under both flat and nested cross-validation. The full ensemble is real and
 available (`hybrid=True`); it just does not win the honest comparison, so
 it is not the default.
 """
-from .corpus import Corpus, Hero, load
-from .rubric import WEIGHTS, LABELS, DIMENSIONS, weighted_total
-from .scoring import rank_all, cohort_stats, percentile_vs, rank_of, verdict
-from .retrieval import (
-    HybridRetriever, TfidfIndex, BM25Index, CharNGramIndex, Retrieval,
-    reciprocal_rank_fusion, mmr, rm3, tokenize, char_ngrams,
-)
-from .rag import build_index, similar, ask
 from . import eval as evaluation
+from .corpus import Corpus, Hero, load
+from .eval import Metrics
+from .rag import ask, build_index, similar
+from .retrieval import (
+    BM25Index,
+    CharNGramIndex,
+    HybridRetriever,
+    Retrieval,
+    TfidfIndex,
+    char_ngrams,
+    mmr,
+    reciprocal_rank_fusion,
+    rm3,
+    tokenize,
+)
+from .rubric import DIMENSIONS, LABELS, WEIGHTS, weighted_total
+from .scoring import cohort_stats, percentile_vs, rank_all, rank_of, verdict
 
-__version__ = "1.6.0"
+__version__ = "1.7.0"
 __all__ = [
     "Corpus", "Hero", "load", "WEIGHTS", "LABELS", "DIMENSIONS", "weighted_total",
     "rank_all", "cohort_stats", "percentile_vs", "rank_of", "verdict",
     "HybridRetriever", "TfidfIndex", "BM25Index", "CharNGramIndex", "Retrieval",
     "reciprocal_rank_fusion", "mmr", "rm3", "tokenize", "char_ngrams",
-    "build_index", "similar", "ask", "evaluation", "__version__",
+    "build_index", "similar", "ask", "evaluation", "Metrics", "__version__",
 ]

@@ -8,10 +8,10 @@ past winners won. Weights are a documented prior; override them and re-run.
 """
 from __future__ import annotations
 
-from typing import Dict, Mapping
+from collections.abc import Mapping
 
 # dimension -> weight (must sum to 1.0)
-WEIGHTS: Dict[str, float] = {
+WEIGHTS: dict[str, float] = {
     "social_impact": 0.20,
     "leadership": 0.20,
     "innovation": 0.15,
@@ -21,7 +21,7 @@ WEIGHTS: Dict[str, float] = {
     "character": 0.10,
 }
 
-LABELS: Dict[str, str] = {
+LABELS: dict[str, str] = {
     "social_impact": "Social impact",
     "leadership": "Leadership",
     "innovation": "Innovation",
@@ -34,7 +34,10 @@ LABELS: Dict[str, str] = {
 DIMENSIONS = tuple(WEIGHTS.keys())
 SCALE_MAX = 5.0
 
-assert abs(sum(WEIGHTS.values()) - 1.0) < 1e-9, "rubric weights must sum to 1.0"
+# Not an assert: assert statements are stripped under -O/PYTHONOPTIMIZE, which
+# would silently disable the one check against a mis-edited rubric.
+if abs(sum(WEIGHTS.values()) - 1.0) >= 1e-9:
+    raise ValueError(f"rubric weights must sum to 1.0, got {sum(WEIGHTS.values())}")
 
 
 def weighted_total(scores: Mapping[str, float], weights: Mapping[str, float] = WEIGHTS) -> float:

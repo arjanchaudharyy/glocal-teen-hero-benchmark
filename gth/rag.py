@@ -12,29 +12,36 @@ the default because it does not out-generalize the simple retriever here.
 """
 from __future__ import annotations
 
-from typing import List, Optional
+import weakref
 
 from .corpus import Corpus, load
 from .retrieval import HybridRetriever, Retrieval
 
-_CACHE = {}
+# WeakKeyDictionary, not a plain dict keyed by id(corpus): id() values are
+# reused by CPython after garbage collection, so an id-keyed cache can
+# silently return a retriever built from a different, already-deallocated
+# corpus. A WeakKeyDictionary keys on the object itself (via a weak
+# reference) and evicts its entry automatically when that corpus is
+# collected, so it can never return a stale answer for a live object and
+# never grows unboundedly for corpora that get discarded.
+_CACHE: weakref.WeakKeyDictionary[Corpus, HybridRetriever] = weakref.WeakKeyDictionary()
 
 
-def build_index(corpus: Optional[Corpus] = None) -> HybridRetriever:
+def build_index(corpus: Corpus | None = None) -> HybridRetriever:
     """Build (and memoize) a hybrid retriever."""
     corpus = corpus or load()
-    key = id(corpus)
-    if key not in _CACHE:
-        _CACHE[key] = HybridRetriever(corpus)
-    return _CACHE[key]
+    idx = _CACHE.get(corpus)
+    if idx is None:
+        idx = _CACHE[corpus] = HybridRetriever(corpus)
+    return idx
 
 
 def _hybrid_kwargs(index: HybridRetriever) -> dict:
     return dict(methods=index.full_hybrid_methods, fusion="rrf", expand="rm3", rerank="mmr")
 
 
-def similar(name: str, k: int = 5, corpus: Optional[Corpus] = None,
-            index: Optional[HybridRetriever] = None, hybrid: bool = False, **kw) -> List[Retrieval]:
+def similar(name: str, k: int = 5, corpus: Corpus | None = None,
+            index: HybridRetriever | None = None, hybrid: bool = False, **kw) -> list[Retrieval]:
     corpus = corpus or load()
     index = index or build_index(corpus)
     hero = corpus.get(name)
@@ -45,8 +52,8 @@ def similar(name: str, k: int = 5, corpus: Optional[Corpus] = None,
     return index.query(hero.doc, k=k, exclude=hero.key, **kw)
 
 
-def ask(query: str, k: int = 5, corpus: Optional[Corpus] = None,
-        index: Optional[HybridRetriever] = None, hybrid: bool = False, **kw) -> str:
+def ask(query: str, k: int = 5, corpus: Corpus | None = None,
+        index: HybridRetriever | None = None, hybrid: bool = False, **kw) -> str:
     """Retrieval-augmented answer. Defaults to the cross-validated best config
     (char n-gram); pass hybrid=True for the full BM25+TF-IDF+char+RM3+MMR stack."""
     corpus = corpus or load()

@@ -4,30 +4,37 @@
   "dimensions": {
    "social_impact": {
     "weight": 0.2,
+    "label": "Social impact",
     "definition": "Scale & measurability of positive change, at selection."
    },
    "leadership": {
     "weight": 0.2,
+    "label": "Leadership",
     "definition": "Orgs founded/led, teams, mentoring, at selection."
    },
    "innovation": {
     "weight": 0.15,
+    "label": "Innovation",
     "definition": "Technical depth/novelty of what they had built by then."
    },
    "entrepreneurship": {
     "weight": 0.15,
+    "label": "Entrepreneurship",
     "definition": "Ventures/traction they had by then."
    },
    "recognition": {
     "weight": 0.1,
+    "label": "Recognition",
     "definition": "Verifiable awards/media/credits held at selection."
    },
    "glocal_fit": {
     "weight": 0.1,
+    "label": "Glocal fit",
     "definition": "Global-grade work rooted in local impact."
    },
    "character": {
     "weight": 0.1,
+    "label": "Character",
     "definition": "Self-drive, resilience, initiative."
    }
   }

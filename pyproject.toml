@@ -4,18 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gth-corpus"
-version = "1.6.0"
+version = "1.7.0"
 description = "Open, reproducible corpus of every Glocal Teen Hero (Nepal) honoree, with a documented at-selection scoring rubric and an included IR retrieval benchmark over the corpus."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [{ name = "Aarjan Chaudhary" }]
-keywords = ["corpus", "dataset", "rubric", "rag", "retrieval", "information-retrieval", "benchmark", "nepal", "glocal-teen-hero"]
-dependencies = []   # core is pure standard library
+keywords = ["corpus", "dataset", "rubric", "retrieval", "information-retrieval", "benchmark", "nepal", "glocal-teen-hero"]
+dependencies = []   # pure standard library, no runtime dependencies at all
 
 [project.optional-dependencies]
-embeddings = ["sentence-transformers>=2.2", "numpy>=1.23"]
-dev = ["pytest>=7"]
+dev = ["ruff>=0.6", "mypy>=1.10"]
 
 [project.scripts]
 gth = "gth.cli:main"
@@ -26,3 +25,22 @@ Repository = "https://github.com/arjanchaudharyy/glocal-teen-hero-corpus"
 
 [tool.setuptools]
 packages = ["gth"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+ignore = ["E501"]  # long lines: many are intentionally wide table-formatting print()s
+
+[tool.mypy]
+# Newer mypy releases refuse to target-check below 3.10; this governs which
+# typing semantics mypy checks against, not the package's actual runtime
+# floor (requires-python above stays >=3.9, verified by CI actually running
+# the test suite under 3.9). Safe because every module uses `from __future__
+# import annotations`, so PEP 604/585 syntax is never evaluated at runtime.
+python_version = "3.10"
+warn_unused_ignores = true
+warn_redundant_casts = true
+check_untyped_defs = true

@@ -7,7 +7,8 @@ version of this file had all of that, and most of it never won a single
 comparison in gth/eval.py. What is here is what actually earned its place:
 
   * TfidfIndex     - smoothed-IDF TF-IDF, L2-normalized sparse vectors, cosine.
-  * BM25Index      - Okapi BM25 (k1, b tunable).
+  * BM25Index      - Okapi BM25 (k1, b tunable at search time, not just at
+                     construction; see HybridRetriever.set_bm25_params).
   * CharNGramIndex - character 3-4-gram TF-IDF cosine (typo / transliteration
                      robust, and the strongest single retriever on this corpus).
   * reciprocal_rank_fusion - the one fusion strategy tested and kept (RRF).
@@ -22,8 +23,8 @@ from __future__ import annotations
 import math
 import re
 from collections import Counter, defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Sequence, Tuple
 
 from .corpus import Corpus, Hero
 
@@ -49,13 +50,13 @@ def _stem(w: str) -> str:
     return w
 
 
-def tokenize(text: str) -> List[str]:
+def tokenize(text: str) -> list[str]:
     return [_stem(t) for t in _TOKEN.findall(text.lower()) if t not in _STOP and len(t) > 1]
 
 
-def char_ngrams(text: str, lo: int = 3, hi: int = 4) -> List[str]:
+def char_ngrams(text: str, lo: int = 3, hi: int = 4) -> list[str]:
     s = "".join(ch if ch.isalnum() else " " for ch in text.lower())
-    grams: List[str] = []
+    grams: list[str] = []
     for tok in s.split():
         t = f"#{tok}#"
         for n in range(lo, hi + 1):
@@ -68,53 +69,83 @@ def char_ngrams(text: str, lo: int = 3, hi: int = 4) -> List[str]:
 class Retrieval:
     hero: Hero
     score: float
-    sources: Dict[str, int] = field(default_factory=dict)  # method -> rank (1-based)
+    sources: dict[str, int] = field(default_factory=dict)  # method -> rank (1-based)
     snippet: str = ""
 
 
-def _rank_map(ranked_idx: Sequence[int]) -> Dict[int, int]:
+def _rank_map(ranked_idx: Sequence[int]) -> dict[int, int]:
     return {idx: r for r, idx in enumerate(ranked_idx, 1)}
 
 
-def _l2(v: Dict[str, float]) -> Dict[str, float]:
+def _l2(v: dict[str, float]) -> dict[str, float]:
     n = math.sqrt(sum(x * x for x in v.values())) or 1.0
     return {w: x / n for w, x in v.items()}
 
 
-def _cos(a: Dict[str, float], b: Dict[str, float]) -> float:
+def _cos(a: dict[str, float], b: dict[str, float]) -> float:
     small, big = (a, b) if len(a) < len(b) else (b, a)
     return sum(v * big.get(w, 0.0) for w, v in small.items())
 
 
 # ----------------------------------------------------------------------------- TF-IDF
 class TfidfIndex:
+    """TF-IDF cosine index.
+
+    Pass either raw `docs` (tokenized internally with `tok`) or a
+    precomputed `tokens` list. HybridRetriever tokenizes once and shares
+    the result with BM25Index rather than each index retokenizing the same
+    documents independently.
+
+    search() uses an inverted index (term -> posting list of doc indices)
+    so it only scores documents that share at least one term with the
+    query, instead of computing cosine similarity against every document in
+    the corpus on every call. A document with zero term overlap always
+    scores exactly 0.0 under cosine similarity, so this changes nothing
+    about which documents are considered relevant, only how many
+    zero-relevance documents get scored for no reason.
+    """
     name = "tfidf"
 
-    def __init__(self, docs: Sequence[str], tok=tokenize):
+    def __init__(self, docs: Sequence[str] | None = None, tok=tokenize,
+                 *, tokens: Sequence[list[str]] | None = None):
         self._tok = tok
-        toks = [tok(d) for d in docs]
+        if tokens is not None:
+            toks = list(tokens)
+        else:
+            if docs is None:
+                raise ValueError("must pass either docs or tokens")
+            toks = [tok(d) for d in docs]
         n = len(toks)
         df: Counter = Counter()
         for tk in toks:
             df.update(set(tk))
         self.idf = {w: math.log((1 + n) / (1 + c)) + 1.0 for w, c in df.items()}
         self.vecs = [self._vec(tk) for tk in toks]
+        self.postings: dict[str, list[int]] = defaultdict(list)
+        for i, v in enumerate(self.vecs):
+            for w in v:
+                self.postings[w].append(i)
 
-    def _vec(self, tk: Sequence[str]) -> Dict[str, float]:
+    def _vec(self, tk: Sequence[str]) -> dict[str, float]:
         if not tk:
             return {}
         tf = Counter(tk)
         return _l2({w: (c / len(tk)) * self.idf.get(w, 0.0) for w, c in tf.items()})
 
-    def search(self, query: str) -> List[Tuple[int, float]]:
+    def search(self, query: str) -> list[tuple[int, float]]:
         q = self._vec(self._tok(query))
-        scored = [(i, _cos(q, v)) for i, v in enumerate(self.vecs)]
+        candidates: set = set()
+        for w in q:
+            candidates.update(self.postings.get(w, ()))
+        scored = [(i, _cos(q, self.vecs[i])) for i in candidates]
         scored.sort(key=lambda t: t[1], reverse=True)
         return scored
 
 
 class CharNGramIndex(TfidfIndex):
-    """TF-IDF cosine over character n-grams, robust to spelling and transliteration."""
+    """TF-IDF cosine over character n-grams, robust to spelling and transliteration.
+    Uses a different tokenizer than the word-level indices, so it cannot share
+    their tokenization pass."""
     name = "char"
 
     def __init__(self, docs: Sequence[str]):
@@ -123,11 +154,28 @@ class CharNGramIndex(TfidfIndex):
 
 # ----------------------------------------------------------------------------- BM25
 class BM25Index:
+    """Okapi BM25, scored via an inverted index.
+
+    k1/b are read at search() time from self.k1/self.b, which callers may
+    mutate directly (or via HybridRetriever.set_bm25_params) between calls.
+    Tokenization, document frequencies, IDF, and the postings lists (the
+    expensive, O(corpus) part of construction) do not depend on k1/b at
+    all, so trying many (k1, b) combinations, as gth/eval.py's grid
+    searches do, never requires rebuilding this index: only search()
+    re-runs, and it only visits documents that share at least one query
+    term (via the postings lists) rather than scanning the whole corpus.
+    """
     name = "bm25"
 
-    def __init__(self, docs: Sequence[str], k1: float = 1.5, b: float = 0.75):
+    def __init__(self, docs: Sequence[str] | None = None, k1: float = 1.5, b: float = 0.75,
+                 *, tokens: Sequence[list[str]] | None = None):
         self.k1, self.b = k1, b
-        self.tokens = [tokenize(d) for d in docs]
+        if tokens is not None:
+            self.tokens = list(tokens)
+        else:
+            if docs is None:
+                raise ValueError("must pass either docs or tokens")
+            self.tokens = [tokenize(d) for d in docs]
         self.dl = [len(t) for t in self.tokens]
         n = len(self.tokens)
         self.avgdl = (sum(self.dl) / n) if n else 0.0
@@ -136,29 +184,33 @@ class BM25Index:
             df.update(set(tk))
         self.idf = {w: math.log(1 + (n - c + 0.5) / (c + 0.5)) for w, c in df.items()}
         self.tf = [Counter(tk) for tk in self.tokens]
-
-    def search(self, query: str) -> List[Tuple[int, float]]:
-        q = tokenize(query)
-        out = []
+        self.postings: dict[str, list[tuple[int, int]]] = defaultdict(list)
         for i, tf in enumerate(self.tf):
-            s, dl = 0.0, self.dl[i] or 1
-            for w in q:
-                f = tf.get(w, 0)
-                if not f:
-                    continue
+            for term, f in tf.items():
+                self.postings[term].append((i, f))
+
+    def search(self, query: str) -> list[tuple[int, float]]:
+        q = tokenize(query)
+        scores: dict[int, float] = defaultdict(float)
+        for w in q:
+            idf = self.idf.get(w)
+            if idf is None:
+                continue
+            for i, f in self.postings.get(w, ()):
+                dl = self.dl[i] or 1
                 denom = f + self.k1 * (1 - self.b + self.b * dl / (self.avgdl or 1))
-                s += self.idf.get(w, 0.0) * (f * (self.k1 + 1)) / denom
-            out.append((i, s))
+                scores[i] += idf * (f * (self.k1 + 1)) / denom
+        out = list(scores.items())
         out.sort(key=lambda t: t[1], reverse=True)
         return out
 
 
 # ----------------------------------------------------------------------------- fusion
-def reciprocal_rank_fusion(rankings: Dict[str, Sequence[int]],
-                           weights: Optional[Dict[str, float]] = None,
-                           k: int = 60) -> List[Tuple[int, float]]:
+def reciprocal_rank_fusion(rankings: dict[str, Sequence[int]],
+                           weights: dict[str, float] | None = None,
+                           k: int = 60) -> list[tuple[int, float]]:
     """RRF: score(d) = sum_r w_r / (k + rank_r(d)). Scale-free, weightable."""
-    fused: Dict[int, float] = defaultdict(float)
+    fused: dict[int, float] = defaultdict(float)
     for name, ranked in rankings.items():
         w = (weights or {}).get(name, 1.0)
         for rank, idx in enumerate(ranked, 1):
@@ -166,7 +218,7 @@ def reciprocal_rank_fusion(rankings: Dict[str, Sequence[int]],
     return sorted(fused.items(), key=lambda t: t[1], reverse=True)
 
 
-def _minmax(scored: Sequence[Tuple[int, float]]) -> Dict[int, float]:
+def _minmax(scored: Sequence[tuple[int, float]]) -> dict[int, float]:
     if not scored:
         return {}
     vals = [s for _, s in scored]
@@ -176,24 +228,37 @@ def _minmax(scored: Sequence[Tuple[int, float]]) -> Dict[int, float]:
 
 
 # ----------------------------------------------------------------------------- expansion & rerank
-def mmr(rel: Dict[int, float], cand_idx, tfidf: TfidfIndex, lam: float = 0.7, k: int = 10) -> List[int]:
+def mmr(rel: dict[int, float], cand_idx, tfidf: TfidfIndex, lam: float = 0.7, k: int = 10) -> list[int]:
     """Maximal Marginal Relevance re-ranking.
 
     `rel` maps candidate index to its (fused) relevance in [0, 1]; diversity is
     measured with TF-IDF cosine between docs. This balances the fused ranking
     against redundancy, so every upstream retriever actually influences output.
+
+    Maintains a running max-similarity-to-selected per candidate, updated
+    incrementally against only the most recently selected item each round,
+    instead of recomputing max cosine similarity against every selected item
+    from scratch on every round. That naive version is O(k^2 * |candidates|)
+    and was, empirically (profiled during gth/eval.py's grid searches), the
+    single largest cost in this whole codebase, over 80% of wall time on a
+    corpus of only 192 documents. This version is O(k * |candidates|) and
+    returns mathematically identical output.
     """
-    selected: List[int] = []
     cands = list(cand_idx)
+    max_sim = {i: 0.0 for i in cands}
+    selected: list[int] = []
     while cands and len(selected) < k:
         best, best_s = cands[0], -1e18
         for i in cands:
-            div = max((_cos(tfidf.vecs[i], tfidf.vecs[j]) for j in selected), default=0.0)
-            s = lam * rel.get(i, 0.0) - (1 - lam) * div
+            s = lam * rel.get(i, 0.0) - (1 - lam) * max_sim[i]
             if s > best_s:
                 best, best_s = i, s
         selected.append(best)
         cands.remove(best)
+        for i in cands:
+            sim = _cos(tfidf.vecs[best], tfidf.vecs[i])
+            if sim > max_sim[i]:
+                max_sim[i] = sim
     return selected
 
 
@@ -208,7 +273,7 @@ def rm3(query: str, bm25: BM25Index, top_m: int = 8, n_terms: int = 10,
     scores = [s for _, s in ranked]
     ws = [math.exp(s - max(scores)) for s in scores]
     z = sum(ws) or 1.0
-    fb: Dict[str, float] = defaultdict(float)
+    fb: dict[str, float] = defaultdict(float)
     for (i, _), w in zip(ranked, ws):
         dl = bm25.dl[i] or 1
         for term, f in bm25.tf[i].items():
@@ -253,8 +318,13 @@ class HybridRetriever:
     def __init__(self, corpus: Corpus, pool: int = 50, bm25_k1: float = 1.5, bm25_b: float = 0.4):
         self.corpus = corpus
         self.docs = [h.doc for h in corpus.heroes]
-        self.tfidf = TfidfIndex(self.docs)
-        self.bm25 = BM25Index(self.docs, k1=bm25_k1, b=bm25_b)
+        # Word-level tokenization happens once and is shared between TF-IDF
+        # and BM25 (they used to each retokenize the same documents
+        # independently). Char n-grams use a different tokenizer and need
+        # their own pass.
+        word_tokens = [tokenize(d) for d in self.docs]
+        self.tfidf = TfidfIndex(tokens=word_tokens)
+        self.bm25 = BM25Index(tokens=word_tokens, k1=bm25_k1, b=bm25_b)
         self.char = CharNGramIndex(self.docs)
         self.pool = pool
         self.weights = dict(_DEFAULT_WEIGHTS)
@@ -267,9 +337,21 @@ class HybridRetriever:
         self.default_methods = ["char"]
         self.full_hybrid_methods = ["bm25", "tfidf", "char"]
 
+    def set_bm25_params(self, k1: float, b: float) -> None:
+        """Change BM25's k1/b without rebuilding the index. Cheap: tokenization,
+        document frequencies, and IDF don't depend on k1/b, only search() does.
+        Grid-searching (k1, b), as gth/eval.py's tune/cv/ncv all do, should call
+        this on one shared HybridRetriever rather than constructing a new one
+        per grid point."""
+        self.bm25.k1 = k1
+        self.bm25.b = b
+
     def _indices(self, methods):
         methods = methods or self.default_methods
-        return {m: self._all[m] for m in methods if m in self._all}
+        unknown = [m for m in methods if m not in self._all]
+        if unknown:
+            raise ValueError(f"unknown retrieval method(s) {unknown!r}; valid: {sorted(self._all)}")
+        return {m: self._all[m] for m in methods}
 
     def describe(self, methods=None, fusion: str = "rrf", expand=None, rerank=None) -> str:
         """Human-readable config label. Reflects the actual params of a call."""
@@ -282,12 +364,21 @@ class HybridRetriever:
         return tag
 
     def query(self, text: str, k: int = 5, *, methods=None, fusion: str = "rrf",
-              expand: Optional[str] = None, rerank: Optional[str] = None,
-              exclude: Optional[str] = None, snippets: bool = False) -> List[Retrieval]:
+              expand: str | None = None, rerank: str | None = None,
+              exclude: str | None = None, snippets: bool = False,
+              pool: int | None = None) -> list[Retrieval]:
+        """
+        pool: how many top hits each individual retriever contributes to
+        fusion before RRF combines them (default self.pool=50). At this
+        corpus's size (192 docs) that's over a quarter of the corpus, so
+        truncation essentially never affects recall; if this corpus grows,
+        a small pool can silently cap recall and should be raised.
+        """
         idxs = self._indices(methods)
+        pool = self.pool if pool is None else pool
         q = rm3(text, self.bm25) if expand == "rm3" else text
 
-        scored = {name: ix.search(q)[: self.pool] for name, ix in idxs.items()}
+        scored = {name: ix.search(q)[:pool] for name, ix in idxs.items()}
         rank_maps = {name: _rank_map([i for i, s in sl if s != 0]) for name, sl in scored.items()}
 
         if len(idxs) == 1:

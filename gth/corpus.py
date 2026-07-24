@@ -11,7 +11,6 @@ import json
 import os
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import Dict, List, Optional
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _DATA = os.path.join(os.path.dirname(_HERE), "data", "heroes.json")
@@ -22,11 +21,11 @@ class Hero:
     name: str
     year: int
     award: str                      # Winner | Finalist | 20under20 | Applicant
-    scores: Dict[str, float]
+    scores: dict[str, float]
     conf: str                       # high | med | low
     then: str                       # at-selection record
     now: str                        # later trajectory
-    links: Dict[str, str] = field(default_factory=dict)
+    links: dict[str, str] = field(default_factory=dict)
     est: bool = False               # heuristic estimate (low footprint)
     me: bool = False                # the applicant
 
@@ -40,10 +39,26 @@ class Hero:
         return f"{self.name}|{self.year}"
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class Corpus:
-    heroes: List[Hero]
+    """eq=False: falls back to identity-based __eq__/__hash__. A default
+    dataclass __eq__/__hash__ here would compare/hash the `heroes` list
+    field, which is unhashable, so hash(corpus) would raise TypeError the
+    moment anything (e.g. a cache keyed by corpus) tried to use it. Identity
+    equality is also the semantically right choice: two Corpus instances
+    built from the same file are still logically distinct instances for
+    caching purposes."""
+    heroes: list[Hero]
     rubric: dict
+    # Built once in __post_init__, not part of the dataclass's identity
+    # (compare/repr excluded): O(1) lookup for the (name, year) case, which
+    # is what every retrieval/eval call actually does. get(name) with no
+    # year is the rarer path and stays a linear scan.
+    _by_name_year: dict[tuple[str, int], Hero] = field(default_factory=dict, repr=False, compare=False)
+
+    def __post_init__(self):
+        index = {(h.name.lower(), h.year): h for h in self.heroes}
+        object.__setattr__(self, "_by_name_year", index)
 
     def __iter__(self):
         return iter(self.heroes)
@@ -51,22 +66,22 @@ class Corpus:
     def __len__(self):
         return len(self.heroes)
 
-    def by_tier(self, tier: str) -> List[Hero]:
+    def by_tier(self, tier: str) -> list[Hero]:
         return [h for h in self.heroes if h.award == tier]
 
     @property
-    def winners(self) -> List[Hero]:
+    def winners(self) -> list[Hero]:
         return self.by_tier("Winner")
 
     @property
-    def applicant(self) -> Optional[Hero]:
+    def applicant(self) -> Hero | None:
         return next((h for h in self.heroes if h.me), None)
 
-    def get(self, name: str, year: Optional[int] = None) -> Optional[Hero]:
-        for h in self.heroes:
-            if h.name.lower() == name.lower() and (year is None or h.year == year):
-                return h
-        return None
+    def get(self, name: str, year: int | None = None) -> Hero | None:
+        if year is not None:
+            return self._by_name_year.get((name.lower(), year))
+        lname = name.lower()
+        return next((h for h in self.heroes if h.name.lower() == lname), None)
 
 
 @lru_cache(maxsize=1)

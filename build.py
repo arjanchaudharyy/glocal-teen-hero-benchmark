@@ -12,18 +12,38 @@ alum's later trajectory for a where-are-they-now view.
 Scores 0-5 per dimension, hand-derived from deep public research per person.
 Run:  python3 build.py
 """
-import json, os
-HERE=os.path.dirname(os.path.abspath(__file__))
-RUBRIC={"description":"Seven dimensions from Glocal Teen Hero's stated criteria, scored on each person's AT-SELECTION teen record (not their later career). 0-5 each; weights sum to 1.0.",
- "dimensions":{
-  "social_impact":{"weight":0.20,"definition":"Scale & measurability of positive change, at selection."},
-  "leadership":{"weight":0.20,"definition":"Orgs founded/led, teams, mentoring, at selection."},
-  "innovation":{"weight":0.15,"definition":"Technical depth/novelty of what they had built by then."},
-  "entrepreneurship":{"weight":0.15,"definition":"Ventures/traction they had by then."},
-  "recognition":{"weight":0.10,"definition":"Verifiable awards/media/credits held at selection."},
-  "glocal_fit":{"weight":0.10,"definition":"Global-grade work rooted in local impact."},
-  "character":{"weight":0.10,"definition":"Self-drive, resilience, initiative."}}}
-DIMS=list(RUBRIC["dimensions"].keys())
+import json
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from gth.rubric import DIMENSIONS, LABELS, WEIGHTS  # noqa: E402 (needs sys.path set first)
+
+# Per-dimension free text lives here; the weights themselves are imported
+# from gth/rubric.py so there is exactly one place that defines them. An
+# earlier version hardcoded a second copy of these weights here, and a third
+# copy again in index.html's JS -- three independently-editable sources of
+# truth for the same seven numbers, with nothing keeping them in sync.
+_DEFINITIONS = {
+    "social_impact": "Scale & measurability of positive change, at selection.",
+    "leadership": "Orgs founded/led, teams, mentoring, at selection.",
+    "innovation": "Technical depth/novelty of what they had built by then.",
+    "entrepreneurship": "Ventures/traction they had by then.",
+    "recognition": "Verifiable awards/media/credits held at selection.",
+    "glocal_fit": "Global-grade work rooted in local impact.",
+    "character": "Self-drive, resilience, initiative.",
+}
+RUBRIC = {
+    "description": ("Seven dimensions from Glocal Teen Hero's stated criteria, scored on each "
+                     "person's AT-SELECTION teen record (not their later career). "
+                     "0-5 each; weights sum to 1.0."),
+    "dimensions": {
+        d: {"weight": WEIGHTS[d], "label": LABELS[d], "definition": _DEFINITIONS[d]}
+        for d in DIMENSIONS
+    },
+}
+DIMS = list(DIMENSIONS)
 
 # name | year | tier | si,ld,in,en,rc,gf,ch | conf | THEN (at-selection) | NOW (trajectory) | socials
 DATA="""
@@ -223,35 +243,61 @@ Saksham Rupakheti|2025|20under20|3,3,3,3,2,4,3|med|Co-founder ThinkNiti Foundati
 """
 
 def parse_socials(s):
-    d={}
+    d = {}
     for kv in s.split(";"):
-        kv=kv.strip()
+        kv = kv.strip()
         if "=" in kv:
-            k,v=kv.split("=",1); d[k.strip()]=v.strip()
+            k, v = kv.split("=", 1)
+            d[k.strip()] = v.strip()
     return d
 
-heroes=[]
+
+heroes = []
 for line in DATA.strip().splitlines():
-    p=[x.strip() for x in line.split("|")]
-    if len(p)<8: continue
-    name,year,tier,scores,conf,then,now,socials=p[0],int(p[1]),p[2],p[3],p[4],p[5],p[6],p[7]
-    if tier=="skip": continue
-    sv=[int(x) for x in scores.split(",")]
-    s={DIMS[i]:sv[i] for i in range(7)}
-    heroes.append({"name":name,"year":year,"award":tier,"s":s,"conf":conf,
-                   "then":then,"now":now,"links":parse_socials(socials),
-                   "me":tier=="Applicant","est":conf=="low"})
+    p = [x.strip() for x in line.split("|")]
+    if len(p) < 8:
+        continue
+    name, year, tier, scores, conf, then, now, socials = (
+        p[0], int(p[1]), p[2], p[3], p[4], p[5], p[6], p[7],
+    )
+    if tier == "skip":
+        continue
+    sv = [int(x) for x in scores.split(",")]
+    s = {DIMS[i]: sv[i] for i in range(7)}
+    heroes.append({
+        "name": name, "year": year, "award": tier, "s": s, "conf": conf,
+        "then": then, "now": now, "links": parse_socials(socials),
+        "me": tier == "Applicant", "est": conf == "low",
+    })
 
-out={"rubric":RUBRIC,
- "note":"AT-SELECTION rubric: each person scored on the record they held when they were a Glocal honoree, NOT their later career. 'now' field holds their subsequent trajectory for a separate view.",
- "heroes":heroes}
-json.dump(out,open(os.path.join(HERE,"data","heroes.json"),"w"),indent=1)
-open(os.path.join(HERE,"corpus.js"),"w").write("window.__CORPUS__="+json.dumps(heroes,separators=(',',':'))+";")
+out = {
+    "rubric": RUBRIC,
+    "note": ("AT-SELECTION rubric: each person scored on the record they held when they "
+             "were a Glocal honoree, NOT their later career. 'now' field holds their "
+             "subsequent trajectory for a separate view."),
+    "heroes": heroes,
+}
+with open(os.path.join(HERE, "data", "heroes.json"), "w", encoding="utf-8") as f:
+    json.dump(out, f, indent=1)
 
-W={k:v["weight"] for k,v in RUBRIC["dimensions"].items()}
-tot=lambda s:sum(s[k]*W[k] for k in W)
-wins=[h for h in heroes if h["award"]=="Winner"]
-print(f"heroes:{len(heroes)} winners:{len(wins)} finalists:{sum(1 for h in heroes if h['award']=='Finalist')} 20u20:{sum(1 for h in heroes if h['award']=='20under20')}")
-rank=sorted(heroes,key=lambda h:-tot(h["s"]))
+# corpus.js is inlined directly into index.html: window.__CORPUS__ is the
+# honoree data, window.__RUBRIC__ is the same weights/labels gth/rubric.py
+# defines, so the web app reads its dimension weights from here instead of
+# hardcoding a third independent copy of the same seven numbers.
+with open(os.path.join(HERE, "corpus.js"), "w", encoding="utf-8") as f:
+    f.write("window.__CORPUS__=" + json.dumps(heroes, separators=(",", ":")) + ";\n")
+    f.write("window.__RUBRIC__=" + json.dumps(RUBRIC, separators=(",", ":")) + ";\n")
+
+
+def tot(s):
+    return sum(s[k] * WEIGHTS[k] for k in WEIGHTS)
+
+
+wins = [h for h in heroes if h["award"] == "Winner"]
+finalists = sum(1 for h in heroes if h["award"] == "Finalist")
+under20 = sum(1 for h in heroes if h["award"] == "20under20")
+print(f"heroes:{len(heroes)} winners:{len(wins)} finalists:{finalists} 20u20:{under20}")
+rank = sorted(heroes, key=lambda h: -tot(h["s"]))
 print("TOP 12 (at-selection):")
-for i,h in enumerate(rank[:12],1): print(f"{i:>2}. {h['name']:<24}{h['year']} {h['award']:<10}{tot(h['s']):.2f}")
+for i, h in enumerate(rank[:12], 1):
+    print(f"{i:>2}. {h['name']:<24}{h['year']} {h['award']:<10}{tot(h['s']):.2f}")
