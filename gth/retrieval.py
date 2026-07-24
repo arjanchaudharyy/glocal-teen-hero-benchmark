@@ -356,15 +356,33 @@ class HybridRetriever:
         self._all = {"bm25": self.bm25, "tfidf": self.tfidf, "qlm": self.qlm, "char": self.char}
         if self.dense:
             self._all["dense"] = self.dense
-        self.default_methods = ["bm25", "tfidf", "char"] + (["dense"] if self.dense else [])
-        self.backend = "hybrid(" + "+".join(self.default_methods) + ")"
+        # Default methods/expand/rerank are the CV-selected config, not a guess:
+        # `python -m gth cv` 5-fold cross-validates every candidate (single
+        # retrievers AND the fancier RM3+MMR hybrid) and char-ngram alone wins
+        # every fold on held-out queries — the fusion/expansion machinery is
+        # real and available, but on THIS corpus it overfits in-sample rather
+        # than generalizing. Ship what the evidence says; keep the rest opt-in.
+        self.default_methods = ["char"]
+        self.full_hybrid_methods = ["bm25", "tfidf", "char"] + (["dense"] if self.dense else [])
 
     def _indices(self, methods):
         methods = methods or self.default_methods
         return {m: self._all[m] for m in methods if m in self._all}
 
+    def describe(self, methods=None, fusion: str = "rrf", expand=None, rerank=None) -> str:
+        """Human-readable config label — reflects the ACTUAL params of a call,
+        not a static guess (a prior version always reported "hybrid(...)" even
+        when a caller passed a single method)."""
+        methods = methods or self.default_methods
+        tag = "+".join(methods) if len(methods) == 1 else f"hybrid({'+'.join(methods)},{fusion})"
+        if expand:
+            tag += f"+{expand}"
+        if rerank:
+            tag += f"+{rerank}"
+        return tag
+
     def query(self, text: str, k: int = 5, *, methods=None, fusion: str = "rrf",
-              expand: Optional[str] = "rm3", rerank: Optional[str] = "mmr",
+              expand: Optional[str] = None, rerank: Optional[str] = None,
               exclude: Optional[str] = None, snippets: bool = False) -> List[Retrieval]:
         idxs = self._indices(methods)
         q = text

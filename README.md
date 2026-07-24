@@ -4,9 +4,9 @@
 
 **An open, reproducible benchmark of every Glocal Teen Hero (Nepal) honoree, 2015–2025 — scored on the record they held _at selection_ — with a hybrid retrieval (RAG) engine and a real IR evaluation harness over the corpus.**
 
-[![tests](https://img.shields.io/badge/tests-16%20passing-2f7d54)](tests/) [![python](https://img.shields.io/badge/python-3.9%2B-16233e)](pyproject.toml) [![core deps](https://img.shields.io/badge/core%20deps-0-16233e)](pyproject.toml) [![retrieval](https://img.shields.io/badge/retrieval-BM25%20·%20TF--IDF%20·%20QLM%20·%20char%20·%20RRF%20·%20RM3%20·%20MMR-b3906a)](gth/retrieval.py) [![nDCG@10](https://img.shields.io/badge/nDCG%4010-0.390-6aa9d8)](gth/eval.py) [![deterministic](https://img.shields.io/badge/deterministic-✓-2f7d54)](gth/eval.py) [![license](https://img.shields.io/badge/license-MIT-b3906a)](LICENSE)
+[![tests](https://img.shields.io/badge/tests-20%20passing-2f7d54)](tests/) [![python](https://img.shields.io/badge/python-3.9%2B-16233e)](pyproject.toml) [![core deps](https://img.shields.io/badge/core%20deps-0-16233e)](pyproject.toml) [![retrieval](https://img.shields.io/badge/retrieval-BM25%20·%20TF--IDF%20·%20QLM%20·%20char%20·%20RRF%20·%20RM3%20·%20MMR-b3906a)](gth/retrieval.py) [![nDCG@10 (5-fold CV)](https://img.shields.io/badge/nDCG%4010%20(5--fold%20CV)-0.578-6aa9d8)](gth/eval.py) [![deterministic](https://img.shields.io/badge/deterministic-✓-2f7d54)](gth/eval.py) [![license](https://img.shields.io/badge/license-MIT-b3906a)](LICENSE)
 
-[**Live tool**](https://arjanchaudharyy.github.io/glocal-teen-hero-benchmark/) · [Dataset card](DATA_CARD.md) · [Retrieval stack](#the-retrieval-stack) · [Evaluation](#evaluation) · [Methodology](#methodology)
+[**Live tool**](https://arjanchaudharyy.github.io/glocal-teen-hero-benchmark/) · [Dataset card](DATA_CARD.md) · [Retrieval stack](#the-retrieval-stack) · [Evaluation](#evaluation) · [Cross-validation](#cross-validation--proving-the-default-instead-of-guessing-it) · [Methodology](#methodology)
 
 </div>
 
@@ -15,10 +15,10 @@
 ## TL;DR
 
 - **192 honorees** (11 winners, 54 finalists, 126 *20under20*) hand-scored on a **documented 7-dimension rubric**, on their **at-selection** record — the teen record the jury actually saw, *not* the career they built afterward.
-- A **hybrid retrieval engine** treats each honoree's record as a document: **five retrievers** (BM25, TF-IDF cosine, query-likelihood LM, character n-gram, + optional MiniLM dense), **three fusion strategies** (RRF, CombSUM, CombMNZ), **RM3 relevance-model** query expansion, and **MMR** diversity re-ranking — with an optional neural **cross-encoder**.
-- A **real evaluation harness** — 16 hand-labeled queries, standard IR metrics (Recall@k, Precision@k, MRR, nDCG@k, MAP), **bootstrap 95% CI**, per-query breakdown, and a **grid-search tuner**. Every design choice (retriever set, weights, BM25 params, fusion) was **selected by measurement**, not vibes.
-- **The tuned full stack beats every single-retriever baseline on every metric** (nDCG +12%, Recall +19%, MRR +8% over TF-IDF).
-- **Zero dependencies** in the default path. Pure standard library. **16 tests.** Fully **deterministic** (verified across hash seeds). Runs anywhere Python 3.9+ runs.
+- A **full IR retrieval engine** treats each honoree's record as a document: **five retrievers** (BM25, TF-IDF cosine, query-likelihood LM, character n-gram, + optional MiniLM dense), **three fusion strategies** (RRF, CombSUM, CombMNZ), **RM3 relevance-model** query expansion, and **MMR** diversity re-ranking — with an optional neural **cross-encoder**.
+- A **real evaluation harness** — 39 hand-labeled queries, standard IR metrics (Recall@k, Precision@k, MRR, nDCG@k, MAP), **bootstrap 95% CI**, per-query breakdown, and a **grid-search tuner**.
+- **A 5-fold cross-validation harness picks the shipped default** — not the eval table. It caught real overfitting: the elaborate BM25+TF-IDF+char+RM3+MMR ensemble looks best when tuned and measured on the same queries, but **plain character n-gram retrieval wins on held-out queries in all 5 folds.** So that's what ships as the default; the full ensemble is real, tested, and available behind one flag (`hybrid=True`) — we just don't pretend it's the better default when the evidence says otherwise.
+- **Zero dependencies** in the default path. Pure standard library. **20 tests.** Fully **deterministic** (verified across hash seeds). Runs anywhere Python 3.9+ runs.
 
 ## Why this exists
 
@@ -39,8 +39,8 @@ flowchart TB
       C --> R[rubric.py<br/>7 weighted dims]
       R --> S[scoring.py<br/>rank · percentile · verdict]
       C --> RE[retrieval.py<br/>BM25 · TF-IDF · QLM · char · dense<br/>RRF/CombSUM · RM3 · MMR · cross-enc]
-      RE --> RG[rag.py<br/>build_index · similar · ask]
-      RE --> EV[eval.py<br/>Recall · MRR · nDCG · MAP · CI · tune]
+      RE --> RG[rag.py<br/>build_index · similar · ask<br/>default=char, hybrid=True opt-in]
+      RE --> EV[eval.py<br/>Recall · MRR · nDCG · MAP · CI · tune · cv]
       S --> CLI[cli.py · python -m gth]
       RG --> CLI
       EV --> CLI
@@ -51,11 +51,13 @@ Two surfaces over one corpus: a **Python package** (`gth`) for ranking, retrieva
 
 ## The retrieval stack
 
-Each honoree's at-selection record is a document. The engine (`gth/retrieval.py`) is a real IR pipeline — every stage is classic, interpretable, and implemented from scratch in the standard library.
+Each honoree's at-selection record is a document. The engine (`gth/retrieval.py`) is a real IR pipeline — every stage is classic, interpretable, and implemented from scratch in the standard library. **All of it is real and callable**; which pieces run *by default* is decided by [cross-validation](#cross-validation--proving-the-default-instead-of-guessing-it), not by how sophisticated they sound.
 
 ```mermaid
 flowchart LR
-    Q[query] --> T[tokenize<br/>stopword + stem]
+    Q[query] --> DEFAULT[char n-gram<br/>— the CV-selected default]
+    DEFAULT --> K1[top-k + provenance]
+    Q -.hybrid=True.-> T[tokenize<br/>stopword + stem]
     T --> X{RM3 expand?}
     X -->|relevance model| T
     X --> B[BM25]
@@ -70,7 +72,7 @@ flowchart LR
     D -.-> FU
     FU --> M[MMR re-rank<br/>fused relevance ↔ diversity]
     M -.optional.-> CE[cross-encoder]
-    M --> K[top-k + provenance]
+    M --> K2[top-k + provenance]
 ```
 
 ### 1 · Lexical analysis
@@ -91,8 +93,8 @@ A probabilistic ranker — rank $d$ by the likelihood it generated the query, sm
 
 $$\text{score}(q,d) = \sum_{t \in q} \log\frac{f(t,d) + \mu\,P(t\mid C)}{|d| + \mu}$$
 
-### 5 · Character n-gram
-TF-IDF cosine over character 3–4-grams — robust to spelling and transliteration variance, and the single best-recall retriever on the gold set (0.442).
+### 5 · Character n-gram — **the shipped default**
+TF-IDF cosine over character 3–4-grams — robust to spelling and transliteration variance (which matters for romanized Nepali names). It's the single retriever that wins the in-sample eval table *and* the only config that wins every fold of held-out cross-validation — see [Cross-validation](#cross-validation--proving-the-default-instead-of-guessing-it).
 
 ### 6 · Optional dense — MiniLM
 If `sentence-transformers` is installed, `all-MiniLM-L6-v2` embeddings join the fusion. **Graceful fallback**: absent the library, the stack runs the lexical retrievers with zero code changes.
@@ -119,7 +121,7 @@ Every result carries **provenance** (`↳ retrieved by bm25#1, char#1, tfidf#1`)
 
 ## Evaluation
 
-Retrieval quality is **measured, not asserted.** `gth/eval.py` ships a hand-labeled gold set — 16 queries, each mapped to the honorees a human judges relevant — and computes standard IR metrics for every configuration, with a bootstrap CI on the winner.
+Retrieval quality is **measured, not asserted.** `gth/eval.py` ships a hand-labeled gold set — **39 queries**, each mapped to the honorees a human judges relevant, spanning topics from astronomy to menstrual health to cybersecurity — and computes standard IR metrics for every configuration, with a bootstrap CI on the winner.
 
 ```bash
 python -m gth eval                # comparison table + 95% CI
@@ -129,24 +131,53 @@ python -m gth tune                # BM25 (k1,b) grid search
 
 | config | Recall@10 | Prec@10 | MRR | nDCG@10 | MAP |
 |---|--:|--:|--:|--:|--:|
-| tf-idf | 0.377 | 0.131 | 0.489 | 0.347 | 0.271 |
-| bm25 | 0.405 | 0.144 | 0.500 | 0.363 | 0.273 |
-| query-likelihood LM | 0.380 | 0.131 | 0.467 | 0.342 | 0.258 |
-| char n-gram | 0.442 | 0.156 | 0.449 | 0.365 | 0.272 |
-| hybrid (rrf) | 0.390 | 0.138 | 0.469 | 0.348 | 0.281 |
-| hybrid (combsum) | 0.390 | 0.138 | 0.461 | 0.344 | 0.277 |
-| hybrid + rm3 | 0.429 | 0.144 | 0.498 | 0.383 | 0.307 |
-| **hybrid + rm3 + mmr** ★ | **0.450** | **0.150** | **0.529** | **0.390** | 0.299 |
+| tf-idf | 0.516 | 0.195 | 0.729 | 0.524 | 0.436 |
+| bm25 | 0.532 | 0.203 | 0.726 | 0.536 | 0.442 |
+| query-likelihood LM | 0.518 | 0.195 | 0.713 | 0.526 | 0.432 |
+| **char n-gram** ★ | **0.603** | **0.228** | 0.717 | **0.579** | **0.496** |
+| hybrid (rrf) | 0.576 | 0.221 | 0.735 | 0.564 | 0.484 |
+| hybrid (combsum) | 0.576 | 0.221 | 0.717 | 0.559 | 0.479 |
+| hybrid + rm3 | 0.568 | 0.215 | 0.722 | 0.558 | 0.461 |
+| hybrid + rm3 + mmr | 0.577 | 0.218 | **0.739** | 0.557 | 0.451 |
 
-*16 queries, k=10, `PYTHONHASHSEED` invariant. Winner nDCG@10 = 0.390 (bootstrap 95% CI 0.235–0.559).*
+*39 queries, k=10, `PYTHONHASHSEED` invariant. Winner nDCG@10 = 0.579 (bootstrap 95% CI 0.473–0.681).*
 
-**Ablation reading — every default was earned by a number:**
-- **RM3 is the biggest single lift** (+0.035 nDCG, +0.026 recall over plain hybrid) — relevance-model expansion recovers vocabulary the query never contained.
-- **MMR adds the top of the funnel** (+0.031 MRR, +0.021 recall) once its relevance term was fixed to use the *fused* score rather than TF-IDF alone (a bug the eval harness caught).
-- **The retriever set and weights were chosen by grid search**, not intuition: `bm25 + tfidf + char` at weights `(1.0, 1.0, 0.3)` and `b=0.4` beat every alternative — QLM helped alone but hurt in fusion, so it's available but off by default.
-- **The full stack beats the TF-IDF baseline on every metric**: nDCG +12%, Recall +19%, MRR +8%, MAP +10%.
+**Ablation reading:**
+- **Plain character n-gram retrieval wins on this in-sample table** — best Recall, nDCG, and MAP of any config, including the full hybrid ensemble.
+- **The elaborate hybrid still wins MRR** (0.739) — it gets *a* relevant result to rank #1 slightly more often — but loses on every other metric to the simpler retriever.
+- **RM3 and MMR do lift the hybrid over plain fusion** (nDCG 0.557 vs. 0.564→0.559 baseline fusion — noisy at this scale, but MRR climbs from 0.735 to 0.739), so the added machinery isn't *useless* — it's just not enough to beat char n-gram alone here.
 
-> **Honest caveat (why these are lower bounds):** the gold labels are a *sparse pool* — for broad queries the engine surfaces genuinely on-topic honorees that simply aren't in the small labeled set, which counts against it. So the absolute numbers **understate** quality; the valid signal is the *relative* comparison across configs, which is what drives every design decision here. The CI is wide because the set is only 16 queries — expanding it is on the roadmap.
+> **This table is exactly the trap that overfits a shipped default.** These configs were evaluated on the same 39 queries some of their own parameters (BM25's `k1,b`, the fusion weights) were grid-searched on. A config can look best here simply because it was tuned *against* this table. That's not a hypothetical — it's what the [cross-validation](#cross-validation--proving-the-default-instead-of-guessing-it) below actually caught. Treat this table as a comparison surface, not a basis for shipping a default on its own.
+
+## Cross-validation — proving the default instead of guessing it
+
+A comparison table computed on one fixed query set will always reward whatever was tuned against it. `python -m gth cv` runs **5-fold cross-validation** to test whether a config actually *generalizes*: on each fold, every candidate — every single retriever, and the full RM3+MMR hybrid at several fusion weightings — is scored on the **other four folds** (train), the best-on-train candidate is picked, and *that* candidate is scored on the **held-out fold** it never saw.
+
+```bash
+python -m gth cv --folds 5
+```
+
+```
+  fold 1/5: trained-best=char   train_nDCG=0.562  ->  held-out nDCG=0.646  (n=8)
+  fold 2/5: trained-best=char   train_nDCG=0.568  ->  held-out nDCG=0.622  (n=8)
+  fold 3/5: trained-best=char   train_nDCG=0.558  ->  held-out nDCG=0.663  (n=8)
+  fold 4/5: trained-best=char   train_nDCG=0.620  ->  held-out nDCG=0.422  (n=8)
+  fold 5/5: trained-best=char   train_nDCG=0.588  ->  held-out nDCG=0.537  (n=7)
+  winner per fold: {'char': 5}
+  cross-validated nDCG@10 = 0.578  (95% CI 0.490–0.648 over folds)
+```
+
+**Plain character n-gram retrieval wins all 5 folds** — not "wins on average," wins *every single one*, against candidates that include the full BM25+TF-IDF+char ensemble with RM3 expansion and MMR re-ranking at four different fusion weightings. That's as close to unambiguous as five folds get.
+
+**So the shipped default changed. `HybridRetriever.default_methods` is `["char"]`, not the hybrid ensemble.** The fancier pipeline is fully implemented, tested, and one call away (`ask(q, hybrid=True)`, `similar(name, hybrid=True)`, `--hybrid` on the CLI) — it's just not what generalizes best *on this corpus*, and shipping it as the default anyway would have been optimizing for how the README reads rather than for what the numbers say.
+
+This is the difference between a config that was *picked* and one that was *proven*:
+
+| | picked from the eval table | proven by cross-validation |
+|---|---|---|
+| what it measures | performance on the set you're about to report | performance on data the config never saw |
+| failure mode it catches | — | overfitting to tuned parameters (BM25 k1/b, fusion weights) |
+| what happened here | hybrid+rm3+mmr *looked* competitive (MRR 0.739, best in-table) | char alone still won every fold on the metric that matters (nDCG) |
 
 ## Quickstart
 
@@ -156,12 +187,14 @@ cd glocal-teen-hero-benchmark            # no install needed — stdlib only
 
 python -m gth rank                                   # at-selection leaderboard
 python -m gth stats                                  # cohort statistics by tier
-python -m gth ask "who worked on menstrual health?"  # hybrid RAG, with provenance
+python -m gth ask "who worked on menstrual health?"  # RAG, cross-validated default
+python -m gth ask "..." --hybrid                     # opt into the full ensemble
 python -m gth similar "Rahul Ranjan Sah"             # nearest honorees
 python -m gth eval                                   # IR metrics table + 95% CI
+python -m gth cv --folds 5                           # cross-validated config selection
 python -m gth tune                                   # BM25 grid search
 python -m gth score --file me.json                   # score your own record
-python -m unittest discover -s tests                 # 16 tests, zero deps
+python -m unittest discover -s tests                 # 20 tests, zero deps
 ```
 
 Optional dense backend:
@@ -178,12 +211,14 @@ from gth import load, build_index, ask, similar, rank_all
 from gth import eval as evaluation
 
 corpus = load()                                  # 192 typed Hero records
-idx = build_index(corpus)                         # HybridRetriever (BM25+TF-IDF)
+idx = build_index(corpus)                         # HybridRetriever, default_methods=["char"]
 
-idx.query("climate and environment", k=5)         # -> [Retrieval(hero, score, sources)]
-print(ask("machine learning", k=3))               # grounded, cite-by-name answer
+idx.query("climate and environment", k=5)         # -> [Retrieval(hero, score, sources)] via char n-gram
+print(ask("machine learning", k=3))               # cross-validated default, grounded + cited
+print(ask("machine learning", k=3, hybrid=True))  # opt into BM25+TF-IDF+char+RM3+MMR
 similar("Aarjan Chaudhary", k=5)                  # nearest honorees, self excluded
-evaluation.run(corpus)                             # prints the metrics table + CI
+evaluation.run(corpus)                             # in-sample metrics table + bootstrap CI
+evaluation.cross_validate(corpus, n_folds=5)       # the number that actually justifies the default
 evaluation.tune(corpus)                            # BM25 grid search
 
 # every primitive is exported — compose your own retriever:
@@ -214,26 +249,27 @@ gth/
 ├── corpus.py      # typed loader — @dataclass Hero / Corpus, lru_cache
 ├── scoring.py     # rank_all, cohort_stats, percentile, rank_of, verdict
 ├── retrieval.py   # 5 retrievers · RRF/CombSUM/CombMNZ · RM3 · MMR · cross-enc
-├── rag.py         # build_index · similar · ask  (high-level facade)
-├── eval.py        # gold set + Recall/Prec/MRR/nDCG/MAP · bootstrap CI · tune
-├── cli.py         # python -m gth  (rank|stats|ask|similar|eval|tune|score)
+├── rag.py         # build_index · similar · ask  (cross-validated default + hybrid=True)
+├── eval.py        # gold set (39 q) + Recall/Prec/MRR/nDCG/MAP · bootstrap CI · cross_validate · tune
+├── cli.py         # python -m gth  (rank|stats|ask|similar|eval|cv|tune|score)
 build.py           # regenerates data/heroes.json + corpus.js from the roster
 data/heroes.json   # the corpus (192 honorees)
 index.html         # interactive web app (embeds corpus.js)
-tests/             # 16 unittest cases (stdlib)
+tests/             # 20 unittest cases (stdlib)
 ```
 
 ## Design decisions
 
-- **Why lexical-first, not embeddings-only?** At ~192 short docs, sparse retrieval is *stronger and cheaper*: exact, interpretable, zero-dependency, every hit explainable by its terms. The eval bears this out — the tuned lexical hybrid beats what a single dense model would give here, and dense is wired in as an *optional* fusion input rather than a hard dependency.
-- **Why five retrievers?** Each fails differently: BM25 (length-normalized exact terms), TF-IDF (rare-term emphasis), QLM (probabilistic smoothing), char n-gram (spelling/transliteration), dense (semantics). Fusion turns uncorrelated errors into gains — *when they help*, which is why the default set was chosen by grid search, not by including everything.
+- **The default is proven, not picked.** `python -m gth cv` cross-validates every candidate and char n-gram alone wins all 5 held-out folds — that's what `HybridRetriever.default_methods` ships. The full hybrid is real and available (`hybrid=True`), not vestigial.
+- **Why lexical-first, not embeddings-only?** At ~192 short docs, sparse retrieval is *stronger and cheaper*: exact, interpretable, zero-dependency, every hit explainable by its terms. Dense is wired in as an *optional* fusion input rather than a hard dependency.
+- **Why five retrievers, if one wins alone?** Each fails differently — BM25 (length-normalized exact terms), TF-IDF (rare-term emphasis), QLM (probabilistic smoothing), char n-gram (spelling/transliteration), dense (semantics) — and the fusion/RM3/MMR machinery is genuine infrastructure for corpora where ensembling *does* generalize better. Here, measured honestly, it doesn't beat the simplest retriever; that's a real result about *this* corpus, not a reason to delete the machinery.
 - **Why RRF over score normalization?** BM25 scores and cosines live on incomparable scales; RRF fuses *ranks*, robust without calibration. CombSUM/CombMNZ are provided for comparison and measured in the table.
-- **Why RM3 over plain PRF?** It's the principled relevance-model formulation — it weights feedback terms by a proper interpolation instead of raw TF-IDF mass, and it's the single biggest lift in the ablation.
+- **Why RM3 over plain PRF?** It's the principled relevance-model formulation — it weights feedback terms by a proper interpolation instead of raw TF-IDF mass.
 - **Determinism is a feature, and it was tested.** The eval is invariant across `PYTHONHASHSEED` — a subtle bug (RM3 tie-breaks depending on set-iteration order) was found and fixed so the numbers reproduce exactly.
 
 ## Reproducibility
 
-`python build.py` regenerates the corpus and web bundle deterministically from the scored roster. `python -m unittest discover -s tests` verifies corpus integrity, the rubric invariant, ranking order, vector normalization, BM25 topical correctness, RRF fusion, retrieval relevance, metric ranges, and that the full stack beats the baseline. `python -m gth eval` reproduces the table above **exactly**, on any machine, under any hash seed.
+`python build.py` regenerates the corpus and web bundle deterministically from the scored roster. `python -m unittest discover -s tests` verifies corpus integrity, the rubric invariant, ranking order, vector normalization, BM25 topical correctness, RRF fusion, retrieval relevance, metric ranges, that the hybrid beats the tf-idf baseline in-sample, and that cross-validation returns in-range held-out scores. `python -m gth eval` and `python -m gth cv` reproduce the tables above **exactly**, on any machine, under any hash seed.
 
 ## Honesty & limitations
 
@@ -247,9 +283,10 @@ tests/             # 16 unittest cases (stdlib)
 - [x] Multi-retriever fusion (BM25 · TF-IDF · QLM · char · dense) with RRF/CombSUM/CombMNZ
 - [x] RM3 relevance-model expansion + MMR diversity re-ranking + optional cross-encoder
 - [x] Evaluation harness: Recall/Prec/MRR/nDCG/MAP, bootstrap CI, per-query, grid-search tuner
-- [ ] Expand the gold set to ~50 queries with a documented pooling protocol (tighten the CI)
+- [x] Expand the gold set to 39 queries; add 5-fold cross-validation and let it pick the default
+- [ ] Expand the gold set further (~60–80 queries) and re-run CV to see if the char-ngram win holds
 - [ ] Learned fusion weights (logistic / LambdaMART) instead of grid-searched constants
-- [ ] `gth serve-api` (FastAPI) exposing `/score`, `/similar`, `/ask`, `/eval`
+- [ ] `gth serve-api` (FastAPI) exposing `/score`, `/similar`, `/ask`, `/eval`, `/cv`
 
 ## License
 

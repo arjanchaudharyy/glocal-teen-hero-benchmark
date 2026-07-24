@@ -35,13 +35,15 @@ honorees receive conservative estimates flagged `est=true`.
 - `now` notes are provided for context and are **excluded** from all scoring.
 
 ## Retrieval evaluation labels (`gth/eval.py`)
-A separate hand-labeled set of **16 topical queries**, each mapped to the honorees
+A separate hand-labeled set of **39 topical queries**, each mapped to the honorees
 a human judges clearly relevant, is used to evaluate the retrieval engine
 (Recall@k, Precision@k, MRR, nDCG@k, MAP). These labels measure *whether the
 engine finds on-topic honorees* — they are independent of the benchmark scores.
 They are a **sparse pool**: for broad queries, relevant honorees outside the
 labeled set are counted as misses, so reported metrics are conservative lower
-bounds. The valid signal is the *relative* comparison across retrieval configs.
+bounds. The valid signal is the *relative* comparison across retrieval configs —
+which is why `gth.eval.cross_validate` (5-fold, held-out queries per fold) is
+used to select the shipped default rather than the single-table comparison.
 
 ## License
 MIT for the code; corpus facts belong to their linked sources.

@@ -36,26 +36,39 @@ def build_index(corpus: Optional[Corpus] = None, backend: str = "auto") -> Hybri
     return _CACHE[key]
 
 
+def _hybrid_kwargs(index: HybridRetriever) -> dict:
+    """The full tuned ensemble (BM25+TF-IDF+char, RM3 expansion, MMR rerank).
+    Cross-validation (`python -m gth cv`) shows this is strong in-sample but
+    does NOT out-generalize plain char-ngram on this corpus — it's opt-in."""
+    return dict(methods=index.full_hybrid_methods, fusion="rrf", expand="rm3", rerank="mmr")
+
+
 def similar(name: str, k: int = 5, corpus: Optional[Corpus] = None,
-            index: Optional[HybridRetriever] = None, **kw) -> List[Retrieval]:
+            index: Optional[HybridRetriever] = None, hybrid: bool = False, **kw) -> List[Retrieval]:
     corpus = corpus or load()
     index = index or build_index(corpus)
     hero = corpus.get(name)
     if hero is None:
         raise KeyError(f"no honoree matching {name!r}")
+    if hybrid:
+        kw = {**_hybrid_kwargs(index), **kw}
     return index.query(hero.doc, k=k, exclude=hero.key, **kw)
 
 
 def ask(query: str, k: int = 5, corpus: Optional[Corpus] = None,
-        index: Optional[HybridRetriever] = None, expand: bool = True,
-        rerank: bool = True) -> str:
+        index: Optional[HybridRetriever] = None, hybrid: bool = False, **kw) -> str:
+    """Retrieval-augmented answer. Defaults to the cross-validated best config
+    (char-ngram); pass hybrid=True for the full BM25+TF-IDF+char+RM3+MMR stack."""
     corpus = corpus or load()
     index = index or build_index(corpus)
-    hits = index.query(query, k=k, expand=expand, rerank=rerank)
-    lines = [f'Top {len(hits)} honorees matching "{query}" (backend: {index.backend}):', ""]
+    if hybrid:
+        kw = {**_hybrid_kwargs(index), **kw}
+    hits = index.query(query, k=k, **kw)
+    label = index.describe(kw.get("methods"), kw.get("fusion", "rrf"), kw.get("expand"), kw.get("rerank"))
+    lines = [f'Top {len(hits)} honorees matching "{query}" (config: {label}):', ""]
     for n, r in enumerate(hits, 1):
         prov = ", ".join(f"{m}#{rk}" for m, rk in sorted(r.sources.items()))
-        lines.append(f"{n}. {r.hero.name} ({r.hero.year}, {r.hero.award}) · rrf={r.score}")
+        lines.append(f"{n}. {r.hero.name} ({r.hero.year}, {r.hero.award}) · score={r.score}")
         lines.append(f"   {r.hero.then[:110]}")
         if prov:
             lines.append(f"   ↳ retrieved by {prov}")

@@ -3,8 +3,11 @@ Command-line interface.
 
     python -m gth rank [--tier winner|finalist|20under20] [--top N]
     python -m gth stats
-    python -m gth similar "Aarjan Chaudhary" [--k 5]
-    python -m gth ask "who worked on menstrual health?" [--k 5]
+    python -m gth similar "Aarjan Chaudhary" [--k 5] [--hybrid]
+    python -m gth ask "who worked on menstrual health?" [--k 5] [--hybrid]
+    python -m gth eval [--per-query]             # Recall/Prec/MRR/nDCG/MAP + bootstrap CI
+    python -m gth cv [--folds 5]                 # k-fold cross-validated config selection
+    python -m gth tune                           # BM25 (k1,b) grid search
     python -m gth score --file profile.json      # {"social_impact":4, ...}
 """
 from __future__ import annotations
@@ -46,13 +49,13 @@ def _cmd_stats(a):
 
 
 def _cmd_similar(a):
-    for r in similar(a.name, k=a.k, rerank=not a.no_rerank):
+    for r in similar(a.name, k=a.k, hybrid=a.hybrid):
         prov = ",".join(f"{m}#{rk}" for m, rk in sorted(r.sources.items()))
         print(f"{r.score:>8}  {r.hero.name} ({r.hero.year}, {r.hero.award}) [{prov}] — {r.hero.then[:80]}")
 
 
 def _cmd_ask(a):
-    print(ask(a.query, k=a.k, expand=not a.no_expand, rerank=not a.no_rerank))
+    print(ask(a.query, k=a.k, hybrid=a.hybrid))
 
 
 def _cmd_eval(a):
@@ -63,6 +66,11 @@ def _cmd_eval(a):
 def _cmd_tune(a):
     from .eval import tune
     tune(k=a.k)
+
+
+def _cmd_cv(a):
+    from .eval import cross_validate
+    cross_validate(k=a.k, n_folds=a.folds)
 
 
 def _cmd_score(a):
@@ -85,10 +93,11 @@ def main(argv=None):
 
     r = sub.add_parser("rank"); r.add_argument("--tier", choices=list(_TIER)); r.add_argument("--top", type=int, default=15); r.set_defaults(fn=_cmd_rank)
     sub.add_parser("stats").set_defaults(fn=_cmd_stats)
-    s = sub.add_parser("similar"); s.add_argument("name"); s.add_argument("--k", type=int, default=5); s.add_argument("--no-rerank", action="store_true"); s.set_defaults(fn=_cmd_similar)
-    q = sub.add_parser("ask"); q.add_argument("query"); q.add_argument("--k", type=int, default=5); q.add_argument("--no-expand", action="store_true"); q.add_argument("--no-rerank", action="store_true"); q.set_defaults(fn=_cmd_ask)
+    s = sub.add_parser("similar"); s.add_argument("name"); s.add_argument("--k", type=int, default=5); s.add_argument("--hybrid", action="store_true", help="use the full BM25+TF-IDF+char+RM3+MMR ensemble instead of the cross-validated char-ngram default"); s.set_defaults(fn=_cmd_similar)
+    q = sub.add_parser("ask"); q.add_argument("query"); q.add_argument("--k", type=int, default=5); q.add_argument("--hybrid", action="store_true", help="use the full BM25+TF-IDF+char+RM3+MMR ensemble instead of the cross-validated char-ngram default"); q.set_defaults(fn=_cmd_ask)
     e = sub.add_parser("eval"); e.add_argument("--k", type=int, default=10); e.add_argument("--per-query", action="store_true"); e.set_defaults(fn=_cmd_eval)
     t = sub.add_parser("tune"); t.add_argument("--k", type=int, default=10); t.set_defaults(fn=_cmd_tune)
+    cv = sub.add_parser("cv"); cv.add_argument("--k", type=int, default=10); cv.add_argument("--folds", type=int, default=5); cv.set_defaults(fn=_cmd_cv)
     sc = sub.add_parser("score"); sc.add_argument("--file"); sc.set_defaults(fn=_cmd_score)
 
     args = p.parse_args(argv)

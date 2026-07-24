@@ -89,14 +89,26 @@ class TestRAG(unittest.TestCase):
         self.assertTrue(all(r.hero.name != "Rahul Ranjan Sah" for r in res))
 
     def test_topical_retrieval(self):
-        hits = self.idx.query("menstrual health hygiene periods", k=8, rerank=False)
+        hits = self.idx.query("menstrual health hygiene periods", k=8)
         names = " ".join(r.hero.then.lower() for r in hits)
         self.assertIn("menstru", names)
 
-    def test_ask_reports_backend_and_provenance(self):
+    def test_ask_reports_config_and_provenance(self):
         out = ask("robotics and hardware", k=3, corpus=self.c, index=self.idx)
-        self.assertIn("hybrid(", out)
         self.assertIn("retrieved by", out)
+
+    def test_ask_hybrid_opt_in_reports_hybrid_label(self):
+        out = ask("robotics and hardware", k=3, corpus=self.c, index=self.idx, hybrid=True)
+        self.assertIn("hybrid(", out)
+
+    def test_default_methods_is_the_cv_selected_config(self):
+        # The default is not a guess — python -m gth cv 5-fold cross-validates
+        # every candidate and char-ngram alone wins every fold (see eval.py).
+        self.assertEqual(self.idx.default_methods, ["char"])
+
+    def test_describe_reflects_actual_call_params(self):
+        self.assertEqual(self.idx.describe(["char"]), "char")
+        self.assertIn("hybrid(", self.idx.describe(["bm25", "tfidf", "char"], rerank="mmr"))
 
 
 class TestEval(unittest.TestCase):
@@ -115,6 +127,15 @@ class TestEval(unittest.TestCase):
     def test_bootstrap_ci_ordered(self):
         lo, hi = ev.bootstrap_ci([0.2, 0.4, 0.6, 0.8])
         self.assertLessEqual(lo, hi)
+
+    def test_cross_validate_reports_held_out_scores_in_range(self):
+        c = load()
+        result = ev.cross_validate(c, n_folds=3)
+        self.assertEqual(len(result["held_out_ndcg"]), 3)
+        for v in result["held_out_ndcg"]:
+            self.assertGreaterEqual(v, 0.0)
+            self.assertLessEqual(v, 1.0)
+        self.assertEqual(len(result["folds"]), 3)
 
 
 if __name__ == "__main__":
